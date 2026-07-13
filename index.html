@@ -265,7 +265,8 @@
       var style = window.getComputedStyle(element);
       if (style.display === "none" || style.visibility === "hidden") return false;
       var rect = element.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
+      if (rect.width <= 0) return false;
+      return rect.height > 0 || normalizeText(element.textContent).length > 12 || hasMediaOrBackground(element);
     }
 
     function textFor(element) {
@@ -301,7 +302,7 @@
     }
 
     function explicitCategory(text) {
-      if (/отел|hotel|жиль|ночев|засел|бронь|booking|airbnb|check-in|check out|где жить/.test(text)) return "hotel";
+      if (/отел|hotel|жиль|ночев|бронь|booking|airbnb|где жить/.test(text)) return "hotel";
       if (/еда|кафе|ресторан|завтрак|обед|ужин|кофе|кофей|food|restaurant|breakfast|dinner|lunch|baklava|балык|рыба/.test(text)) return "food";
       if (/транспорт|метро|такси|паром|istanbulkart|sim|связь|деньги|бюджет|билет|ticket|ferry|metro|taxi|одежда|дресс-код|лир|try|руб|евро|доллар/.test(text)) return "practical";
       if (/мест|достопр|музей|мечеть|дворец|башн|босфор|galata|sultanahmet|taksim|kadikoy|topkapi|hagia|sofia|basilica|tower|palace|mosque|museum|bazaar/.test(text)) return "places";
@@ -310,8 +311,9 @@
 
     function categoryFor(element) {
       var text = textFor(element).toLowerCase();
-      if (routeSignal(element, text)) return "route";
       var explicit = explicitCategory(text);
+      if (explicit === "hotel" || explicit === "food") return explicit;
+      if (routeSignal(element, text)) return "route";
       if (explicit) return explicit;
 
       var best = TAB_DEFS[TAB_DEFS.length - 1];
@@ -478,6 +480,52 @@
       return headings.length >= 2 ? headings : nested;
     }
 
+    function fallbackHeadingBlocks(root) {
+      var headings = Array.prototype.slice.call(root.querySelectorAll("h2, h3"))
+        .filter(function (heading) {
+          if (heading.closest(".trip-tabs, .trip-tab-shell, header, nav, footer, form")) return false;
+          return normalizeText(heading.textContent).length > 0;
+        });
+
+      if (headings.length < 2) return [];
+
+      var blocks = [];
+      headings.forEach(function (heading) {
+        if (!heading.parentElement || heading.closest(".trip-generated-block")) return;
+
+        var block = heading.closest(BLOCK_SELECTOR);
+        if (block && block !== document.body && block !== root) {
+          blocks.push(block);
+          return;
+        }
+
+        var wrapper = document.createElement("section");
+        wrapper.className = "trip-generated-block";
+        heading.parentElement.insertBefore(wrapper, heading);
+
+        var current = heading;
+        while (current) {
+          var next = current.nextElementSibling;
+          wrapper.appendChild(current);
+          if (!next || next.matches("h2, h3")) break;
+          current = next;
+        }
+        blocks.push(wrapper);
+      });
+
+      return uniqueTopLevel(blocks).filter(function (block) {
+        return normalizeText(block.textContent).length > 0;
+      });
+    }
+
+    function fallbackDirectBlocks(root) {
+      return Array.prototype.slice.call(root.children).filter(function (child) {
+        if (child.closest(".trip-tabs, .trip-tab-shell")) return false;
+        if (child.matches("script, style, template, header, nav, footer, form")) return false;
+        return normalizeText(child.textContent).length > 20 || hasMediaOrBackground(child);
+      });
+    }
+
     function groupHeadingRuns(root, elements) {
       var blocks = [];
       var children = Array.prototype.slice.call(root.children);
@@ -611,8 +659,17 @@
       hideLargeHero();
       var root = findRoot();
       var blocks = candidateBlocks(root);
-      if (blocks.length < 2) return;
-      buildTabs(root, blocks);
+      var built = blocks.length >= 2 && buildTabs(root, blocks);
+
+      if (!built) {
+        blocks = fallbackHeadingBlocks(document.querySelector("main, [role='main']") || document.body);
+        built = blocks.length >= 2 && buildTabs(blocks[0].parentElement || root, blocks);
+      }
+
+      if (!built) {
+        blocks = fallbackDirectBlocks(root);
+        built = blocks.length >= 2 && buildTabs(root, blocks);
+      }
     }
 
     if (document.readyState === "loading") {
