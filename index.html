@@ -509,19 +509,66 @@
         : `${withStyle}\n${tripTabsScript}`;
     }
 
+    const passwordCookieName = "istanbul_trip_password";
+    const passwordCookieMaxAge = 60 * 60 * 24 * 180;
+
+    function passwordCookiePath() {
+      const path = window.location.pathname || "/";
+      if (path.endsWith("/")) return path;
+      const lastSlash = path.lastIndexOf("/");
+      return lastSlash >= 0 ? path.slice(0, lastSlash + 1) : "/";
+    }
+
+    function getPasswordCookie() {
+      const prefix = `${passwordCookieName}=`;
+      const parts = document.cookie ? document.cookie.split("; ") : [];
+      const match = parts.find((part) => part.startsWith(prefix));
+      if (!match) return "";
+      try {
+        return decodeURIComponent(match.slice(prefix.length));
+      } catch (_) {
+        return "";
+      }
+    }
+
+    function setPasswordCookie(password) {
+      const secure = window.location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = `${passwordCookieName}=${encodeURIComponent(password)}; Max-Age=${passwordCookieMaxAge}; Path=${passwordCookiePath()}; SameSite=Lax${secure}`;
+    }
+
+    function clearPasswordCookie() {
+      const secure = window.location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = `${passwordCookieName}=; Max-Age=0; Path=${passwordCookiePath()}; SameSite=Lax${secure}`;
+    }
+
+    async function unlockAndRender(password, rememberPassword) {
+      const html = await unlock(password);
+      if (rememberPassword) setPasswordCookie(password);
+      document.open();
+      document.write(addTripTabs(html));
+      document.close();
+    }
+
     document.getElementById("unlockForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const error = document.getElementById("error");
       error.textContent = "";
       try {
-        const html = await unlock(document.getElementById("password").value.trim());
-        document.open();
-        document.write(addTripTabs(html));
-        document.close();
+        await unlockAndRender(document.getElementById("password").value.trim(), true);
       } catch (_) {
         error.textContent = "Wrong password.";
       }
     });
+
+    (async () => {
+      const savedPassword = getPasswordCookie();
+      if (!savedPassword) return;
+      try {
+        await unlockAndRender(savedPassword, true);
+      } catch (_) {
+        clearPasswordCookie();
+      }
+    })();
   </script>
 </body>
 </html>
