@@ -150,6 +150,9 @@
   .trip-tab-panel[hidden] {
     display: none !important;
   }
+  .trip-hero-hidden {
+    display: none !important;
+  }
   .trip-generated-block {
     width: 100%;
   }
@@ -255,6 +258,43 @@
       });
 
       return best.id;
+    }
+
+    function classText(element) {
+      return String(element.className || "").toLowerCase();
+    }
+
+    function hasMediaOrBackground(element) {
+      var style = window.getComputedStyle(element);
+      return style.backgroundImage !== "none" || Boolean(element.querySelector("img, picture, video, canvas"));
+    }
+
+    function hideLargeHero() {
+      var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+      var minHeroHeight = Math.min(420, Math.max(260, viewportHeight * 0.38));
+      var candidates = Array.prototype.slice.call(document.querySelectorAll("header, section, [role='banner'], [class]"))
+        .filter(isUsableElement)
+        .filter(function (element) {
+          var rect = element.getBoundingClientRect();
+          if (rect.top > Math.max(120, viewportHeight * 0.22)) return false;
+          if (rect.height < minHeroHeight) return false;
+
+          var classes = classText(element);
+          var tag = element.tagName.toLowerCase();
+          var text = textFor(element).toLowerCase();
+          var namedLikeHero = tag === "header" || element.getAttribute("role") === "banner" || /hero|cover|intro|banner|masthead/.test(classes);
+          var visualLikeHero = hasMediaOrBackground(element);
+          var titleLikeHero = /istanbul|стамбул|july|июл|дней/.test(text);
+
+          return namedLikeHero || (visualLikeHero && titleLikeHero) || (visualLikeHero && rect.height > viewportHeight * 0.55);
+        })
+        .sort(function (a, b) {
+          return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+        });
+
+      if (!candidates.length) return;
+      candidates[0].classList.add("trip-hero-hidden");
+      candidates[0].setAttribute("data-trip-hero-hidden", "true");
     }
 
     function findRoot() {
@@ -422,6 +462,7 @@
     }
 
     function initTripTabs() {
+      hideLargeHero();
       var root = findRoot();
       var blocks = candidateBlocks(root);
       if (blocks.length < 2) return;
