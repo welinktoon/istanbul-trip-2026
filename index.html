@@ -250,12 +250,7 @@
       {
         id: "places",
         label: "Места",
-        keywords: ["мест", "достопр", "музей", "мечеть", "дворец", "район", "башня", "босфор", "galata", "sultanahmet", "taksim", "kadikoy", "topkapi", "hagia", "sofia", "basilica", "tower", "palace", "mosque", "museum", "bazaar"]
-      },
-      {
-        id: "hotel",
-        label: "Отель",
-        keywords: ["отель", "hotel", "жиль", "ночев", "засел", "бронь", "booking", "airbnb", "check-in", "check out", "адрес", "район где жить", "где жить"]
+        keywords: ["мест", "достопр", "музей", "мечеть", "дворец", "район", "башня", "босфор", "place", "places", "attraction", "landmark", "galata", "sultanahmet", "taksim", "kadikoy", "topkapi", "hagia", "sofia", "basilica", "tower", "palace", "mosque", "museum", "bazaar"]
       },
       {
         id: "food",
@@ -263,9 +258,9 @@
         keywords: ["еда", "кафе", "ресторан", "завтрак", "обед", "ужин", "кофе", "кофей", "food", "restaurant", "breakfast", "dinner", "lunch", "baklava", "балык", "рыба", "рынок"]
       },
       {
-        id: "practical",
-        label: "Практика",
-        keywords: ["транспорт", "метро", "такси", "паром", "карта", "sim", "связь", "деньги", "бюджет", "билет", "ticket", "ferry", "metro", "taxi", "правил", "важно", "совет", "где брать", "купить"]
+        id: "checklist",
+        label: "Чек-листы",
+        keywords: ["чек", "checklist", "to-do", "todo", "взять", "собрать", "перед вылетом", "документ", "паспорт", "страхов", "билет", "бронь", "скачать", "офлайн", "транспорт", "метро", "такси", "паром", "sim", "связь", "деньги", "бюджет", "ticket", "ferry", "metro", "taxi", "одежда", "дресс-код", "правил", "важно", "совет", "купить"]
       }
     ];
 
@@ -289,7 +284,6 @@
       ".map",
       ".day",
       ".place",
-      ".hotel",
       ".food",
       ".transport",
       ".budget",
@@ -299,7 +293,6 @@
       "[class*='route']",
       "[class*='day']",
       "[class*='place']",
-      "[class*='hotel']",
       "[class*='food']"
     ].join(",");
 
@@ -345,6 +338,26 @@
       ].filter(Boolean).join(" "));
     }
 
+    function headingTextFor(element) {
+      var heading = element.matches("h2, h3, h4")
+        ? element
+        : element.querySelector("[data-tab-title], h2, h3, h4, .day-title, .card-title");
+      return normalizeText([
+        element.getAttribute("data-tab-title"),
+        element.getAttribute("aria-label"),
+        heading && heading.textContent
+      ].filter(Boolean).join(" "));
+    }
+
+    function metadataTextFor(element) {
+      return normalizeText([
+        element.id,
+        element.getAttribute("class"),
+        element.getAttribute("data-tab-title"),
+        element.getAttribute("aria-label")
+      ].filter(Boolean).join(" "));
+    }
+
     function routeSignal(element, text) {
       var classes = classText(element);
       var dataText = normalizeText([
@@ -356,7 +369,7 @@
       var joined = (text + " " + classes + " " + dataText).toLowerCase();
 
       if (/day|route|itinerary|timeline|schedule|agenda|plan|map|leg/.test(joined)) return true;
-      if (/день\\s*\\d+|день\\s+[0-9]|карта\\s+маршрута|маршрутная\\s+карта|распис|таймлайн|план/.test(joined)) return true;
+      if (/день\\s*\\d+|день\\s+[0-9]|карта\\s+маршрута|маршрутная\\s+карта|распис|таймлайн|план|даты|темп/.test(joined)) return true;
       if (/\\b\\d{1,2}\\s*(july|jul|июля|июл)\\b/.test(joined)) return true;
       if (/\\b\\d{1,2}[./-]\\d{1,2}\\b/.test(joined)) return true;
       if (/\\b\\d{1,2}[.:]\\d{2}\\b/.test(joined) && /маршрут|день|day|itinerary|timeline|schedule|утро|вечер|прогул/.test(joined)) return true;
@@ -365,19 +378,35 @@
       return false;
     }
 
+    function checklistSignal(text) {
+      return /чек|check\\s*list|checklist|to-?do|взять|собрать|перед вылет|перед поезд|документ|паспорт|страхов|билет|бронь|скачать|офлайн|заряд|powerbank|переходник|одежд|дресс-код|транспорт|метро|такси|паром|istanbulkart|sim|связь|деньги|бюджет|ticket|ferry|metro|taxi|правил|важно|совет|купить|лир|try|руб|евро|доллар/.test(text);
+    }
+
+    function hotelOnlySignal(text) {
+      return /отел|hotel|жиль|ночев|booking|airbnb|где жить/.test(text);
+    }
+
     function explicitCategory(text) {
-      if (/отел|hotel|жиль|ночев|бронь|booking|airbnb|где жить/.test(text)) return "hotel";
       if (/еда|кафе|ресторан|завтрак|обед|ужин|кофе|кофей|food|restaurant|breakfast|dinner|lunch|baklava|балык|рыба/.test(text)) return "food";
-      if (/транспорт|метро|такси|паром|istanbulkart|sim|связь|деньги|бюджет|билет|ticket|ferry|metro|taxi|одежда|дресс-код|лир|try|руб|евро|доллар/.test(text)) return "practical";
-      if (/мест|достопр|музей|мечеть|дворец|башн|босфор|galata|sultanahmet|taksim|kadikoy|topkapi|hagia|sofia|basilica|tower|palace|mosque|museum|bazaar/.test(text)) return "places";
+      if (checklistSignal(text)) return "checklist";
+      if (/мест|достопр|музей|мечеть|дворец|башн|босфор|place|places|attraction|landmark|galata|sultanahmet|taksim|kadikoy|topkapi|hagia|sofia|basilica|tower|palace|mosque|museum|bazaar/.test(text)) return "places";
       return "";
     }
 
     function categoryFor(element) {
       var text = textFor(element).toLowerCase();
+      var heading = headingTextFor(element).toLowerCase();
+      var metadata = metadataTextFor(element).toLowerCase();
+      var focusedText = normalizeText([heading, metadata].filter(Boolean).join(" ")).toLowerCase();
+
+      if (hotelOnlySignal(focusedText)) return "skip";
+
+      var focusedExplicit = explicitCategory(focusedText);
+      if (focusedExplicit) return focusedExplicit;
+
+      if (routeSignal(element, normalizeText([focusedText, text].join(" ")))) return "route";
+
       var explicit = explicitCategory(text);
-      if (explicit === "hotel" || explicit === "food") return explicit;
-      if (routeSignal(element, text)) return "route";
       if (explicit) return explicit;
 
       var best = TAB_DEFS[TAB_DEFS.length - 1];
@@ -393,7 +422,7 @@
         }
       });
 
-      return best.id;
+      return bestScore > 0 ? best.id : "route";
     }
 
     function classText(element) {
@@ -678,7 +707,17 @@
         return /карта маршрут/.test(key) || /route map/.test(key);
       });
       if (!heading) return null;
-      return heading.closest(BLOCK_SELECTOR) || heading.parentElement;
+
+      var ownBlock = heading.closest(BLOCK_SELECTOR);
+      if (ownBlock && ownBlock !== document.body && ownBlock !== document.documentElement) return ownBlock;
+
+      var next = heading.nextElementSibling;
+      while (next && !next.matches("h2, h3")) {
+        if (next.matches(BLOCK_SELECTOR) || /map|route/.test(classText(next))) return next;
+        next = next.nextElementSibling;
+      }
+
+      return heading.parentElement;
     }
 
     function enrichRouteMap() {
@@ -776,13 +815,11 @@
       });
 
       blocks.forEach(function (block) {
-        groups[categoryFor(block)].blocks.push(block);
+        var category = categoryFor(block);
+        if (groups[category]) groups[category].blocks.push(block);
       });
 
-      groups.route.blocks = blocks.slice();
-
       var activeTabs = TAB_DEFS.filter(function (tab) {
-        if (tab.id === "practical") return false;
         return groups[tab.id].blocks.length > 0;
       });
 
