@@ -90,7 +90,7 @@
 
     const tripTabsStyle = `
 <style id="istanbul-trip-tabs-style">
-  :root { --trip-tabs-offset: 68px; scroll-padding-top: calc(var(--trip-tabs-offset) + 18px); }
+  :root { --trip-tabs-offset: 68px; }
   .trip-tabs,
   .trip-tabs * {
     box-sizing: border-box;
@@ -138,8 +138,20 @@
     background: #17212b;
     color: #fff;
   }
-  .trip-tabs-target {
-    scroll-margin-top: calc(var(--trip-tabs-offset) + 18px);
+  .trip-tab-shell {
+    width: 100%;
+  }
+  .trip-tab-panels {
+    width: 100%;
+  }
+  .trip-tab-panel {
+    width: 100%;
+  }
+  .trip-tab-panel[hidden] {
+    display: none !important;
+  }
+  .trip-generated-block {
+    width: 100%;
   }
   @media (max-width: 680px) {
     :root { --trip-tabs-offset: 60px; }
@@ -162,116 +174,258 @@
     if (window.__istanbulTripTabsReady) return;
     window.__istanbulTripTabsReady = true;
 
+    var TAB_DEFS = [
+      {
+        id: "route",
+        label: "Маршрут",
+        keywords: ["маршрут", "день", "day", "itinerary", "план", "распис", "тайм", "утро", "вечер", "прилет", "вылет", "рейс", "flight", "аэропорт", "arrival", "departure", "walk"]
+      },
+      {
+        id: "places",
+        label: "Места",
+        keywords: ["мест", "достопр", "музей", "мечеть", "дворец", "район", "башня", "босфор", "galata", "sultanahmet", "taksim", "kadikoy", "topkapi", "hagia", "sofia", "basilica", "tower", "palace", "mosque", "museum", "bazaar"]
+      },
+      {
+        id: "hotel",
+        label: "Отель",
+        keywords: ["отель", "hotel", "жиль", "ночев", "засел", "бронь", "booking", "airbnb", "check-in", "check out", "адрес", "район где жить", "где жить"]
+      },
+      {
+        id: "food",
+        label: "Еда",
+        keywords: ["еда", "кафе", "ресторан", "завтрак", "обед", "ужин", "кофе", "кофей", "food", "restaurant", "breakfast", "dinner", "lunch", "baklava", "балык", "рыба", "рынок"]
+      },
+      {
+        id: "practical",
+        label: "Практика",
+        keywords: ["транспорт", "метро", "такси", "паром", "карта", "sim", "связь", "деньги", "бюджет", "билет", "ticket", "ferry", "metro", "taxi", "правил", "важно", "совет", "где брать", "купить"]
+      }
+    ];
+
+    var BLOCK_SELECTOR = [
+      "section",
+      "article",
+      "[data-tab-title]",
+      ".day-card",
+      ".itinerary-day",
+      ".place-card",
+      ".hotel-card",
+      ".info-card",
+      ".card"
+    ].join(",");
+
     function normalizeText(value) {
       return (value || "").replace(/\\s+/g, " ").trim();
     }
 
-    function visibleEnough(element) {
-      if (!element || element.closest(".trip-tabs")) return false;
+    function isUsableElement(element) {
+      if (!element || element.closest(".trip-tabs, .trip-tab-shell")) return false;
+      if (element.matches("script, style, template, nav, footer, form")) return false;
       var style = window.getComputedStyle(element);
       if (style.display === "none" || style.visibility === "hidden") return false;
       var rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     }
 
-    function getLabel(element) {
-      var explicit = element.getAttribute("data-tab-title") || element.getAttribute("aria-label");
-      var heading = element.matches("h2, h3") ? element : element.querySelector("[data-tab-title], h2, h3, .day-title, .card-title");
-      var label = normalizeText(explicit || (heading && heading.textContent) || element.id);
-      if (!label || label.length > 42) return "";
-      return label;
+    function textFor(element) {
+      var heading = element.matches("h2, h3")
+        ? element
+        : element.querySelector("[data-tab-title], h2, h3, h4, .day-title, .card-title");
+      return normalizeText([
+        element.getAttribute("data-tab-title"),
+        element.getAttribute("aria-label"),
+        heading && heading.textContent,
+        element.textContent
+      ].filter(Boolean).join(" "));
     }
 
-    function uniqueItems(items) {
-      var seenElements = new Set();
-      var seenLabels = new Set();
-      return items.filter(function (item) {
-        var labelKey = item.label.toLowerCase();
-        if (seenElements.has(item.element) || seenLabels.has(labelKey)) return false;
-        seenElements.add(item.element);
-        seenLabels.add(labelKey);
+    function categoryFor(element) {
+      var text = textFor(element).toLowerCase();
+      var best = TAB_DEFS[TAB_DEFS.length - 1];
+      var bestScore = 0;
+
+      TAB_DEFS.forEach(function (tab) {
+        var score = tab.keywords.reduce(function (total, keyword) {
+          return total + (text.indexOf(keyword.toLowerCase()) >= 0 ? 1 : 0);
+        }, 0);
+        if (score > bestScore) {
+          best = tab;
+          bestScore = score;
+        }
+      });
+
+      return best.id;
+    }
+
+    function findRoot() {
+      var roots = Array.prototype.slice.call(document.querySelectorAll("main, [role='main'], body"));
+      return roots
+        .map(function (root) {
+          var priority = root.matches("main, [role='main']") ? 1 : 0;
+          return { root: root, count: root.querySelectorAll(BLOCK_SELECTOR + ", h2, h3").length, priority: priority };
+        })
+        .sort(function (a, b) { return (b.count - a.count) || (b.priority - a.priority); })[0].root;
+    }
+
+    function uniqueTopLevel(elements) {
+      var set = new Set(elements);
+      return elements.filter(function (element) {
+        var parent = element.parentElement;
+        while (parent && parent !== document.body) {
+          if (set.has(parent)) return false;
+          parent = parent.parentElement;
+        }
         return true;
-      }).slice(0, 12);
-    }
-
-    function collectTargets() {
-      var sectionSelectors = "section, article, [data-tab-title], .day-card, .day, .itinerary-day";
-      var items = Array.prototype.slice.call(document.querySelectorAll(sectionSelectors))
-        .filter(visibleEnough)
-        .map(function (element) { return { element: element, label: getLabel(element) }; })
-        .filter(function (item) { return item.label; });
-
-      if (items.length < 2) {
-        items = Array.prototype.slice.call(document.querySelectorAll("h2"))
-          .filter(visibleEnough)
-          .map(function (element) { return { element: element, label: getLabel(element) }; })
-          .filter(function (item) { return item.label; });
-      }
-
-      if (items.length < 2) {
-        items = Array.prototype.slice.call(document.querySelectorAll("h3"))
-          .filter(visibleEnough)
-          .map(function (element) { return { element: element, label: getLabel(element) }; })
-          .filter(function (item) { return item.label; });
-      }
-
-      return uniqueItems(items);
-    }
-
-    function setActive(buttons, activeId) {
-      buttons.forEach(function (button) {
-        button.setAttribute("aria-selected", String(button.getAttribute("data-target") === activeId));
       });
     }
 
-    function initTripTabs() {
-      var targets = collectTargets();
-      if (targets.length < 2) return;
+    function candidateBlocks(root) {
+      var direct = Array.prototype.slice.call(root.children)
+        .filter(isUsableElement)
+        .filter(function (element) {
+          return element.matches(BLOCK_SELECTOR) || element.matches("h2, h3");
+        });
+
+      if (direct.length >= 2) return groupHeadingRuns(root, direct);
+
+      var nested = uniqueTopLevel(Array.prototype.slice.call(root.querySelectorAll(BLOCK_SELECTOR)).filter(isUsableElement));
+      if (nested.length >= 2) return nested;
+
+      var headings = Array.prototype.slice.call(root.querySelectorAll("h2, h3")).filter(isUsableElement);
+      if (headings.length >= 2) return groupHeadingRuns(root, headings);
+
+      return nested;
+    }
+
+    function groupHeadingRuns(root, elements) {
+      var blocks = [];
+      var children = Array.prototype.slice.call(root.children);
+      var current = [];
+
+      function flush() {
+        if (!current.length) return;
+        if (current.length === 1 && current[0].matches(BLOCK_SELECTOR)) {
+          blocks.push(current[0]);
+        } else {
+          var wrapper = document.createElement("section");
+          wrapper.className = "trip-generated-block";
+          root.insertBefore(wrapper, current[0]);
+          current.forEach(function (element) { wrapper.appendChild(element); });
+          blocks.push(wrapper);
+        }
+        current = [];
+      }
+
+      children.forEach(function (child) {
+        if (!isUsableElement(child)) return;
+        if (child.matches("h1, header")) {
+          flush();
+          return;
+        }
+        if (child.matches(BLOCK_SELECTOR)) {
+          flush();
+          blocks.push(child);
+          return;
+        }
+        if (child.matches("h2, h3")) {
+          flush();
+          current.push(child);
+          return;
+        }
+        if (current.length) current.push(child);
+      });
+      flush();
+
+      if (blocks.length >= 2) return blocks;
+      return elements;
+    }
+
+    function buildTabs(root, blocks) {
+      var firstBlock = blocks[0];
+      var shell = document.createElement("div");
+      shell.className = "trip-tab-shell";
 
       var nav = document.createElement("nav");
       nav.className = "trip-tabs";
-      nav.setAttribute("aria-label", "Trip sections");
+      nav.setAttribute("role", "tablist");
+      nav.setAttribute("aria-label", "Разделы поездки");
 
-      var buttons = targets.map(function (target, index) {
-        var id = target.element.id || "trip-section-" + (index + 1);
-        target.element.id = id;
-        target.element.classList.add("trip-tabs-target");
+      var panelsWrap = document.createElement("div");
+      panelsWrap.className = "trip-tab-panels";
 
+      var groups = {};
+      TAB_DEFS.forEach(function (tab) {
+        groups[tab.id] = { def: tab, blocks: [] };
+      });
+
+      blocks.forEach(function (block) {
+        groups[categoryFor(block)].blocks.push(block);
+      });
+
+      var activeTabs = TAB_DEFS.filter(function (tab) {
+        return groups[tab.id].blocks.length > 0;
+      });
+
+      if (activeTabs.length < 2) return false;
+
+      var host = firstBlock.parentElement || root;
+      host.insertBefore(shell, firstBlock);
+      shell.appendChild(nav);
+      shell.appendChild(panelsWrap);
+
+      var buttons = {};
+      var panels = {};
+
+      function activate(tabId) {
+        activeTabs.forEach(function (tab) {
+          var isActive = tab.id === tabId;
+          buttons[tab.id].setAttribute("aria-selected", String(isActive));
+          panels[tab.id].hidden = !isActive;
+        });
+        shell.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+
+      activeTabs.forEach(function (tab, index) {
         var button = document.createElement("button");
         button.className = "trip-tabs__button";
         button.type = "button";
-        button.textContent = target.label;
+        button.id = "trip-tab-" + tab.id;
+        button.textContent = tab.label;
         button.setAttribute("role", "tab");
+        button.setAttribute("aria-controls", "trip-panel-" + tab.id);
         button.setAttribute("aria-selected", index === 0 ? "true" : "false");
-        button.setAttribute("data-target", id);
-        button.addEventListener("click", function () {
-          document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
-          setActive(buttons, id);
-        });
+        button.addEventListener("click", function () { activate(tab.id); });
         nav.appendChild(button);
-        return button;
+        buttons[tab.id] = button;
+
+        var panel = document.createElement("section");
+        panel.className = "trip-tab-panel";
+        panel.id = "trip-panel-" + tab.id;
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", button.id);
+        panel.hidden = index !== 0;
+        groups[tab.id].blocks.forEach(function (block) { panel.appendChild(block); });
+        panelsWrap.appendChild(panel);
+        panels[tab.id] = panel;
       });
 
-      nav.setAttribute("role", "tablist");
       nav.addEventListener("keydown", function (event) {
         if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
-        var current = buttons.indexOf(document.activeElement);
+        var current = activeTabs.findIndex(function (tab) { return buttons[tab.id] === document.activeElement; });
         if (current < 0) return;
         event.preventDefault();
         var next = event.key === "ArrowRight" ? current + 1 : current - 1;
-        buttons[(next + buttons.length) % buttons.length].focus();
+        buttons[activeTabs[(next + activeTabs.length) % activeTabs.length].id].focus();
       });
 
-      document.body.insertBefore(nav, document.body.firstChild);
+      return true;
+    }
 
-      if ("IntersectionObserver" in window) {
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) setActive(buttons, entry.target.id);
-          });
-        }, { rootMargin: "-25% 0px -65% 0px", threshold: [0, .1, .3] });
-        targets.forEach(function (target) { observer.observe(target.element); });
-      }
+    function initTripTabs() {
+      var root = findRoot();
+      var blocks = candidateBlocks(root);
+      if (blocks.length < 2) return;
+      buildTabs(root, blocks);
     }
 
     if (document.readyState === "loading") {
