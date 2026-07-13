@@ -174,6 +174,34 @@
   .trip-generated-block {
     width: 100%;
   }
+  .trip-map-attractions {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid rgba(23, 33, 43, .12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .74);
+  }
+  .trip-map-attractions__title {
+    margin: 0 0 10px;
+    font: 900 17px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+    color: #17212b;
+  }
+  .trip-map-attractions__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-map-attractions__item {
+    padding: 7px 10px;
+    border: 1px solid rgba(23, 33, 43, .12);
+    border-radius: 8px;
+    background: #fff;
+    color: #17212b;
+    font: 800 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+  }
   @media (max-width: 680px) {
     :root { --trip-tabs-offset: 60px; }
     .trip-tabs {
@@ -193,6 +221,16 @@
       padding-left: 12px;
       padding-right: 12px;
       font-size: 14px;
+    }
+    .trip-map-attractions {
+      padding: 12px;
+    }
+    .trip-map-attractions__list {
+      gap: 6px;
+    }
+    .trip-map-attractions__item {
+      padding: 6px 8px;
+      font-size: 12px;
     }
   }
 </style>`;
@@ -552,6 +590,125 @@
       });
     }
 
+    function textKey(value) {
+      return normalizeText(value).toLowerCase()
+        .replace(/[ё]/g, "е")
+        .replace(/[^a-zа-я0-9]+/g, " ")
+        .trim();
+    }
+
+    function removeRunFromHeading(heading) {
+      var container = heading.closest("section, article, .trip-generated-block");
+      if (container && container !== document.body && container.tagName.toLowerCase() !== "main") {
+        container.remove();
+        return;
+      }
+
+      var parent = heading.parentElement;
+      if (!parent) return;
+      var current = heading;
+      while (current) {
+        var next = current.nextElementSibling;
+        current.remove();
+        if (!next || next.matches("h2, h3")) break;
+        current = next;
+      }
+    }
+
+    function removeHotelTopAreas() {
+      var headings = Array.prototype.slice.call(document.querySelectorAll("h2, h3, h4, [data-tab-title]"));
+      headings.forEach(function (heading) {
+        if (!heading.isConnected) return;
+        var key = textKey(heading.getAttribute("data-tab-title") || heading.textContent);
+        var isHotelTopAreas = /где брать отел/.test(key) && /топ ?3 район/.test(key);
+        if (isHotelTopAreas) removeRunFromHeading(heading);
+      });
+    }
+
+    function attractionNameFromElement(element) {
+      var title = element.matches("h2, h3, h4, li")
+        ? element
+        : element.querySelector("h2, h3, h4, .place-title, .card-title, strong, b");
+      var value = normalizeText(title ? title.textContent : element.textContent);
+      return value
+        .replace(/^[•\\-–—\\d.)\\s]+/, "")
+        .replace(/\\s+—.*$/, "")
+        .replace(/\\s+-.*$/, "")
+        .replace(/\\s*\\([^)]*\\)\\s*$/, "")
+        .trim();
+    }
+
+    function isAttractionCandidate(element) {
+      if (!element || element.closest(".trip-tabs, .trip-tab-shell, .trip-map-attractions, header, nav, footer, form")) return false;
+      var text = textKey(element.textContent);
+      if (text.length < 3 || text.length > 140) return false;
+      if (/где брать отел|топ ?3 район|перевод лир|даты|темп|транспорт|одежда|заселение/.test(text)) return false;
+      if (/отел|hotel|кафе|ресторан|еда|кофе|завтрак|обед|ужин|такси|метро|паром|istanbulkart/.test(text)) return false;
+      return /айя|соф|голуб|султанахмет|ипподром|цистерн|топкапы|гюльхане|галат|башн|дворец|мечет|музей|базар|босфор|сулеймание|балат|кадик|таксим|истикляль|долмабахче|eminonu|karakoy|galata|sultanahmet|hagia|sophia|mosque|cistern|topkapi|gulhane|bazaar|bosphorus|palace|tower|museum/.test(text);
+    }
+
+    function collectAttractions() {
+      var selectors = [
+        ".place-card",
+        ".place",
+        "[class*='place']",
+        "[data-place]",
+        "li",
+        "h3",
+        "h4"
+      ].join(",");
+
+      var seen = new Set();
+      return Array.prototype.slice.call(document.querySelectorAll(selectors))
+        .filter(isAttractionCandidate)
+        .map(attractionNameFromElement)
+        .filter(function (name) {
+          var key = textKey(name);
+          if (key.length < 3 || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .slice(0, 40);
+    }
+
+    function findRouteMapBlock() {
+      var headings = Array.prototype.slice.call(document.querySelectorAll("h2, h3, h4"));
+      var heading = headings.find(function (node) {
+        var key = textKey(node.textContent);
+        return /карта маршрут/.test(key) || /route map/.test(key);
+      });
+      if (!heading) return null;
+      return heading.closest(BLOCK_SELECTOR) || heading.parentElement;
+    }
+
+    function enrichRouteMap() {
+      var mapBlock = findRouteMapBlock();
+      if (!mapBlock || mapBlock.querySelector(".trip-map-attractions")) return;
+
+      var attractions = collectAttractions();
+      if (!attractions.length) return;
+
+      var box = document.createElement("div");
+      box.className = "trip-map-attractions";
+      box.setAttribute("data-trip-map-attractions", "true");
+
+      var title = document.createElement("h3");
+      title.className = "trip-map-attractions__title";
+      title.textContent = "Достопримечательности на карте";
+      box.appendChild(title);
+
+      var list = document.createElement("ul");
+      list.className = "trip-map-attractions__list";
+      attractions.forEach(function (name) {
+        var item = document.createElement("li");
+        item.className = "trip-map-attractions__item";
+        item.textContent = name;
+        list.appendChild(item);
+      });
+      box.appendChild(list);
+      mapBlock.appendChild(box);
+    }
+
     function groupHeadingRuns(root, elements) {
       var blocks = [];
       var children = Array.prototype.slice.call(root.children);
@@ -687,6 +844,8 @@
     }
 
     function initTripTabs() {
+      removeHotelTopAreas();
+      enrichRouteMap();
       hideLargeHero();
       var root = findRoot();
       var blocks = candidateBlocks(root);
