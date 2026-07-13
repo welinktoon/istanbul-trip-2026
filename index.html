@@ -181,7 +181,7 @@
       {
         id: "route",
         label: "Маршрут",
-        keywords: ["маршрут", "день", "day", "itinerary", "план", "распис", "тайм", "утро", "вечер", "прилет", "вылет", "рейс", "flight", "аэропорт", "arrival", "departure", "walk"]
+        keywords: ["маршрут", "карта маршрута", "route map", "день", "day", "itinerary", "план", "распис", "тайм", "таймлайн", "утро", "вечер", "прилет", "вылет", "рейс", "flight", "аэропорт", "arrival", "departure", "walk", "july", "июль", "июля", "20 июля", "21 июля", "22 июля", "23 июля", "24 июля", "25 июля", "26 июля"]
       },
       {
         id: "places",
@@ -242,8 +242,30 @@
       ].filter(Boolean).join(" "));
     }
 
+    function routeSignal(element, text) {
+      var classes = classText(element);
+      var dataText = normalizeText([
+        element.id,
+        element.getAttribute("class"),
+        element.getAttribute("data-tab-title"),
+        element.getAttribute("aria-label")
+      ].filter(Boolean).join(" ")).toLowerCase();
+      var joined = (text + " " + classes + " " + dataText).toLowerCase();
+
+      if (/day|route|itinerary|timeline|schedule|agenda|plan|map|leg/.test(joined)) return true;
+      if (/день\\s*\\d+|день\\s+[0-9]|карта\\s+маршрута|маршрутная\\s+карта|распис|таймлайн|план/.test(joined)) return true;
+      if (/\\b\\d{1,2}\\s*(july|jul|июля|июл)\\b/.test(joined)) return true;
+      if (/\\b\\d{1,2}[./-]\\d{1,2}\\b/.test(joined)) return true;
+      if (/\\b\\d{1,2}[.:]\\d{2}\\b/.test(joined) && /маршрут|день|day|itinerary|timeline|schedule|утро|вечер|прогул/.test(joined)) return true;
+      if (/понедельник|вторник|среда|четверг|пятница|суббота|воскресенье/.test(joined)) return true;
+
+      return false;
+    }
+
     function categoryFor(element) {
       var text = textFor(element).toLowerCase();
+      if (routeSignal(element, text)) return "route";
+
       var best = TAB_DEFS[TAB_DEFS.length - 1];
       var bestScore = 0;
 
