@@ -239,6 +239,22 @@
       "[class*='food']"
     ].join(",");
 
+    var ROOT_SELECTOR = [
+      "main",
+      "[role='main']",
+      "body",
+      ".container",
+      ".content",
+      ".wrapper",
+      ".wrap",
+      ".page",
+      "[class*='container']",
+      "[class*='content']",
+      "[class*='wrapper']",
+      "[class*='wrap']",
+      "[class*='page']"
+    ].join(",");
+
     function normalizeText(value) {
       return (value || "").replace(/\\s+/g, " ").trim();
     }
@@ -352,16 +368,36 @@
     }
 
     function findRoot() {
-      var main = document.querySelector("main, [role='main']");
-      if (main && main.querySelectorAll("h2, h3, section, article, div").length > 1) return main;
-
-      var roots = Array.prototype.slice.call(document.querySelectorAll("main, [role='main'], body"));
-      return roots
+      var roots = uniqueElements(Array.prototype.slice.call(document.querySelectorAll(ROOT_SELECTOR)));
+      var ranked = roots
         .map(function (root) {
-          var priority = root.matches("main, [role='main']") ? 1 : 0;
-          return { root: root, count: root.querySelectorAll(BLOCK_SELECTOR + ", h2, h3").length, priority: priority };
+          var direct = directContentChildren(root);
+          var className = classText(root);
+          var containerPriority = /container|content|wrapper|wrap|page/.test(className) ? 8 : 0;
+          var pagePriority = root.matches("main, [role='main'], body") ? 6 : 0;
+          var compactPenalty = /card|cards|grid|row|col/.test(className) ? 10 : 0;
+          var headingCount = root.querySelectorAll("h2, h3").length;
+          var blockCount = root.querySelectorAll(BLOCK_SELECTOR).length;
+          var textLength = normalizeText(root.textContent).length;
+          var score = direct.length * 14
+            + Math.min(headingCount, 12) * 8
+            + Math.min(blockCount, 30)
+            + Math.min(textLength / 900, 8)
+            + containerPriority
+            + pagePriority
+            - compactPenalty;
+          return { root: root, direct: direct.length, count: blockCount + headingCount, score: score };
         })
-        .sort(function (a, b) { return (b.count - a.count) || (b.priority - a.priority); })[0].root;
+        .filter(function (item) { return item.direct >= 2 || item.count >= 2; })
+        .sort(function (a, b) { return (b.score - a.score) || (b.direct - a.direct) || (b.count - a.count); });
+
+      return ranked.length ? ranked[0].root : document.body;
+    }
+
+    function uniqueElements(elements) {
+      return elements.filter(function (element, index) {
+        return element && elements.indexOf(element) === index;
+      });
     }
 
     function uniqueTopLevel(elements) {
@@ -388,19 +424,58 @@
       return Boolean(element.querySelector("h2, h3, h4, li, article, section"));
     }
 
-    function candidateBlocks(root) {
-      var direct = Array.prototype.slice.call(root.children)
-        .filter(isContentBlock);
+    function directContentChildren(root) {
+      return Array.prototype.slice.call(root.children).filter(isContentBlock);
+    }
 
-      if (direct.length >= 2) return groupHeadingRuns(root, direct);
+    function scoreBlockRoot(root, direct) {
+      var className = classText(root);
+      return direct.length * 14
+        + Math.min(root.querySelectorAll("h2, h3").length, 12) * 8
+        + Math.min(root.querySelectorAll(BLOCK_SELECTOR).length, 30)
+        + (/container|content|wrapper|wrap|page/.test(className) ? 8 : 0)
+        + (root.matches("main, [role='main'], body") ? 6 : 0)
+        - (/card|cards|grid|row|col/.test(className) ? 10 : 0);
+    }
+
+    function bestDirectBlocks(root) {
+      var candidates = uniqueElements([root].concat(Array.prototype.slice.call(root.querySelectorAll(ROOT_SELECTOR))));
+      var best = candidates
+        .map(function (candidate) {
+          var direct = directContentChildren(candidate);
+          return { root: candidate, direct: direct, score: scoreBlockRoot(candidate, direct) };
+        })
+        .filter(function (item) { return item.direct.length >= 2; })
+        .sort(function (a, b) { return (b.score - a.score) || (b.direct.length - a.direct.length); })[0];
+
+      return best ? groupHeadingRuns(best.root, best.direct) : [];
+    }
+
+    function headingBlocks(root) {
+      var headings = Array.prototype.slice.call(root.querySelectorAll("h2, h3")).filter(isUsableElement);
+      if (headings.length < 2) return [];
+
+      var parents = uniqueElements(headings.map(function (heading) { return heading.parentElement; }).filter(Boolean));
+      var bestParent = parents
+        .map(function (parent) {
+          var direct = directContentChildren(parent);
+          return { root: parent, direct: direct, score: scoreBlockRoot(parent, direct) };
+        })
+        .filter(function (item) { return item.direct.length >= 2; })
+        .sort(function (a, b) { return (b.score - a.score) || (b.direct.length - a.direct.length); })[0];
+
+      return bestParent ? groupHeadingRuns(bestParent.root, bestParent.direct) : groupHeadingRuns(root, headings);
+    }
+
+    function candidateBlocks(root) {
+      var direct = bestDirectBlocks(root);
+      if (direct.length >= 2) return direct;
 
       var nested = uniqueTopLevel(Array.prototype.slice.call(root.querySelectorAll(BLOCK_SELECTOR)).filter(isUsableElement));
       if (nested.length >= 2) return nested;
 
-      var headings = Array.prototype.slice.call(root.querySelectorAll("h2, h3")).filter(isUsableElement);
-      if (headings.length >= 2) return groupHeadingRuns(root, headings);
-
-      return nested;
+      var headings = headingBlocks(root);
+      return headings.length >= 2 ? headings : nested;
     }
 
     function groupHeadingRuns(root, elements) {
