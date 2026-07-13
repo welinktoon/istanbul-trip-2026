@@ -88,6 +88,210 @@
       return new TextDecoder().decode(decrypted);
     }
 
+    const tripTabsStyle = `
+<style id="istanbul-trip-tabs-style">
+  :root { --trip-tabs-offset: 68px; scroll-padding-top: calc(var(--trip-tabs-offset) + 18px); }
+  .trip-tabs,
+  .trip-tabs * {
+    box-sizing: border-box;
+  }
+  .trip-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    overflow-x: auto;
+    padding: 10px max(14px, env(safe-area-inset-left)) 10px max(14px, env(safe-area-inset-right));
+    border-bottom: 1px solid rgba(23, 33, 43, .12);
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 12px 30px rgba(23, 33, 43, .10);
+    backdrop-filter: blur(16px);
+    scrollbar-width: none;
+  }
+  .trip-tabs::-webkit-scrollbar { display: none; }
+  .trip-tabs__button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    min-height: 38px;
+    margin: 0;
+    padding: 8px 13px;
+    border: 1px solid rgba(23, 33, 43, .14);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .78);
+    color: #17212b;
+    font: 800 14px/1.15 Inter, "Segoe UI", Arial, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: none;
+  }
+  .trip-tabs__button:hover,
+  .trip-tabs__button:focus-visible {
+    border-color: rgba(196, 123, 22, .55);
+    outline: none;
+  }
+  .trip-tabs__button[aria-selected="true"] {
+    border-color: #17212b;
+    background: #17212b;
+    color: #fff;
+  }
+  .trip-tabs-target {
+    scroll-margin-top: calc(var(--trip-tabs-offset) + 18px);
+  }
+  @media (max-width: 680px) {
+    :root { --trip-tabs-offset: 60px; }
+    .trip-tabs {
+      gap: 6px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+    .trip-tabs__button {
+      min-height: 36px;
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+  }
+</style>`;
+
+    const tripTabsScript = `
+<script id="istanbul-trip-tabs-script">
+  (function () {
+    if (window.__istanbulTripTabsReady) return;
+    window.__istanbulTripTabsReady = true;
+
+    function normalizeText(value) {
+      return (value || "").replace(/\\s+/g, " ").trim();
+    }
+
+    function visibleEnough(element) {
+      if (!element || element.closest(".trip-tabs")) return false;
+      var style = window.getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden") return false;
+      var rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    }
+
+    function getLabel(element) {
+      var explicit = element.getAttribute("data-tab-title") || element.getAttribute("aria-label");
+      var heading = element.matches("h2, h3") ? element : element.querySelector("[data-tab-title], h2, h3, .day-title, .card-title");
+      var label = normalizeText(explicit || (heading && heading.textContent) || element.id);
+      if (!label || label.length > 42) return "";
+      return label;
+    }
+
+    function uniqueItems(items) {
+      var seenElements = new Set();
+      var seenLabels = new Set();
+      return items.filter(function (item) {
+        var labelKey = item.label.toLowerCase();
+        if (seenElements.has(item.element) || seenLabels.has(labelKey)) return false;
+        seenElements.add(item.element);
+        seenLabels.add(labelKey);
+        return true;
+      }).slice(0, 12);
+    }
+
+    function collectTargets() {
+      var sectionSelectors = "section, article, [data-tab-title], .day-card, .day, .itinerary-day";
+      var items = Array.prototype.slice.call(document.querySelectorAll(sectionSelectors))
+        .filter(visibleEnough)
+        .map(function (element) { return { element: element, label: getLabel(element) }; })
+        .filter(function (item) { return item.label; });
+
+      if (items.length < 2) {
+        items = Array.prototype.slice.call(document.querySelectorAll("h2"))
+          .filter(visibleEnough)
+          .map(function (element) { return { element: element, label: getLabel(element) }; })
+          .filter(function (item) { return item.label; });
+      }
+
+      if (items.length < 2) {
+        items = Array.prototype.slice.call(document.querySelectorAll("h3"))
+          .filter(visibleEnough)
+          .map(function (element) { return { element: element, label: getLabel(element) }; })
+          .filter(function (item) { return item.label; });
+      }
+
+      return uniqueItems(items);
+    }
+
+    function setActive(buttons, activeId) {
+      buttons.forEach(function (button) {
+        button.setAttribute("aria-selected", String(button.getAttribute("data-target") === activeId));
+      });
+    }
+
+    function initTripTabs() {
+      var targets = collectTargets();
+      if (targets.length < 2) return;
+
+      var nav = document.createElement("nav");
+      nav.className = "trip-tabs";
+      nav.setAttribute("aria-label", "Trip sections");
+
+      var buttons = targets.map(function (target, index) {
+        var id = target.element.id || "trip-section-" + (index + 1);
+        target.element.id = id;
+        target.element.classList.add("trip-tabs-target");
+
+        var button = document.createElement("button");
+        button.className = "trip-tabs__button";
+        button.type = "button";
+        button.textContent = target.label;
+        button.setAttribute("role", "tab");
+        button.setAttribute("aria-selected", index === 0 ? "true" : "false");
+        button.setAttribute("data-target", id);
+        button.addEventListener("click", function () {
+          document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+          setActive(buttons, id);
+        });
+        nav.appendChild(button);
+        return button;
+      });
+
+      nav.setAttribute("role", "tablist");
+      nav.addEventListener("keydown", function (event) {
+        if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+        var current = buttons.indexOf(document.activeElement);
+        if (current < 0) return;
+        event.preventDefault();
+        var next = event.key === "ArrowRight" ? current + 1 : current - 1;
+        buttons[(next + buttons.length) % buttons.length].focus();
+      });
+
+      document.body.insertBefore(nav, document.body.firstChild);
+
+      if ("IntersectionObserver" in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) setActive(buttons, entry.target.id);
+          });
+        }, { rootMargin: "-25% 0px -65% 0px", threshold: [0, .1, .3] });
+        targets.forEach(function (target) { observer.observe(target.element); });
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initTripTabs);
+    } else {
+      initTripTabs();
+    }
+  })();
+<\/script>`;
+
+    function addTripTabs(html) {
+      if (html.includes("istanbul-trip-tabs-script")) return html;
+      const withStyle = /<\/head>/i.test(html)
+        ? html.replace(/<\/head>/i, `${tripTabsStyle}\n</head>`)
+        : `${tripTabsStyle}\n${html}`;
+      return /<\/body>/i.test(withStyle)
+        ? withStyle.replace(/<\/body>/i, `${tripTabsScript}\n</body>`)
+        : `${withStyle}\n${tripTabsScript}`;
+    }
+
     document.getElementById("unlockForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const error = document.getElementById("error");
@@ -95,7 +299,7 @@
       try {
         const html = await unlock(document.getElementById("password").value.trim());
         document.open();
-        document.write(html);
+        document.write(addTripTabs(html));
         document.close();
       } catch (_) {
         error.textContent = "Wrong password.";
