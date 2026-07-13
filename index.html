@@ -97,16 +97,18 @@
   }
   .trip-tabs {
     position: sticky;
-    top: 0;
+    top: 8px;
     z-index: 1000;
     display: flex;
     gap: 8px;
     align-items: center;
     width: 100%;
     overflow-x: auto;
+    margin: 0 0 24px;
     padding: 10px max(14px, env(safe-area-inset-left)) 10px max(14px, env(safe-area-inset-right));
-    border-bottom: 1px solid rgba(23, 33, 43, .12);
-    background: rgba(255, 255, 255, .92);
+    border: 1px solid rgba(23, 33, 43, .12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .96);
     box-shadow: 0 12px 30px rgba(23, 33, 43, .10);
     backdrop-filter: blur(16px);
     scrollbar-width: none;
@@ -128,6 +130,12 @@
     cursor: pointer;
     box-shadow: none;
   }
+  .trip-tabs__button:first-child {
+    min-width: 116px;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 15px;
+  }
   .trip-tabs__button:hover,
   .trip-tabs__button:focus-visible {
     border-color: rgba(196, 123, 22, .55);
@@ -138,14 +146,24 @@
     background: #17212b;
     color: #fff;
   }
+  .trip-tabs__button:first-child[aria-selected="true"] {
+    box-shadow: 0 10px 22px rgba(23, 33, 43, .18);
+  }
   .trip-tab-shell {
     width: 100%;
+    grid-column: 1 / -1;
+    min-width: 0;
   }
   .trip-tab-panels {
     width: 100%;
+    min-width: 0;
   }
   .trip-tab-panel {
     width: 100%;
+    min-width: 0;
+  }
+  .trip-tab-panel > :first-child {
+    margin-top: 0 !important;
   }
   .trip-tab-panel[hidden] {
     display: none !important;
@@ -160,6 +178,8 @@
     :root { --trip-tabs-offset: 60px; }
     .trip-tabs {
       gap: 6px;
+      top: 6px;
+      margin-bottom: 18px;
       padding-top: 8px;
       padding-bottom: 8px;
     }
@@ -167,6 +187,12 @@
       min-height: 36px;
       padding: 7px 10px;
       font-size: 13px;
+    }
+    .trip-tabs__button:first-child {
+      min-width: 100px;
+      padding-left: 12px;
+      padding-right: 12px;
+      font-size: 14px;
     }
   }
 </style>`;
@@ -596,7 +622,10 @@
         groups[categoryFor(block)].blocks.push(block);
       });
 
+      groups.route.blocks = blocks.slice();
+
       var activeTabs = TAB_DEFS.filter(function (tab) {
+        if (tab.id === "practical") return false;
         return groups[tab.id].blocks.length > 0;
       });
 
@@ -638,7 +667,9 @@
         panel.setAttribute("role", "tabpanel");
         panel.setAttribute("aria-labelledby", button.id);
         panel.hidden = index !== 0;
-        groups[tab.id].blocks.forEach(function (block) { panel.appendChild(block); });
+        groups[tab.id].blocks.forEach(function (block) {
+          panel.appendChild(tab.id === "route" ? block : block.cloneNode(true));
+        });
         panelsWrap.appendChild(panel);
         panels[tab.id] = panel;
       });
