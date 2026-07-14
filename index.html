@@ -92,6 +92,8 @@
 <style id="istanbul-trip-tabs-style">
   :root { --trip-tabs-offset: 68px; }
   .trip-tabs,
+  .trip-tab-shell,
+  .trip-tab-shell *,
   .trip-tabs * {
     box-sizing: border-box;
   }
@@ -202,6 +204,67 @@
     color: #17212b;
     font: 800 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
   }
+  .trip-docs-checklist {
+    width: 100%;
+    max-width: 100%;
+    padding: 18px;
+    border: 1px solid rgba(23, 33, 43, .12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .82);
+  }
+  .trip-docs-checklist h2 {
+    margin: 0 0 6px;
+    color: #17212b;
+    font: 950 24px/1.15 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-docs-checklist__note {
+    margin: 0 0 16px;
+    color: #5e6a75;
+    font: 700 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-docs-checklist__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .trip-docs-checklist__group {
+    min-width: 0;
+  }
+  .trip-docs-checklist__group h3 {
+    margin: 0 0 8px;
+    color: #17212b;
+    font: 900 15px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-docs-checklist__items {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-docs-checklist__item {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    min-width: 0;
+    color: #17212b;
+    font: 750 13px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-docs-checklist__item input {
+    width: 16px;
+    height: 16px;
+    min-height: 0;
+    margin: 1px 0 0;
+    padding: 0;
+    accent-color: #17212b;
+  }
+  .trip-docs-checklist__item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
   @media (max-width: 680px) {
     :root { --trip-tabs-offset: 60px; }
     .trip-tabs {
@@ -232,6 +295,16 @@
       padding: 6px 8px;
       font-size: 12px;
     }
+    .trip-docs-checklist {
+      padding: 14px;
+    }
+    .trip-docs-checklist h2 {
+      font-size: 21px;
+    }
+    .trip-docs-checklist__grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
   }
 </style>`;
 
@@ -258,9 +331,46 @@
         keywords: ["еда", "кафе", "ресторан", "завтрак", "обед", "ужин", "кофе", "кофей", "food", "restaurant", "breakfast", "dinner", "lunch", "baklava", "балык", "рыба", "рынок"]
       },
       {
+        id: "documents",
+        label: "Документы",
+        keywords: ["документы", "загран", "паспорт", "страховка", "билеты", "бронь", "адрес", "наличные", "деньги", "виза", "sim", "esim", "роуминг", "аптечка", "декларация", "лиры", "доллары", "евро"]
+      },
+      {
         id: "checklist",
         label: "Чек-листы",
         keywords: ["чек", "checklist", "to-do", "todo", "взять", "собрать", "перед вылетом", "документ", "паспорт", "страхов", "билет", "бронь", "скачать", "офлайн", "транспорт", "метро", "такси", "паром", "sim", "связь", "деньги", "бюджет", "ticket", "ferry", "metro", "taxi", "одежда", "дресс-код", "правил", "важно", "совет", "купить"]
+      }
+    ];
+
+    var TRAVEL_DOCS_CHECKLIST = [
+      {
+        title: "Документы",
+        items: [
+          "Загранпаспорт оригинал; лучше 120+ дней с даты въезда",
+          "Авиабилеты туда-обратно офлайн",
+          "Адрес проживания или бронь, можно скриншотом",
+          "Медстраховка на все даты поездки",
+          "Фото/сканы заграна, билетов, страховки и брони",
+          "Виза не нужна: до 60 дней подряд, до 90/180 суммарно"
+        ]
+      },
+      {
+        title: "Купить",
+        items: [
+          "Туристическую медстраховку для Турции",
+          "eSIM для Турции или роуминг",
+          "USD/EUR наличными и немного TRY на первые расходы",
+          "Аптечку; рецепты на рецептурные лекарства"
+        ]
+      },
+      {
+        title: "Деньги",
+        items: [
+          "Из РФ: наличная валюта до эквивалента 10 000 $ на человека",
+          "Рубли + валюта свыше 10 000 $ суммарно: нужна декларация",
+          "Российские Visa/Mastercard в Турции обычно не работают",
+          "Из Турции: свыше 10 000 € или 185 000 TRY декларировать"
+        ]
       }
     ];
 
@@ -394,6 +504,8 @@
     }
 
     function categoryFor(element) {
+      if (element && element.hasAttribute("data-trip-docs-checklist")) return "documents";
+
       var text = textFor(element).toLowerCase();
       var heading = headingTextFor(element).toLowerCase();
       var metadata = metadataTextFor(element).toLowerCase();
@@ -617,6 +729,89 @@
         if (child.matches("script, style, template, header, nav, footer, form")) return false;
         return normalizeText(child.textContent).length > 20 || hasMediaOrBackground(child);
       });
+    }
+
+    function checklistStorageKey(input) {
+      return "istanbul-trip-docs-checklist:" + (input.getAttribute("data-check-id") || "");
+    }
+
+    function applyStoredChecklistState(root) {
+      Array.prototype.slice.call(root.querySelectorAll(".trip-docs-checklist input[type='checkbox']")).forEach(function (input) {
+        try {
+          input.checked = localStorage.getItem(checklistStorageKey(input)) === "1";
+        } catch (_) {}
+      });
+    }
+
+    function bindStoredChecklistState() {
+      if (window.__istanbulTripDocsChecklistBound) return;
+      window.__istanbulTripDocsChecklistBound = true;
+      document.addEventListener("change", function (event) {
+        var input = event.target;
+        if (!input || !input.matches(".trip-docs-checklist input[type='checkbox']")) return;
+        try {
+          localStorage.setItem(checklistStorageKey(input), input.checked ? "1" : "0");
+        } catch (_) {}
+      });
+    }
+
+    function appendTravelDocsChecklist(root) {
+      if (!root || root.querySelector("[data-trip-docs-checklist]")) return;
+
+      var section = document.createElement("section");
+      section.className = "trip-docs-checklist";
+      section.setAttribute("data-trip-docs-checklist", "true");
+      section.setAttribute("data-tab-title", "Документы и деньги");
+
+      var title = document.createElement("h2");
+      title.textContent = "Документы и деньги";
+      section.appendChild(title);
+
+      var note = document.createElement("p");
+      note.className = "trip-docs-checklist__note";
+      note.textContent = "Коротко для поездки РФ - Стамбул - РФ.";
+      section.appendChild(note);
+
+      var grid = document.createElement("div");
+      grid.className = "trip-docs-checklist__grid";
+
+      TRAVEL_DOCS_CHECKLIST.forEach(function (group, groupIndex) {
+        var groupBlock = document.createElement("div");
+        groupBlock.className = "trip-docs-checklist__group";
+
+        var heading = document.createElement("h3");
+        heading.textContent = group.title;
+        groupBlock.appendChild(heading);
+
+        var list = document.createElement("ul");
+        list.className = "trip-docs-checklist__items";
+
+        group.items.forEach(function (text, itemIndex) {
+          var item = document.createElement("li");
+          var label = document.createElement("label");
+          label.className = "trip-docs-checklist__item";
+
+          var checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.setAttribute("data-check-id", groupIndex + "-" + itemIndex);
+
+          var caption = document.createElement("span");
+          caption.textContent = text;
+
+          label.appendChild(checkbox);
+          label.appendChild(caption);
+          item.appendChild(label);
+          list.appendChild(item);
+        });
+
+        groupBlock.appendChild(list);
+        grid.appendChild(groupBlock);
+      });
+
+      section.appendChild(grid);
+      root.appendChild(section);
+      applyStoredChecklistState(section);
+      bindStoredChecklistState();
     }
 
     function textKey(value) {
@@ -885,6 +1080,7 @@
       enrichRouteMap();
       hideLargeHero();
       var root = findRoot();
+      appendTravelDocsChecklist(root);
       var blocks = candidateBlocks(root);
       var built = blocks.length >= 2 && buildTabs(root, blocks);
 
@@ -897,6 +1093,8 @@
         blocks = fallbackDirectBlocks(root);
         built = blocks.length >= 2 && buildTabs(root, blocks);
       }
+
+      if (built) applyStoredChecklistState(document);
     }
 
     if (document.readyState === "loading") {
