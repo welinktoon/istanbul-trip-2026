@@ -1615,9 +1615,7 @@
       var replacements = {
         "маршрут по дням": "Маршрут по дням",
         "маршрут по дням.": "Маршрут по дням",
-        "маршрут по дням ": "Маршрут по дням",
-        "маршрут по дням\n": "Маршрут по дням",
-        "маршрут по дням\r\n": "Маршрут по дням"
+        "маршрут по дням ": "Маршрут по дням"
       };
       Array.prototype.slice.call(root.querySelectorAll("h2, h3, h4, [data-tab-title]")).forEach(function (element) {
         var value = normalizeText(element.getAttribute("data-tab-title") || element.textContent);
