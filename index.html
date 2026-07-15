@@ -625,6 +625,81 @@
     min-width: 0;
     overflow-wrap: anywhere;
   }
+  .trip-food-recommendations h2 {
+    margin: 0 0 8px;
+    color: var(--trip-ink);
+    font: 950 24px/1.12 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-food-recommendations__note {
+    margin: 0 0 16px;
+    color: var(--trip-muted);
+    font: 750 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-food-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .trip-food-card {
+    display: grid;
+    grid-template-rows: 150px auto;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-food-card__image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    background: #d9e2e8;
+  }
+  .trip-food-card__body {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+  }
+  .trip-food-card h3 {
+    margin: 0;
+    color: var(--trip-ink);
+    font: 950 16px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-food-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin: 0;
+  }
+  .trip-food-card__meta span {
+    display: inline-flex;
+    min-height: 24px;
+    align-items: center;
+    padding: 4px 7px;
+    border: 1px solid rgba(15, 106, 120, .20);
+    border-radius: var(--trip-radius);
+    background: var(--trip-accent-soft);
+    color: #0a5360;
+    font: 900 12px/1 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-food-card p {
+    margin: 0;
+    color: var(--trip-muted);
+    font: 750 13px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-food-card a {
+    justify-self: start;
+    color: var(--trip-accent);
+    font: 900 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-decoration: none;
+  }
+  .trip-food-card a:hover,
+  .trip-food-card a:focus-visible {
+    text-decoration: underline;
+    outline: none;
+  }
   .trip-empty-search {
     padding: 18px;
     border: 1px dashed var(--trip-line);
@@ -717,7 +792,8 @@
     }
     .trip-reference-grid,
     .trip-reference-grid--wide,
-    .trip-docs-checklist__grid {
+    .trip-docs-checklist__grid,
+    .trip-food-grid {
       grid-template-columns: 1fr;
       gap: 10px;
     }
@@ -746,11 +822,6 @@
 
     var TAB_DEFS = [
       {
-        id: "overview",
-        label: "Обзор",
-        keywords: ["обзор", "кратко", "главное", "справочник", "summary", "overview", "quick"]
-      },
-      {
         id: "route",
         label: "Маршрут",
         keywords: ["маршрут", "карта маршрута", "route map", "день", "day", "itinerary", "план", "распис", "тайм", "таймлайн", "утро", "вечер", "прилет", "вылет", "рейс", "flight", "аэропорт", "arrival", "departure", "walk", "july", "июль", "июля", "20 июля", "21 июля", "22 июля", "23 июля", "24 июля", "25 июля", "26 июля"]
@@ -776,14 +847,9 @@
         keywords: ["деньги", "наличные", "валюта", "перевод лир", "бюджет", "лиры", "try", "руб", "рубли", "доллары", "usd", "евро", "eur", "карты", "visa", "mastercard", "декларация", "налоги"]
       },
       {
-        id: "documents",
-        label: "Документы",
-        keywords: ["документы", "загран", "паспорт", "страховка", "билеты", "бронь", "адрес", "виза", "sim", "esim", "роуминг", "аптечка", "medicine", "insurance"]
-      },
-      {
         id: "checklist",
         label: "Чек-лист",
-        keywords: ["чек", "checklist", "to-do", "todo", "взять", "собрать", "перед вылетом", "перед поездкой", "скачать", "офлайн", "заряд", "powerbank", "переходник", "одежда", "дресс-код"]
+        keywords: ["чек", "checklist", "to-do", "todo", "взять", "собрать", "перед вылетом", "перед поездкой", "скачать", "офлайн", "заряд", "powerbank", "переходник", "одежда", "дресс-код", "документы", "загран", "паспорт", "страховка", "билеты", "бронь", "sim", "esim", "аптечка", "лекарства"]
       },
       {
         id: "emergency",
@@ -796,30 +862,42 @@
       {
         title: "Документы",
         items: [
-          "Загранпаспорт оригинал; лучше 120+ дней с даты въезда",
+          "Загранпаспорт",
           "Авиабилеты туда-обратно офлайн",
-          "Адрес проживания или бронь, можно скриншотом",
+          "Бронь отеля или адрес проживания",
           "Медстраховка на все даты поездки",
-          "Фото/сканы заграна, билетов, страховки и брони",
-          "Виза не нужна: до 60 дней подряд, до 90/180 суммарно"
+          "Фото/сканы заграна, билетов, страховки и брони"
         ]
       },
       {
-        title: "Купить",
+        title: "Деньги и карты",
         items: [
-          "Туристическую медстраховку для Турции",
-          "eSIM для Турции или роуминг",
-          "USD/EUR наличными и немного TRY на первые расходы",
-          "Аптечку; рецепты на рецептурные лекарства"
+          "Снять деньги в долларах на 30 000 ₽",
+          "Купить карту для путешествий от Плати по миру",
+          "Привязать карту в приложении такси и проверить оплату",
+          "Пополнить карту для путешествий на 5 000 ₽ на тест"
         ]
       },
       {
-        title: "Деньги",
+        title: "Связь и телефон",
         items: [
-          "Из РФ: наличная валюта до эквивалента 10 000 $ на человека",
-          "Рубли + валюта свыше 10 000 $ суммарно: нужна декларация",
-          "Российские Visa/Mastercard в Турции обычно не работают",
-          "Из Турции: свыше 10 000 € или 185 000 TRY декларировать"
+          "Купить eSIM для Турции с интернетом",
+          "Настроить eSIM на телефоне",
+          "Скачать офлайн-карты",
+          "Сохранить адрес отеля и важные телефоны"
+        ]
+      },
+      {
+        title: "Аптечка и личное",
+        items: [
+          "Обезболивающее",
+          "Таблетки от головы",
+          "Средство от отравления",
+          "Пластыри и антисептик",
+          "Прокладки",
+          "Солнцезащитный крем",
+          "Влажные салфетки",
+          "Зарядки и powerbank"
         ]
       }
     ];
@@ -1228,48 +1306,30 @@
 
     var REFERENCE_SECTIONS = [
       {
-        tab: "overview",
-        title: "Справочник поездки",
-        note: "Главное собрано по темам: маршрут, места, транспорт, деньги, документы и срочная помощь.",
+        tab: "transport",
+        title: "Транспорт",
+        note: "Подробный транспортный справочник: аэропорт, Istanbulkart, трамвай, метро, паромы и такси.",
         wide: true,
         cards: [
           {
-            title: "Как пользоваться",
-            text: "Откройте нужную вкладку или ищите по слову: музей, аэропорт, SIM, лиры, страховка.",
-            accent: true,
-            items: ["Вкладки не дублируют блоки", "Поиск работает по всем темам", "На телефоне навигация скроллится горизонтально"]
-          },
-          {
-            title: "Перед выходом",
-            text: "Быстрая проверка перед дневным маршрутом.",
-            items: ["Паспорт или копия", "Наличные TRY и карта отеля", "Офлайн-карты и заряд телефона"]
-          },
-          {
-            title: "Быстрые темы",
-            text: "Чаще всего в поездке нужны транспорт, деньги, места и экстренные контакты.",
-            items: ["IST / центр", "Istanbulkart", "Перевод лир", "112"]
-          },
-          {
-            title: "Карточки мест",
-            text: "Перед покупкой билетов открывайте карту или оценку места и проверяйте актуальные часы.",
-            items: ["Карта", "Оценка", "Очереди и билеты"]
-          }
-        ]
-      },
-      {
-        tab: "transport",
-        title: "Транспорт",
-        note: "Короткий транспортный справочник для Стамбула.",
-        cards: [
-          {
-            title: "Аэропорт IST",
-            text: "Заложите запас времени на дорогу, багаж и контроль.",
-            items: ["Havaist до центра", "Метро как бюджетный вариант", "Такси только по официальной стойке"]
+            title: "Из аэропорта IST",
+            text: "Самый простой вариант - Havaist до центральных районов; бюджетный - метро с пересадками.",
+            items: ["Havaist: проверить остановку заранее", "Метро: держать Istanbulkart с балансом", "Такси: только официальная стойка или приложение"]
           },
           {
             title: "Istanbulkart",
             text: "Одна карта закрывает метро, трамвай, автобус, Marmaray и многие паромы.",
-            items: ["Пополнить заранее", "Держать отдельно от телефона", "Проверять остаток перед пересадками"]
+            items: ["Купить и пополнить в автомате", "Держать мелкие TRY на пополнение", "Проверять остаток перед длинным днем"]
+          },
+          {
+            title: "Трамвай T1",
+            text: "Главная линия для Султанахмета, Эминеню, Каракея, Галаты и Гранд-базара.",
+            items: ["В час пик тесно", "На коротких переездах быстрее такси", "Смотреть направление перед входом"]
+          },
+          {
+            title: "Метро и Marmaray",
+            text: "Удобно для длинных переездов, азиатской стороны и объезда пробок.",
+            items: ["Marmaray пересекает Босфор", "Метро стабильно по времени", "Сохранять маршрут офлайн"]
           },
           {
             title: "Паромы",
@@ -1278,86 +1338,36 @@
           },
           {
             title: "Такси",
-            text: "Лучше иметь адрес на турецком и точку на карте.",
-            items: ["Смотреть маршрут", "Уточнять оплату", "Избегать неофициальных водителей"]
+            text: "Лучше заранее привязать карту в приложении и проверить оплату до поездки.",
+            items: ["Смотреть маршрут и цену", "Проверить карту в приложении", "Избегать неофициальных водителей"]
           }
         ]
       },
       {
         tab: "food",
         title: "Еда",
-        note: "Короткие ориентиры по еде, кофе и покупкам на каждый день маршрута.",
+        note: "Вместо общего списка - проверенные точки в центре: много отзывов, оценка на картах 4.3+.",
         cards: [
           {
-            title: "Кафе и завтраки",
-            text: "Держите несколько вариантов рядом с отелем и первой точкой дня.",
-            items: ["Проверить часы работы", "Сохранить 2-3 места на карте", "Иметь запасной вариант без брони"]
+            title: "Как выбирать",
+            text: "Открывайте свежие отзывы в Google Maps перед визитом: часы, очередь и цены меняются.",
+            items: ["Оценка 4.3+", "Много отзывов", "Близко к маршруту"]
           },
           {
-            title: "Улица и рынки",
-            text: "Для быстрых перекусов удобны симит, рыба, кебаб, сладости и рынки рядом с маршрутом.",
-            items: ["Брать воду", "Держать мелкие TRY", "Смотреть очередь и свежесть"]
+            title: "Бронь и очереди",
+            text: "На ужин и видовые места лучше бронировать или приходить раньше пика.",
+            items: ["Сохранять 2 запасных места", "Проверять сервисный сбор", "Держать наличные"]
           },
           {
-            title: "Ужин",
-            text: "Популярные места лучше проверять заранее, особенно вечером и у воды.",
-            items: ["Смотреть свежие отзывы", "Проверять цену сервиса", "Сохранять адрес на турецком"]
+            title: "Что попробовать",
+            text: "Кебаб, кефте, мезе, рыбу, пахлаву и турецкий кофе лучше брать в местах с большим потоком.",
+            items: ["Кебаб и кефте", "Мезе и рыба", "Пахлава и кофе"]
           },
           {
-            title: "Кофе и сладости",
-            text: "Отдельно отмечайте кофейни и места с пахлавой рядом с прогулками.",
+            title: "Сладости",
+            text: "Пахлаву и лукум удобно брать в Каракее, Сиркеджи и рядом с туристическим маршрутом.",
             accent: true,
-            items: ["Турецкий кофе", "Чай", "Пахлава", "Лукум"]
-          }
-        ]
-      },
-      {
-        tab: "money",
-        title: "Деньги и связь",
-        note: "Практичные правила для наличных, карт, связи и курса лиры.",
-        cards: [
-          {
-            title: "Наличные",
-            text: "Держите мелкие TRY на транспорт, воду, чаевые и небольшие покупки.",
-            items: ["Не носить все деньги вместе", "Проверять курс обменника", "Сохранять резерв в USD/EUR"]
-          },
-          {
-            title: "Карты",
-            text: "Российские Visa/Mastercard обычно не работают в Турции.",
-            items: ["Не рассчитывать только на карту", "Проверить альтернативы заранее", "Держать наличный резерв"]
-          },
-          {
-            title: "Связь",
-            text: "eSIM или роуминг лучше подготовить до вылета.",
-            items: ["Скачать офлайн-карты", "Сохранить адрес отеля", "Проверить интернет в аэропорту"]
-          },
-          {
-            title: "Перевод лир",
-            text: "Конвертер на странице остается интерактивным и лежит в этой теме.",
-            accent: true,
-            items: ["TRY", "RUB", "USD", "EUR"]
-          }
-        ]
-      },
-      {
-        tab: "documents",
-        title: "Документы",
-        note: "Что держать под рукой в бумаге и офлайн-копиях.",
-        cards: [
-          {
-            title: "На границе",
-            text: "Основные документы лучше иметь быстро доступными.",
-            items: ["Загранпаспорт", "Билеты туда-обратно", "Бронь или адрес проживания"]
-          },
-          {
-            title: "Медицина",
-            text: "Страховка и лекарства должны быть доступны без интернета.",
-            items: ["Полис страхования", "Рецепты на рецептурные лекарства", "Аптечка в ручной клади"]
-          },
-          {
-            title: "Офлайн-копии",
-            text: "Сохраните копии в телефон и отдельное облако.",
-            items: ["Паспорт", "Билеты", "Страховка", "Бронь отеля"]
+            items: ["Karakoy Gulluoglu", "Hafiz Mustafa", "Смотреть свежесть и очередь"]
           }
         ]
       },
@@ -1392,6 +1402,73 @@
       usd: 0.022,
       eur: 0.019
     };
+
+    var FOOD_RECOMMENDATIONS = [
+      {
+        name: "Sehzade Cag Kebap",
+        area: "Sirkeci",
+        rating: "4.7+",
+        reviews: "много отзывов",
+        note: "Кебаб рядом с Сиркеджи; хороший вариант на быстрый плотный обед без сильного ухода с маршрута.",
+        map: "https://www.google.com/maps/search/?api=1&query=Sehzade%20Cag%20Kebap%20Istanbul",
+        image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Bitlisli",
+        area: "Sirkeci",
+        rating: "4.7+",
+        reviews: "много отзывов",
+        note: "Турецкая кухня, мясо, мезе и супы; удобно держать как нормальный ужин в центре.",
+        map: "https://www.google.com/maps/search/?api=1&query=Bitlisli%20Istanbul",
+        image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Roof Mezze 360",
+        area: "Sirkeci",
+        rating: "4.8+",
+        reviews: "много отзывов",
+        note: "Видовое место для вечера: мезе, рыба, закат и вид на город. Лучше бронировать.",
+        map: "https://www.google.com/maps/search/?api=1&query=Roof%20Mezze%20360%20Restaurant%20Istanbul",
+        image: "https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Karakoy Gulluoglu",
+        area: "Karakoy",
+        rating: "4.4+",
+        reviews: "тысячи отзывов",
+        note: "Пахлава и сладости в Каракее; удобно совместить с Галатой, паромом или прогулкой у воды.",
+        map: "https://www.google.com/maps/search/?api=1&query=Karakoy%20Gulluoglu%20Istanbul",
+        image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Old Ottoman Cafe & Restaurant",
+        area: "Sultanahmet",
+        rating: "4.8+",
+        reviews: "много отзывов",
+        note: "Центральный вариант у Султанахмета: удобно, если хочется без долгой дороги после музеев.",
+        map: "https://www.google.com/maps/search/?api=1&query=Old%20Ottoman%20Cafe%20Restaurant%20Istanbul",
+        image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Hafiz Mustafa 1864",
+        area: "Sirkeci",
+        rating: "4.4+",
+        reviews: "тысячи отзывов",
+        note: "Сладости, чай и кофе; удобно на паузу рядом с туристическим центром.",
+        map: "https://www.google.com/maps/search/?api=1&query=Hafiz%20Mustafa%201864%20Sirkeci",
+        image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80"
+      }
+    ];
+
+    var REMOVED_TEXT_PATTERNS = [
+      /виза\\s+не\\s+нужна/i,
+      /usd\\/eur\\s+наличными/i,
+      /аптечк[ау];?\\s*рецепт/i,
+      /из\\s+рф:\\s*наличная\\s+валюта/i,
+      /рубли\\s*\\+\\s*валюта\\s+свыше/i,
+      /российские\\s+visa\\/mastercard/i,
+      /из\\s+турции:\\s*свыше/i
+    ];
 
     function formatRuNumber(value, options) {
       return new Intl.NumberFormat("ru-RU", options || {}).format(value);
@@ -1514,6 +1591,127 @@
         input.focus();
       });
       updateRates();
+    }
+
+    function containsRemovedText(value) {
+      var text = normalizeText(value).toLowerCase();
+      return REMOVED_TEXT_PATTERNS.some(function (pattern) { return pattern.test(text); });
+    }
+
+    function removeUnwantedTripText(root) {
+      root = root || document;
+      Array.prototype.slice.call(root.querySelectorAll("li, label, p, article, section")).forEach(function (element) {
+        if (element.closest(".trip-tabs, .trip-tab-shell")) return;
+        if (!containsRemovedText(element.textContent)) return;
+        var smallerMatch = Array.prototype.slice.call(element.children).some(function (child) {
+          return containsRemovedText(child.textContent);
+        });
+        if (!smallerMatch) element.remove();
+      });
+    }
+
+    function normalizeTripHeadings(root) {
+      root = root || document;
+      var replacements = {
+        "маршрут по дням": "Маршрут по дням",
+        "маршрут по дням.": "Маршрут по дням",
+        "маршрут по дням ": "Маршрут по дням",
+        "маршрут по дням\n": "Маршрут по дням",
+        "маршрут по дням\r\n": "Маршрут по дням"
+      };
+      Array.prototype.slice.call(root.querySelectorAll("h2, h3, h4, [data-tab-title]")).forEach(function (element) {
+        var value = normalizeText(element.getAttribute("data-tab-title") || element.textContent);
+        var key = value.toLowerCase();
+        if (replacements[key]) {
+          if (element.hasAttribute("data-tab-title")) element.setAttribute("data-tab-title", replacements[key]);
+          if (element.matches("h2, h3, h4")) element.textContent = replacements[key];
+        }
+        if (/^маршрут\\s+по\\s+дням$/i.test(value) && element.matches("h2, h3, h4")) {
+          element.textContent = "Маршрут по дням";
+        }
+      });
+    }
+
+    function suppressOriginalFoodBlocks(root) {
+      root = root || document;
+      uniqueTopLevel(Array.prototype.slice.call(root.querySelectorAll(BLOCK_SELECTOR)).filter(isUsableElement)).forEach(function (block) {
+        if (block.hasAttribute("data-trip-tab")) return;
+        var focusedText = normalizeText([headingTextFor(block), metadataTextFor(block)].join(" ")).toLowerCase();
+        if (explicitCategory(focusedText) === "food" && !routeSignal(block, focusedText)) {
+          block.setAttribute("data-trip-tab", "skip");
+          block.setAttribute("data-trip-hidden-food-source", "true");
+        }
+      });
+    }
+
+    function appendFoodRecommendations(root) {
+      if (!root || root.querySelector("[data-trip-food-recommendations]")) return;
+
+      var section = document.createElement("section");
+      section.className = "trip-food-recommendations";
+      section.setAttribute("data-trip-food-recommendations", "true");
+      section.setAttribute("data-trip-tab", "food");
+      section.setAttribute("data-tab-title", "Топ мест в центре");
+
+      var title = document.createElement("h2");
+      title.textContent = "Топ мест в центре";
+      section.appendChild(title);
+
+      var note = document.createElement("p");
+      note.className = "trip-food-recommendations__note";
+      note.textContent = "Ориентир: Google Maps / карты, оценка 4.3+ и много отзывов. Перед визитом проверьте свежие часы и очередь.";
+      section.appendChild(note);
+
+      var grid = document.createElement("div");
+      grid.className = "trip-food-grid";
+      FOOD_RECOMMENDATIONS.forEach(function (place) {
+        var card = document.createElement("article");
+        card.className = "trip-food-card";
+
+        var image = document.createElement("img");
+        image.className = "trip-food-card__image";
+        image.src = place.image;
+        image.alt = place.name;
+        image.loading = "lazy";
+        image.referrerPolicy = "no-referrer";
+        image.addEventListener("error", function () {
+          image.style.display = "none";
+          card.style.gridTemplateRows = "auto";
+        });
+        card.appendChild(image);
+
+        var body = document.createElement("div");
+        body.className = "trip-food-card__body";
+        var heading = document.createElement("h3");
+        heading.textContent = place.name;
+        body.appendChild(heading);
+
+        var meta = document.createElement("p");
+        meta.className = "trip-food-card__meta";
+        [place.area, place.rating, place.reviews].forEach(function (value) {
+          var chip = document.createElement("span");
+          chip.textContent = value;
+          meta.appendChild(chip);
+        });
+        body.appendChild(meta);
+
+        var text = document.createElement("p");
+        text.textContent = place.note;
+        body.appendChild(text);
+
+        var link = document.createElement("a");
+        link.href = place.map;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Открыть в Google Maps";
+        body.appendChild(link);
+
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+
+      section.appendChild(grid);
+      root.appendChild(section);
     }
 
     function buildReferenceSection(config) {
@@ -1759,31 +1957,7 @@
     }
 
     function enrichRouteMap() {
-      var mapBlock = findRouteMapBlock();
-      if (!mapBlock || mapBlock.querySelector(".trip-map-attractions")) return;
-
-      var attractions = collectAttractions();
-      if (!attractions.length) return;
-
-      var box = document.createElement("div");
-      box.className = "trip-map-attractions";
-      box.setAttribute("data-trip-map-attractions", "true");
-
-      var title = document.createElement("h3");
-      title.className = "trip-map-attractions__title";
-      title.textContent = "Достопримечательности на карте";
-      box.appendChild(title);
-
-      var list = document.createElement("ul");
-      list.className = "trip-map-attractions__list";
-      attractions.forEach(function (name) {
-        var item = document.createElement("li");
-        item.className = "trip-map-attractions__item";
-        item.textContent = name;
-        list.appendChild(item);
-      });
-      box.appendChild(list);
-      mapBlock.appendChild(box);
+      return;
     }
 
     function groupHeadingRuns(root, elements) {
@@ -2042,12 +2216,15 @@
     function initTripTabs() {
       document.documentElement.classList.add("trip-reference-mode");
       removeHotelTopAreas();
-      enrichRouteMap();
       hideLargeHero();
       hideIntroTitleBlocks();
       var root = findRoot();
+      removeUnwantedTripText(root);
+      normalizeTripHeadings(root);
       upgradeCurrencyConverter(root);
+      suppressOriginalFoodBlocks(root);
       appendReferenceSections(root);
+      appendFoodRecommendations(root);
       appendTravelDocsChecklist(root);
       var blocks = candidateBlocks(root);
       var built = blocks.length >= 2 && buildTabs(root, blocks);
