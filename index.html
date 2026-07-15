@@ -434,9 +434,14 @@
   }
   .converter.trip-currency-converter {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 16px;
+    align-items: stretch;
     border-color: rgba(15, 106, 120, .22);
     background: #fbfdfd;
+  }
+  .converter.trip-currency-converter > * {
+    min-width: 0;
   }
   .trip-currency-converter__head {
     display: flex;
