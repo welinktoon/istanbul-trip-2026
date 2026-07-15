@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <!-- published refresh: 2026-07-15T10:23Z -->
+  <!-- published refresh: 2026-07-15T10:44Z -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Istanbul 2026</title>
@@ -26,7 +26,7 @@
       padding: 24px;
       border-radius: 8px;
       background: rgba(255,255,255,.96);
-      box-shadow: 0 24px 70px rgba(0,0,0,.22);
+      box-shadow: none;
       border: 1px solid rgba(255,255,255,.6);
     }
     h1 { margin: 0 0 8px; font-size: 28px; line-height: 1.1; }
@@ -103,7 +103,7 @@
     --trip-clay: #c65f28;
     --trip-danger: #b9473f;
     --trip-radius: 8px;
-    --trip-shadow: 0 16px 42px rgba(23, 33, 43, .08);
+    --trip-shadow: none;
     --trip-tabs-offset: 84px;
   }
   html.trip-reference-mode,
@@ -232,7 +232,7 @@
     background: #fff;
     color: var(--trip-ink);
     font: 750 14px/1.3 Inter, "Segoe UI", Arial, sans-serif;
-    box-shadow: inset 0 1px 0 rgba(23, 33, 43, .02);
+    box-shadow: none;
   }
   .trip-search input::placeholder {
     color: #7a8795;
@@ -356,7 +356,7 @@
     border: 1px solid var(--trip-line);
     border-radius: var(--trip-radius);
     background: var(--trip-surface);
-    box-shadow: 0 1px 0 rgba(23, 33, 43, .02);
+    box-shadow: none;
   }
   .trip-tab-panel > section h2,
   .trip-tab-panel > article h2,
@@ -478,7 +478,7 @@
   }
   .trip-currency-converter__body {
     display: grid;
-    grid-template-columns: minmax(190px, 280px) minmax(0, 1fr);
+    grid-template-columns: minmax(190px, 280px) minmax(160px, 220px) minmax(0, 1fr);
     gap: 12px;
     align-items: end;
   }
@@ -489,7 +489,8 @@
     color: var(--trip-ink);
     font: 900 13px/1.25 Inter, "Segoe UI", Arial, sans-serif;
   }
-  .trip-currency-converter input {
+  .trip-currency-converter input,
+  .trip-currency-converter select {
     width: 100%;
     min-height: 46px;
     margin: 0;
@@ -499,9 +500,14 @@
     background: #fff;
     color: var(--trip-ink);
     font: 900 18px/1.2 Inter, "Segoe UI", Arial, sans-serif;
-    box-shadow: inset 0 1px 0 rgba(23, 33, 43, .02);
+    box-shadow: none;
   }
-  .trip-currency-converter input:focus {
+  .trip-currency-converter select {
+    appearance: auto;
+    font-size: 15px;
+  }
+  .trip-currency-converter input:focus,
+  .trip-currency-converter select:focus {
     border-color: rgba(15, 106, 120, .7);
     outline: 3px solid rgba(15, 106, 120, .14);
   }
@@ -538,7 +544,7 @@
   }
   .trip-currency-rates {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
   }
   .trip-currency-rate {
@@ -743,7 +749,7 @@
       border: 1px solid var(--trip-line);
       border-radius: var(--trip-radius);
       background: rgba(255, 255, 255, .96);
-      box-shadow: var(--trip-shadow);
+      box-shadow: none;
       scrollbar-width: none;
     }
     .trip-tabs::-webkit-scrollbar {
@@ -1320,7 +1326,7 @@
           {
             title: "Istanbulkart",
             text: "Одна карта закрывает метро, трамвай, автобус, Marmaray и многие паромы.",
-            items: ["Купить и пополнить в автомате", "Держать мелкие TRY на пополнение", "Проверять остаток перед длинным днем"]
+            items: ["Купить и пополнить в автомате", "Держать мелкие лиры на пополнение", "Проверять остаток перед длинным днем"]
           },
           {
             title: "Трамвай T1",
@@ -1477,7 +1483,18 @@
       return new Intl.NumberFormat("ru-RU", options || {}).format(value);
     }
 
+    function liraUnit(value) {
+      var rounded = Math.abs(Math.round(value));
+      var lastTwo = rounded % 100;
+      var last = rounded % 10;
+      if (lastTwo >= 11 && lastTwo <= 19) return "лир";
+      if (last === 1) return "лира";
+      if (last >= 2 && last <= 4) return "лиры";
+      return "лир";
+    }
+
     function formatMoneyValue(value, currency) {
+      if (currency === "try") return formatRuNumber(Math.round(value)) + " " + liraUnit(value);
       if (currency === "rub") return formatRuNumber(Math.round(value)) + " ₽";
       if (currency === "usd") return "$" + new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 2,
@@ -1489,11 +1506,38 @@
       }).format(value);
     }
 
-    function parseTryAmount(value) {
+    function parseCurrencyAmount(value) {
       var normalized = String(value || "").replace(/\s+/g, "").replace(",", ".");
       var amount = Number(normalized);
       if (!Number.isFinite(amount) || amount < 0) return 0;
       return amount;
+    }
+
+    function amountToLira(amount, currency) {
+      if (currency === "rub") return amount / CURRENCY_RATES.rub;
+      if (currency === "usd") return amount / CURRENCY_RATES.usd;
+      if (currency === "eur") return amount / CURRENCY_RATES.eur;
+      return amount;
+    }
+
+    function liraToCurrency(amount, currency) {
+      if (currency === "rub") return amount * CURRENCY_RATES.rub;
+      if (currency === "usd") return amount * CURRENCY_RATES.usd;
+      if (currency === "eur") return amount * CURRENCY_RATES.eur;
+      return amount;
+    }
+
+    function quickAmountsFor(currency) {
+      if (currency === "rub") return [1000, 5000, 10000, 30000, 50000];
+      if (currency === "usd" || currency === "eur") return [10, 50, 100, 250, 500];
+      return [100, 500, 1000, 2500, 5000];
+    }
+
+    function quickLabelFor(amount, currency) {
+      if (currency === "rub") return formatRuNumber(amount) + " ₽";
+      if (currency === "usd") return "$" + formatRuNumber(amount);
+      if (currency === "eur") return "€" + formatRuNumber(amount);
+      return formatRuNumber(amount) + " " + liraUnit(amount);
     }
 
     function makeCurrencyElement(tagName, className, text) {
@@ -1520,12 +1564,12 @@
       var head = makeCurrencyElement("div", "trip-currency-converter__head");
       var titleWrap = document.createElement("div");
       titleWrap.appendChild(makeCurrencyElement("p", "trip-currency-converter__eyebrow", "Перевод лир"));
-      titleWrap.appendChild(makeCurrencyElement("h2", "", "Калькулятор TRY"));
+      titleWrap.appendChild(makeCurrencyElement("h2", "", "Калькулятор валют"));
       head.appendChild(titleWrap);
-      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "1 TRY = 1,70 ₽"));
+      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "1 лира = 1,70 ₽"));
 
       var body = makeCurrencyElement("div", "trip-currency-converter__body");
-      var label = makeCurrencyElement("label", "", "Сумма в лирах");
+      var label = makeCurrencyElement("label", "", "Сумма");
       label.setAttribute("for", "tryAmount");
       var input = document.createElement("input");
       input.id = "tryAmount";
@@ -1537,21 +1581,34 @@
       input.setAttribute("aria-describedby", "rateNote");
       label.appendChild(input);
 
+      var currencyLabel = makeCurrencyElement("label", "", "Считаем из");
+      currencyLabel.setAttribute("for", "currencySource");
+      var currencySelect = document.createElement("select");
+      currencySelect.id = "currencySource";
+      [
+        { value: "try", label: "лир" },
+        { value: "rub", label: "рублей" },
+        { value: "usd", label: "долларов" },
+        { value: "eur", label: "евро" }
+      ].forEach(function (item) {
+        var option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        currencySelect.appendChild(option);
+      });
+      currencyLabel.appendChild(currencySelect);
+
       var quick = makeCurrencyElement("div", "trip-currency-converter__quick");
       quick.setAttribute("aria-label", "Быстрые суммы");
       quick.appendChild(makeCurrencyElement("span", "", "Быстро:"));
-      [100, 500, 1000, 2500, 5000].forEach(function (amount) {
-        var button = makeCurrencyElement("button", "", formatRuNumber(amount) + " TRY");
-        button.type = "button";
-        button.setAttribute("data-try-amount", String(amount));
-        quick.appendChild(button);
-      });
       body.appendChild(label);
+      body.appendChild(currencyLabel);
       body.appendChild(quick);
 
       var rates = makeCurrencyElement("div", "rates trip-currency-rates");
       rates.setAttribute("aria-live", "polite");
       [
+        { id: "tryRate", label: "в лирах", code: "try" },
         { id: "rubRate", label: "в рублях", code: "rub" },
         { id: "usdRate", label: "в долларах", code: "usd" },
         { id: "eurRate", label: "в евро", code: "eur" }
@@ -1568,7 +1625,7 @@
       var note = makeCurrencyElement(
         "p",
         "converter-note trip-currency-note",
-        "Ориентир на " + CURRENCY_RATES.updatedLabel + ", округлен вверх с небольшим запасом: 1 TRY ≈ 1.70 RUB, 0.022 USD, 0.019 EUR."
+        "Ориентир на " + CURRENCY_RATES.updatedLabel + ", округлен вверх с небольшим запасом: 1 лира ≈ 1.70 ₽, $0.022, €0.019."
       );
       note.id = "rateNote";
 
@@ -1577,22 +1634,41 @@
       section.appendChild(rates);
       section.appendChild(note);
 
+      function renderQuickAmounts() {
+        var currency = currencySelect.value;
+        quick.querySelectorAll("button[data-quick-amount]").forEach(function (button) { button.remove(); });
+        quickAmountsFor(currency).forEach(function (amount) {
+          var button = makeCurrencyElement("button", "", quickLabelFor(amount, currency));
+          button.type = "button";
+          button.setAttribute("data-quick-amount", String(amount));
+          quick.appendChild(button);
+        });
+      }
+
       function updateRates() {
-        var amount = parseTryAmount(input.value);
-        section.querySelector("#rubRate").textContent = formatMoneyValue(amount * CURRENCY_RATES.rub, "rub");
-        section.querySelector("#usdRate").textContent = formatMoneyValue(amount * CURRENCY_RATES.usd, "usd");
-        section.querySelector("#eurRate").textContent = formatMoneyValue(amount * CURRENCY_RATES.eur, "eur");
+        var amount = parseCurrencyAmount(input.value);
+        var sourceCurrency = currencySelect.value;
+        var amountInLira = amountToLira(amount, sourceCurrency);
+        section.querySelector("#tryRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "try"), "try");
+        section.querySelector("#rubRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "rub"), "rub");
+        section.querySelector("#usdRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "usd"), "usd");
+        section.querySelector("#eurRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "eur"), "eur");
       }
 
       input.addEventListener("input", updateRates);
+      currencySelect.addEventListener("change", function () {
+        renderQuickAmounts();
+        updateRates();
+      });
       quick.addEventListener("click", function (event) {
         var target = event.target;
-        var button = target && target.closest ? target.closest("button[data-try-amount]") : null;
+        var button = target && target.closest ? target.closest("button[data-quick-amount]") : null;
         if (!button) return;
-        input.value = button.getAttribute("data-try-amount") || "0";
+        input.value = button.getAttribute("data-quick-amount") || "0";
         updateRates();
         input.focus();
       });
+      renderQuickAmounts();
       updateRates();
     }
 
@@ -1618,7 +1694,10 @@
       var replacements = {
         "маршрут по дням": "Маршрут по дням",
         "маршрут по дням.": "Маршрут по дням",
-        "маршрут по дням ": "Маршрут по дням"
+        "маршрут по дням ": "Маршрут по дням",
+        "карточки мест": "Карточки мест",
+        "карточки мест.": "Карточки мест",
+        "карточки места": "Карточки мест"
       };
       Array.prototype.slice.call(root.querySelectorAll("h2, h3, h4, [data-tab-title]")).forEach(function (element) {
         var value = normalizeText(element.getAttribute("data-tab-title") || element.textContent);
@@ -1630,6 +1709,32 @@
         if (/^маршрут\\s+по\\s+дням$/i.test(value) && element.matches("h2, h3, h4")) {
           element.textContent = "Маршрут по дням";
         }
+      });
+    }
+
+    function rewriteTripCopy(root) {
+      root = root || document;
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (node) {
+          var parent = node.parentElement;
+          if (!parent || parent.closest("script, style, template, noscript")) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      var nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(function (node) {
+        var value = node.nodeValue;
+        value = value.replace(
+          /Оценки Google Maps меняются, поэтому ниже указаны ориентиры на момент подготовки\\.\\s*Перед покупкой билетов нажмите [“"]карта\\/оценка[”"] и проверьте свежую карточку места\\./g,
+          "Оценки ориентировочные. Перед визитом проверьте карточку на карте."
+        );
+        value = value.replace(/Карточки\\s+Мест/g, "Карточки мест");
+        value = value.replace(/Маршрут\\s+По\\s+Дням/g, "Маршрут по дням");
+        value = value.replace(/1\\s*TRY\\b/g, "1 лира");
+        value = value.replace(/(\\d[\\d\\s.,]*)\\s*TRY\\b/g, "$1 лир");
+        value = value.replace(/\\bTRY\\b/g, "лиры");
+        if (value !== node.nodeValue) node.nodeValue = value;
       });
     }
 
@@ -1660,7 +1765,7 @@
 
       var note = document.createElement("p");
       note.className = "trip-food-recommendations__note";
-      note.textContent = "Ориентир: Google Maps / карты, оценка 4.3+ и много отзывов. Перед визитом проверьте свежие часы и очередь.";
+      note.textContent = "Оценки ориентировочные. Перед визитом проверьте карточку на карте.";
       section.appendChild(note);
 
       var grid = document.createElement("div");
@@ -2221,12 +2326,15 @@
       hideIntroTitleBlocks();
       var root = findRoot();
       removeUnwantedTripText(root);
+      rewriteTripCopy(root);
       normalizeTripHeadings(root);
       upgradeCurrencyConverter(root);
       suppressOriginalFoodBlocks(root);
       appendReferenceSections(root);
       appendFoodRecommendations(root);
       appendTravelDocsChecklist(root);
+      rewriteTripCopy(root);
+      normalizeTripHeadings(root);
       var blocks = candidateBlocks(root);
       var built = blocks.length >= 2 && buildTabs(root, blocks);
 
