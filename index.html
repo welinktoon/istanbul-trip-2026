@@ -90,70 +90,238 @@
 
     const tripTabsStyle = `
 <style id="istanbul-trip-tabs-style">
-  :root { --trip-tabs-offset: 68px; }
-  .trip-tabs,
+  :root {
+    --trip-ink: #17212b;
+    --trip-muted: #657181;
+    --trip-line: #d9e2e8;
+    --trip-soft-line: rgba(23, 33, 43, .10);
+    --trip-bg: #f6f8fa;
+    --trip-surface: #ffffff;
+    --trip-accent: #0f6a78;
+    --trip-accent-soft: #e8f4f6;
+    --trip-clay: #c65f28;
+    --trip-danger: #b9473f;
+    --trip-radius: 8px;
+    --trip-shadow: 0 16px 42px rgba(23, 33, 43, .08);
+    --trip-tabs-offset: 84px;
+  }
+  html.trip-reference-mode,
+  html.trip-reference-mode body {
+    min-height: 100%;
+    background: var(--trip-bg) !important;
+    color: var(--trip-ink);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+  }
+  html.trip-reference-mode body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .trip-reference-header,
+  .trip-reference-header *,
+  .trip-reference-layout,
+  .trip-reference-layout *,
   .trip-tab-shell,
   .trip-tab-shell *,
+  .trip-tabs,
   .trip-tabs * {
     box-sizing: border-box;
   }
+  .trip-tab-shell {
+    width: min(1440px, 100vw);
+    min-width: 0;
+    max-width: 100vw;
+    margin-left: calc(50% - min(720px, 50vw));
+    grid-column: 1 / -1;
+    background: var(--trip-bg);
+    color: var(--trip-ink);
+  }
+  .trip-reference-header {
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(280px, 560px) auto;
+    gap: 20px;
+    align-items: center;
+    min-height: 76px;
+    padding: 14px max(20px, env(safe-area-inset-left)) 14px max(20px, env(safe-area-inset-right));
+    border-bottom: 1px solid var(--trip-line);
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(16px);
+  }
+  .trip-brand {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+  }
+  .trip-brand__mark {
+    position: relative;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    border-bottom: 4px solid var(--trip-clay);
+  }
+  .trip-brand__mark::before,
+  .trip-brand__mark::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    border: 2px solid var(--trip-clay);
+    border-bottom: 0;
+    background: #fff;
+  }
+  .trip-brand__mark::before {
+    left: 3px;
+    width: 28px;
+    height: 20px;
+    border-radius: 18px 18px 0 0;
+  }
+  .trip-brand__mark::after {
+    right: 2px;
+    width: 9px;
+    height: 32px;
+    border-radius: 6px 6px 0 0;
+  }
+  .trip-brand__title {
+    margin: 0;
+    color: var(--trip-ink);
+    font: 950 25px/1.05 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-brand__subtitle {
+    margin: 2px 0 0;
+    color: var(--trip-muted);
+    font: 700 13px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-search {
+    position: relative;
+    min-width: 0;
+  }
+  .trip-search::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    border: 2px solid #4f5e6d;
+    border-radius: 50%;
+    transform: translateY(-52%);
+  }
+  .trip-search::after {
+    content: "";
+    position: absolute;
+    left: 27px;
+    top: 50%;
+    width: 7px;
+    height: 2px;
+    border-radius: 2px;
+    background: #4f5e6d;
+    transform: translateY(5px) rotate(45deg);
+  }
+  .trip-search input {
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px 14px 10px 42px;
+    border: 1px solid var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+    color: var(--trip-ink);
+    font: 750 14px/1.3 Inter, "Segoe UI", Arial, sans-serif;
+    box-shadow: inset 0 1px 0 rgba(23, 33, 43, .02);
+  }
+  .trip-search input::placeholder {
+    color: #7a8795;
+  }
+  .trip-search input:focus {
+    border-color: rgba(15, 106, 120, .7);
+    outline: 3px solid rgba(15, 106, 120, .14);
+  }
+  .trip-header-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    color: var(--trip-muted);
+    font: 800 13px/1 Inter, "Segoe UI", Arial, sans-serif;
+    white-space: nowrap;
+  }
+  .trip-header-actions span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-reference-layout {
+    display: grid;
+    grid-template-columns: 188px minmax(0, 1fr);
+    gap: 18px;
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 18px max(20px, env(safe-area-inset-left)) 28px max(20px, env(safe-area-inset-right));
+  }
   .trip-tabs {
     position: sticky;
-    top: 8px;
+    top: calc(var(--trip-tabs-offset) + 18px);
     z-index: 1000;
+    align-self: start;
     display: flex;
-    gap: 8px;
-    align-items: center;
+    flex-direction: column;
+    gap: 6px;
     width: 100%;
-    overflow-x: auto;
-    margin: 0 0 24px;
-    padding: 10px max(14px, env(safe-area-inset-left)) 10px max(14px, env(safe-area-inset-right));
-    border: 1px solid rgba(23, 33, 43, .12);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, .96);
-    box-shadow: 0 12px 30px rgba(23, 33, 43, .10);
-    backdrop-filter: blur(16px);
-    scrollbar-width: none;
-  }
-  .trip-tabs::-webkit-scrollbar { display: none; }
-  .trip-tabs__button {
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 0;
-    min-height: 38px;
+    max-height: calc(100vh - var(--trip-tabs-offset) - 36px);
+    overflow: auto;
     margin: 0;
-    padding: 8px 13px;
-    border: 1px solid rgba(23, 33, 43, .14);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, .78);
-    color: #17212b;
-    font: 800 14px/1.15 Inter, "Segoe UI", Arial, sans-serif;
+    padding: 0;
+    background: transparent;
+    scrollbar-width: thin;
+  }
+  .trip-tabs__button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 42px;
+    min-width: 0;
+    margin: 0;
+    padding: 9px 12px;
+    border: 1px solid transparent;
+    border-radius: var(--trip-radius);
+    background: transparent;
+    color: #2f3d4a;
+    font: 850 14px/1.15 Inter, "Segoe UI", Arial, sans-serif;
+    text-align: left;
     white-space: nowrap;
     cursor: pointer;
     box-shadow: none;
   }
-  .trip-tabs__button:first-child {
-    min-width: 116px;
-    padding-left: 16px;
-    padding-right: 16px;
-    font-size: 15px;
-  }
   .trip-tabs__button:hover,
   .trip-tabs__button:focus-visible {
-    border-color: rgba(196, 123, 22, .55);
+    border-color: rgba(15, 106, 120, .28);
+    background: rgba(255, 255, 255, .78);
     outline: none;
   }
   .trip-tabs__button[aria-selected="true"] {
-    border-color: #17212b;
-    background: #17212b;
-    color: #fff;
+    border-color: rgba(15, 106, 120, .62);
+    background: var(--trip-accent-soft);
+    color: #0a5360;
   }
-  .trip-tabs__button:first-child[aria-selected="true"] {
-    box-shadow: 0 10px 22px rgba(23, 33, 43, .18);
+  .trip-tabs__button[data-search-match]::after {
+    content: attr(data-search-match);
+    margin-left: auto;
+    min-width: 20px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--trip-accent);
+    font: 900 11px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-align: center;
   }
-  .trip-tab-shell {
-    width: 100%;
-    grid-column: 1 / -1;
+  .trip-reference-main {
     min-width: 0;
   }
   .trip-tab-panels {
@@ -161,32 +329,120 @@
     min-width: 0;
   }
   .trip-tab-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
     width: 100%;
     min-width: 0;
-  }
-  .trip-tab-panel > :first-child {
-    margin-top: 0 !important;
   }
   .trip-tab-panel[hidden] {
     display: none !important;
   }
-  .trip-hero-hidden {
-    display: none !important;
+  .trip-tab-panel > :first-child {
+    margin-top: 0 !important;
   }
-  .trip-generated-block {
+  .trip-tab-panel > section,
+  .trip-tab-panel > article,
+  .trip-generated-block,
+  .trip-reference-section,
+  .trip-docs-checklist {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 18px;
+    border: 1px solid var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: var(--trip-surface);
+    box-shadow: 0 1px 0 rgba(23, 33, 43, .02);
+  }
+  .trip-tab-panel > section h2,
+  .trip-tab-panel > article h2,
+  .trip-reference-section h2,
+  .trip-docs-checklist h2 {
+    margin: 0 0 8px;
+    color: var(--trip-ink);
+    font: 950 24px/1.12 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-tab-panel > section h3,
+  .trip-tab-panel > article h3,
+  .trip-reference-card h3,
+  .trip-docs-checklist__group h3 {
+    margin: 0 0 6px;
+    color: var(--trip-ink);
+    font: 900 15px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-reference-section__note,
+  .trip-docs-checklist__note {
+    margin: 0 0 16px;
+    color: var(--trip-muted);
+    font: 700 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-reference-grid,
+  .trip-docs-checklist__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .trip-reference-grid--wide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .trip-reference-card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-reference-card p {
+    margin: 0;
+    color: var(--trip-muted);
+    font: 700 13px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-reference-card ul {
+    display: grid;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-reference-card li {
+    position: relative;
+    padding-left: 14px;
+    color: #2f3d4a;
+    font: 750 13px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-reference-card li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .62em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--trip-accent);
+  }
+  .trip-reference-card--accent {
+    border-color: rgba(15, 106, 120, .22);
+    background: var(--trip-accent-soft);
+  }
+  .trip-reference-card--danger {
+    border-color: rgba(185, 71, 63, .22);
+    background: #fff7f5;
   }
   .trip-map-attractions {
     margin-top: 16px;
-    padding: 16px;
-    border: 1px solid rgba(23, 33, 43, .12);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, .74);
+    padding: 14px;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
   }
   .trip-map-attractions__title {
     margin: 0 0 10px;
-    font: 900 17px/1.25 Inter, "Segoe UI", Arial, sans-serif;
-    color: #17212b;
+    font: 900 16px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+    color: var(--trip-ink);
   }
   .trip-map-attractions__list {
     display: flex;
@@ -198,44 +454,14 @@
   }
   .trip-map-attractions__item {
     padding: 7px 10px;
-    border: 1px solid rgba(23, 33, 43, .12);
-    border-radius: 8px;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
     background: #fff;
-    color: #17212b;
+    color: var(--trip-ink);
     font: 800 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
-  }
-  .trip-docs-checklist {
-    width: 100%;
-    max-width: 100%;
-    padding: 18px;
-    border: 1px solid rgba(23, 33, 43, .12);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, .82);
-  }
-  .trip-docs-checklist h2 {
-    margin: 0 0 6px;
-    color: #17212b;
-    font: 950 24px/1.15 Inter, "Segoe UI", Arial, sans-serif;
-    letter-spacing: 0;
-  }
-  .trip-docs-checklist__note {
-    margin: 0 0 16px;
-    color: #5e6a75;
-    font: 700 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
-  }
-  .trip-docs-checklist__grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
   }
   .trip-docs-checklist__group {
     min-width: 0;
-  }
-  .trip-docs-checklist__group h3 {
-    margin: 0 0 8px;
-    color: #17212b;
-    font: 900 15px/1.25 Inter, "Segoe UI", Arial, sans-serif;
-    letter-spacing: 0;
   }
   .trip-docs-checklist__items {
     display: grid;
@@ -250,7 +476,7 @@
     gap: 8px;
     align-items: start;
     min-width: 0;
-    color: #17212b;
+    color: var(--trip-ink);
     font: 750 13px/1.35 Inter, "Segoe UI", Arial, sans-serif;
   }
   .trip-docs-checklist__item input {
@@ -259,51 +485,107 @@
     min-height: 0;
     margin: 1px 0 0;
     padding: 0;
-    accent-color: #17212b;
+    accent-color: var(--trip-accent);
   }
   .trip-docs-checklist__item span {
     min-width: 0;
     overflow-wrap: anywhere;
   }
-  @media (max-width: 680px) {
-    :root { --trip-tabs-offset: 60px; }
+  .trip-empty-search {
+    padding: 18px;
+    border: 1px dashed var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: rgba(255, 255, 255, .7);
+    color: var(--trip-muted);
+    font: 750 14px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-block-hidden,
+  .trip-hero-hidden {
+    display: none !important;
+  }
+  @media (max-width: 980px) {
+    .trip-tab-shell {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+    }
+    .trip-reference-header {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      position: static;
+    }
+    .trip-header-actions {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+    .trip-reference-layout {
+      grid-template-columns: 1fr;
+      padding-top: 12px;
+    }
     .trip-tabs {
+      position: sticky;
+      top: 0;
+      flex-direction: row;
+      width: 100%;
+      max-height: none;
+      overflow-x: auto;
+      padding: 8px;
+      border: 1px solid var(--trip-line);
+      border-radius: var(--trip-radius);
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--trip-shadow);
+      scrollbar-width: none;
+    }
+    .trip-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .trip-tabs__button {
+      flex: 0 0 auto;
+      width: auto;
+      min-height: 38px;
+    }
+  }
+  @media (max-width: 680px) {
+    .trip-reference-header {
+      padding: 12px max(14px, env(safe-area-inset-left)) 12px max(14px, env(safe-area-inset-right));
+    }
+    .trip-brand__title {
+      font-size: 22px;
+    }
+    .trip-reference-layout {
+      padding: 12px max(14px, env(safe-area-inset-left)) 20px max(14px, env(safe-area-inset-right));
+    }
+    .trip-tabs {
+      width: 100%;
       gap: 6px;
-      top: 6px;
-      margin-bottom: 18px;
-      padding-top: 8px;
-      padding-bottom: 8px;
+      padding: 7px;
     }
     .trip-tabs__button {
       min-height: 36px;
       padding: 7px 10px;
       font-size: 13px;
     }
-    .trip-tabs__button:first-child {
-      min-width: 100px;
-      padding-left: 12px;
-      padding-right: 12px;
-      font-size: 14px;
+    .trip-tab-panel {
+      gap: 12px;
     }
-    .trip-map-attractions {
-      padding: 12px;
-    }
-    .trip-map-attractions__list {
-      gap: 6px;
-    }
-    .trip-map-attractions__item {
-      padding: 6px 8px;
-      font-size: 12px;
-    }
+    .trip-tab-panel > section,
+    .trip-tab-panel > article,
+    .trip-generated-block,
+    .trip-reference-section,
     .trip-docs-checklist {
       padding: 14px;
     }
+    .trip-tab-panel > section h2,
+    .trip-tab-panel > article h2,
+    .trip-reference-section h2,
     .trip-docs-checklist h2 {
       font-size: 21px;
     }
+    .trip-reference-grid,
+    .trip-reference-grid--wide,
     .trip-docs-checklist__grid {
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 10px;
     }
   }
 </style>`;
@@ -315,6 +597,11 @@
     window.__istanbulTripTabsReady = true;
 
     var TAB_DEFS = [
+      {
+        id: "overview",
+        label: "Обзор",
+        keywords: ["обзор", "кратко", "главное", "справочник", "summary", "overview", "quick"]
+      },
       {
         id: "route",
         label: "Маршрут",
@@ -331,14 +618,29 @@
         keywords: ["еда", "кафе", "ресторан", "завтрак", "обед", "ужин", "кофе", "кофей", "food", "restaurant", "breakfast", "dinner", "lunch", "baklava", "балык", "рыба", "рынок"]
       },
       {
+        id: "transport",
+        label: "Транспорт",
+        keywords: ["транспорт", "метро", "трамвай", "паром", "такси", "аэропорт", "airport", "ist", "saw", "havaist", "marmaray", "istanbulkart", "ferry", "metro", "tram", "bus", "otobus"]
+      },
+      {
+        id: "money",
+        label: "Деньги",
+        keywords: ["деньги", "наличные", "валюта", "перевод лир", "бюджет", "лиры", "try", "руб", "рубли", "доллары", "usd", "евро", "eur", "карты", "visa", "mastercard", "декларация", "налоги"]
+      },
+      {
         id: "documents",
         label: "Документы",
-        keywords: ["документы", "загран", "паспорт", "страховка", "билеты", "бронь", "адрес", "наличные", "деньги", "валюта", "перевод лир", "виза", "sim", "esim", "роуминг", "аптечка", "декларация", "лиры", "try", "руб", "рубли", "доллары", "usd", "евро", "eur"]
+        keywords: ["документы", "загран", "паспорт", "страховка", "билеты", "бронь", "адрес", "виза", "sim", "esim", "роуминг", "аптечка", "medicine", "insurance"]
       },
       {
         id: "checklist",
-        label: "Чек-листы",
+        label: "Чек-лист",
         keywords: ["чек", "checklist", "to-do", "todo", "взять", "собрать", "перед вылетом", "перед поездкой", "скачать", "офлайн", "заряд", "powerbank", "переходник", "одежда", "дресс-код"]
+      },
+      {
+        id: "emergency",
+        label: "Экстренно",
+        keywords: ["экстренно", "экстренная", "помощь", "112", "скорая", "полиция", "пожар", "страховая", "консульство", "emergency", "police", "ambulance", "fire", "hospital"]
       }
     ];
 
@@ -496,8 +798,20 @@
       return namedChecklistSignal(text) || /взять|собрать|перед вылет|перед поезд|скачать|офлайн|заряд|powerbank|переходник|одежд|дресс-код/.test(text);
     }
 
+    function transportSignal(text) {
+      return /транспорт|метро|трамва|паром|такси|аэропорт|airport|ist\\b|saw\\b|havaist|marmaray|istanbulkart|ferry|metro|tram|bus|otobus|шаттл|маршрутка/.test(text);
+    }
+
+    function moneySignal(text) {
+      return /деньг|налич|бюджет|валют|перевод лир|лир|try|руб|доллар|usd|евро|eur|карты|visa|mastercard|деклараци|налог|курс/.test(text);
+    }
+
     function documentsSignal(text) {
-      return /документ|загран|паспорт|страхов|билет|бронь|адрес|налич|деньг|бюджет|валют|перевод лир|лир|try|руб|доллар|usd|евро|eur|виза|sim|esim|роуминг|аптеч|деклараци/.test(text);
+      return /документ|загран|паспорт|страховк|билет|бронь|адрес|виза|sim|esim|роуминг|аптеч|лекарств|medicine|insurance/.test(text);
+    }
+
+    function emergencySignal(text) {
+      return /экстрен|помощь|112|скорая|полици|пожар|страховая|консульств|hospital|emergency|police|ambulance|fire/.test(text);
     }
 
     function hotelOnlySignal(text) {
@@ -508,13 +822,17 @@
       if (/еда|кафе|ресторан|завтрак|обед|ужин|кофе|кофей|food|restaurant|breakfast|dinner|lunch|baklava|балык|рыба/.test(text)) return "food";
       if (namedChecklistSignal(text)) return "checklist";
       if (/мест|достопр|музей|мечеть|дворец|башн|босфор|place|places|attraction|landmark|galata|sultanahmet|taksim|kadikoy|topkapi|hagia|sofia|basilica|tower|palace|mosque|museum|bazaar/.test(text)) return "places";
+      if (emergencySignal(text)) return "emergency";
+      if (transportSignal(text)) return "transport";
+      if (moneySignal(text)) return "money";
       if (documentsSignal(text)) return "documents";
       if (checklistSignal(text)) return "checklist";
       return "";
     }
 
     function categoryFor(element) {
-      if (element && element.hasAttribute("data-trip-docs-checklist")) return "documents";
+      if (element && element.hasAttribute("data-trip-tab")) return element.getAttribute("data-trip-tab");
+      if (element && element.hasAttribute("data-trip-docs-checklist")) return "checklist";
 
       var text = textFor(element).toLowerCase();
       var heading = headingTextFor(element).toLowerCase();
@@ -574,6 +892,25 @@
           var titleLikeHero = /istanbul|стамбул|july|июл|дней/.test(text);
 
           return namedLikeHero || (visualLikeHero && titleLikeHero) || (visualLikeHero && rect.height > viewportHeight * 0.55);
+        })
+        .sort(function (a, b) {
+          return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+        });
+
+      if (!candidates.length) return;
+      candidates[0].classList.add("trip-hero-hidden");
+      candidates[0].setAttribute("data-trip-hero-hidden", "true");
+    }
+
+    function hideIntroTitleBlocks() {
+      var candidates = Array.prototype.slice.call(document.querySelectorAll("header, section, article, [role='banner'], [class*='hero'], [class*='intro']"))
+        .filter(function (element) {
+          if (!isUsableElement(element)) return false;
+          if (element.closest(".trip-tabs, .trip-tab-shell")) return false;
+          var heading = element.querySelector("h1");
+          if (!heading) return false;
+          var key = textKey(heading.textContent + " " + element.textContent);
+          return /istanbul|стамбул/.test(key) && /2026|поезд|trip/.test(key);
         })
         .sort(function (a, b) {
           return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
@@ -741,6 +1078,195 @@
       });
     }
 
+    var REFERENCE_SECTIONS = [
+      {
+        tab: "overview",
+        title: "Справочник поездки",
+        note: "Главное собрано по темам: маршрут, места, транспорт, деньги, документы и срочная помощь.",
+        wide: true,
+        cards: [
+          {
+            title: "Как пользоваться",
+            text: "Откройте нужную вкладку или ищите по слову: музей, аэропорт, SIM, лиры, страховка.",
+            accent: true,
+            items: ["Вкладки не дублируют блоки", "Поиск работает по всем темам", "На телефоне навигация скроллится горизонтально"]
+          },
+          {
+            title: "Перед выходом",
+            text: "Быстрая проверка перед дневным маршрутом.",
+            items: ["Паспорт или копия", "Наличные TRY и карта отеля", "Офлайн-карты и заряд телефона"]
+          },
+          {
+            title: "Быстрые темы",
+            text: "Чаще всего в поездке нужны транспорт, деньги, места и экстренные контакты.",
+            items: ["IST / центр", "Istanbulkart", "Перевод лир", "112"]
+          },
+          {
+            title: "Карточки мест",
+            text: "Перед покупкой билетов открывайте карту или оценку места и проверяйте актуальные часы.",
+            items: ["Карта", "Оценка", "Очереди и билеты"]
+          }
+        ]
+      },
+      {
+        tab: "transport",
+        title: "Транспорт",
+        note: "Короткий транспортный справочник для Стамбула.",
+        cards: [
+          {
+            title: "Аэропорт IST",
+            text: "Заложите запас времени на дорогу, багаж и контроль.",
+            items: ["Havaist до центра", "Метро как бюджетный вариант", "Такси только по официальной стойке"]
+          },
+          {
+            title: "Istanbulkart",
+            text: "Одна карта закрывает метро, трамвай, автобус, Marmaray и многие паромы.",
+            items: ["Пополнить заранее", "Держать отдельно от телефона", "Проверять остаток перед пересадками"]
+          },
+          {
+            title: "Паромы",
+            text: "Паромы удобны для Босфора, Кадыкея и видов на город.",
+            items: ["Проверять последний рейс", "Приходить к причалу заранее", "Брать ветровку вечером"]
+          },
+          {
+            title: "Такси",
+            text: "Лучше иметь адрес на турецком и точку на карте.",
+            items: ["Смотреть маршрут", "Уточнять оплату", "Избегать неофициальных водителей"]
+          }
+        ]
+      },
+      {
+        tab: "money",
+        title: "Деньги и связь",
+        note: "Практичные правила для наличных, карт, связи и курса лиры.",
+        cards: [
+          {
+            title: "Наличные",
+            text: "Держите мелкие TRY на транспорт, воду, чаевые и небольшие покупки.",
+            items: ["Не носить все деньги вместе", "Проверять курс обменника", "Сохранять резерв в USD/EUR"]
+          },
+          {
+            title: "Карты",
+            text: "Российские Visa/Mastercard обычно не работают в Турции.",
+            items: ["Не рассчитывать только на карту", "Проверить альтернативы заранее", "Держать наличный резерв"]
+          },
+          {
+            title: "Связь",
+            text: "eSIM или роуминг лучше подготовить до вылета.",
+            items: ["Скачать офлайн-карты", "Сохранить адрес отеля", "Проверить интернет в аэропорту"]
+          },
+          {
+            title: "Перевод лир",
+            text: "Конвертер на странице остается интерактивным и лежит в этой теме.",
+            accent: true,
+            items: ["TRY", "RUB", "USD", "EUR"]
+          }
+        ]
+      },
+      {
+        tab: "documents",
+        title: "Документы",
+        note: "Что держать под рукой в бумаге и офлайн-копиях.",
+        cards: [
+          {
+            title: "На границе",
+            text: "Основные документы лучше иметь быстро доступными.",
+            items: ["Загранпаспорт", "Билеты туда-обратно", "Бронь или адрес проживания"]
+          },
+          {
+            title: "Медицина",
+            text: "Страховка и лекарства должны быть доступны без интернета.",
+            items: ["Полис страхования", "Рецепты на рецептурные лекарства", "Аптечка в ручной клади"]
+          },
+          {
+            title: "Офлайн-копии",
+            text: "Сохраните копии в телефон и отдельное облако.",
+            items: ["Паспорт", "Билеты", "Страховка", "Бронь отеля"]
+          }
+        ]
+      },
+      {
+        tab: "emergency",
+        title: "Экстренно",
+        note: "Срочная помощь и действия, которые должны быть доступны без поиска в чате.",
+        cards: [
+          {
+            title: "112",
+            text: "В Турции 112 используется для срочной помощи: скорая, пожарные и полиция.",
+            danger: true,
+            items: ["Назвать город и район", "Сказать адрес отеля или точку на карте", "Оставаться на линии"]
+          },
+          {
+            title: "Если потерялись документы",
+            text: "Сначала зафиксируйте ситуацию и соберите копии.",
+            items: ["Полиция", "Страховая", "Консульство РФ", "Копии паспорта и билетов"]
+          },
+          {
+            title: "Если нужна медицина",
+            text: "Свяжитесь со страховой до платного лечения, если ситуация не угрожает жизни.",
+            items: ["Номер полиса", "Адрес клиники", "Фото чеков и назначений"]
+          }
+        ]
+      }
+    ];
+
+    function buildReferenceSection(config) {
+      var section = document.createElement("section");
+      section.className = "trip-reference-section";
+      section.setAttribute("data-trip-reference-section", "true");
+      section.setAttribute("data-trip-tab", config.tab);
+      section.setAttribute("data-tab-title", config.title);
+
+      var title = document.createElement("h2");
+      title.textContent = config.title;
+      section.appendChild(title);
+
+      if (config.note) {
+        var note = document.createElement("p");
+        note.className = "trip-reference-section__note";
+        note.textContent = config.note;
+        section.appendChild(note);
+      }
+
+      var grid = document.createElement("div");
+      grid.className = "trip-reference-grid" + (config.wide ? " trip-reference-grid--wide" : "");
+      config.cards.forEach(function (card) {
+        var item = document.createElement("article");
+        item.className = "trip-reference-card"
+          + (card.accent ? " trip-reference-card--accent" : "")
+          + (card.danger ? " trip-reference-card--danger" : "");
+
+        var heading = document.createElement("h3");
+        heading.textContent = card.title;
+        item.appendChild(heading);
+
+        var text = document.createElement("p");
+        text.textContent = card.text;
+        item.appendChild(text);
+
+        if (card.items && card.items.length) {
+          var list = document.createElement("ul");
+          card.items.forEach(function (value) {
+            var li = document.createElement("li");
+            li.textContent = value;
+            list.appendChild(li);
+          });
+          item.appendChild(list);
+        }
+
+        grid.appendChild(item);
+      });
+      section.appendChild(grid);
+      return section;
+    }
+
+    function appendReferenceSections(root) {
+      if (!root || root.querySelector("[data-trip-reference-section]")) return;
+      REFERENCE_SECTIONS.forEach(function (config) {
+        root.appendChild(buildReferenceSection(config));
+      });
+    }
+
     function checklistStorageKey(input) {
       return "istanbul-trip-docs-checklist:" + (input.getAttribute("data-check-id") || "");
     }
@@ -771,15 +1297,16 @@
       var section = document.createElement("section");
       section.className = "trip-docs-checklist";
       section.setAttribute("data-trip-docs-checklist", "true");
-      section.setAttribute("data-tab-title", "Документы и деньги");
+      section.setAttribute("data-trip-tab", "checklist");
+      section.setAttribute("data-tab-title", "Чек-лист поездки");
 
       var title = document.createElement("h2");
-      title.textContent = "Документы и деньги";
+      title.textContent = "Чек-лист поездки";
       section.appendChild(title);
 
       var note = document.createElement("p");
       note.className = "trip-docs-checklist__note";
-      note.textContent = "Коротко для поездки РФ - Стамбул - РФ.";
+      note.textContent = "Отмечайте подготовку: состояние сохраняется в этом браузере.";
       section.appendChild(note);
 
       var grid = document.createElement("div");
@@ -1001,15 +1528,73 @@
       return elements;
     }
 
+    function createReferenceHeader() {
+      var header = document.createElement("header");
+      header.className = "trip-reference-header";
+
+      var brand = document.createElement("div");
+      brand.className = "trip-brand";
+      var mark = document.createElement("span");
+      mark.className = "trip-brand__mark";
+      mark.setAttribute("aria-hidden", "true");
+      var brandText = document.createElement("div");
+      var title = document.createElement("h1");
+      title.className = "trip-brand__title";
+      title.textContent = "Istanbul 2026";
+      var subtitle = document.createElement("p");
+      subtitle.className = "trip-brand__subtitle";
+      subtitle.textContent = "Справочник поездки";
+      brandText.appendChild(title);
+      brandText.appendChild(subtitle);
+      brand.appendChild(mark);
+      brand.appendChild(brandText);
+
+      var search = document.createElement("label");
+      search.className = "trip-search";
+      var searchText = document.createElement("span");
+      searchText.textContent = "Поиск по справочнику";
+      searchText.style.position = "absolute";
+      searchText.style.width = "1px";
+      searchText.style.height = "1px";
+      searchText.style.overflow = "hidden";
+      searchText.style.clip = "rect(0 0 0 0)";
+      var input = document.createElement("input");
+      input.type = "search";
+      input.setAttribute("data-trip-search", "true");
+      input.placeholder = "Поиск: транспорт, музей, SIM, лиры";
+      search.appendChild(searchText);
+      search.appendChild(input);
+
+      var actions = document.createElement("div");
+      actions.className = "trip-header-actions";
+      ["RU", "Офлайн-копии"].forEach(function (text) {
+        var item = document.createElement("span");
+        item.textContent = text;
+        actions.appendChild(item);
+      });
+
+      header.appendChild(brand);
+      header.appendChild(search);
+      header.appendChild(actions);
+      return header;
+    }
+
     function buildTabs(root, blocks) {
       var firstBlock = blocks[0];
       var shell = document.createElement("div");
       shell.className = "trip-tab-shell";
 
+      var header = createReferenceHeader();
+      var layout = document.createElement("div");
+      layout.className = "trip-reference-layout";
+
       var nav = document.createElement("nav");
       nav.className = "trip-tabs";
       nav.setAttribute("role", "tablist");
       nav.setAttribute("aria-label", "Разделы поездки");
+
+      var main = document.createElement("div");
+      main.className = "trip-reference-main";
 
       var panelsWrap = document.createElement("div");
       panelsWrap.className = "trip-tab-panels";
@@ -1032,19 +1617,25 @@
 
       var host = firstBlock.parentElement || root;
       host.insertBefore(shell, firstBlock);
-      shell.appendChild(nav);
-      shell.appendChild(panelsWrap);
+      shell.appendChild(header);
+      shell.appendChild(layout);
+      layout.appendChild(nav);
+      layout.appendChild(main);
+      main.appendChild(panelsWrap);
 
       var buttons = {};
       var panels = {};
+      var activeTabId = activeTabs[0].id;
 
-      function activate(tabId) {
+      function activate(tabId, options) {
+        options = options || {};
+        activeTabId = tabId;
         activeTabs.forEach(function (tab) {
           var isActive = tab.id === tabId;
           buttons[tab.id].setAttribute("aria-selected", String(isActive));
           panels[tab.id].hidden = !isActive;
         });
-        shell.scrollIntoView({ block: "start", behavior: "smooth" });
+        if (!options.skipScroll) shell.scrollIntoView({ block: "start", behavior: "smooth" });
       }
 
       activeTabs.forEach(function (tab, index) {
@@ -1069,9 +1660,66 @@
         groups[tab.id].blocks.forEach(function (block) {
           panel.appendChild(block);
         });
+        var empty = document.createElement("div");
+        empty.className = "trip-empty-search";
+        empty.hidden = true;
+        empty.textContent = "В этой теме ничего не найдено. Попробуйте другой запрос или откройте соседнюю вкладку.";
+        panel.appendChild(empty);
         panelsWrap.appendChild(panel);
         panels[tab.id] = panel;
       });
+
+      function panelBlocks(panel) {
+        return Array.prototype.slice.call(panel.children).filter(function (child) {
+          return !child.classList.contains("trip-empty-search");
+        });
+      }
+
+      function applySearch(value) {
+        var query = textKey(value);
+        var firstMatch = "";
+        var firstSpecificMatch = "";
+
+        activeTabs.forEach(function (tab) {
+          var panel = panels[tab.id];
+          var count = 0;
+          panelBlocks(panel).forEach(function (block) {
+            var matched = !query || textKey(block.textContent).indexOf(query) >= 0;
+            block.classList.toggle("trip-block-hidden", !matched);
+            if (matched) count += 1;
+          });
+
+          var empty = panel.querySelector(".trip-empty-search");
+          if (empty) empty.hidden = !query || count > 0;
+
+          if (query && count > 0 && !firstMatch) firstMatch = tab.id;
+          if (query && count > 0 && tab.id !== "overview" && !firstSpecificMatch) firstSpecificMatch = tab.id;
+          if (query && count > 0) {
+            buttons[tab.id].setAttribute("data-search-match", String(count));
+          } else {
+            buttons[tab.id].removeAttribute("data-search-match");
+          }
+        });
+
+        if (!query) {
+          activate(activeTabId, { skipScroll: true });
+          return;
+        }
+        if (firstSpecificMatch || firstMatch) activate(firstSpecificMatch || firstMatch, { skipScroll: true });
+      }
+
+      var searchInput = header.querySelector("[data-trip-search]");
+      if (searchInput) {
+        searchInput.addEventListener("input", function () {
+          applySearch(searchInput.value);
+        });
+        searchInput.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") {
+            searchInput.value = "";
+            applySearch("");
+          }
+        });
+      }
 
       nav.addEventListener("keydown", function (event) {
         if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
@@ -1086,10 +1734,13 @@
     }
 
     function initTripTabs() {
+      document.documentElement.classList.add("trip-reference-mode");
       removeHotelTopAreas();
       enrichRouteMap();
       hideLargeHero();
+      hideIntroTitleBlocks();
       var root = findRoot();
+      appendReferenceSections(root);
       appendTravelDocsChecklist(root);
       var blocks = candidateBlocks(root);
       var built = blocks.length >= 2 && buildTabs(root, blocks);
