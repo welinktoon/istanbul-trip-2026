@@ -1430,6 +1430,36 @@
         note: "Сладости, чай и кофе; удобно на паузу рядом с туристическим центром.",
         map: "https://www.google.com/maps/search/?api=1&query=Hafiz%20Mustafa%201864%20Sirkeci",
         image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Hocapasa Pidecisi",
+        area: "Sirkeci",
+        rating: "4.5+",
+        reviews: "400+ отзывов",
+        chips: ["Sirkeci", "4.5+", "норм чек", "без брони"],
+        note: "Пиде рядом с Сиркеджи: быстрый обед или ужин, понятный чек, обычно можно просто зайти по пути.",
+        map: "https://www.google.com/maps/search/?api=1&query=Hocapasa%20Pidecisi%20Istanbul",
+        image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Ortaklar Kebap",
+        area: "Sultanahmet",
+        rating: "4.6+",
+        reviews: "2000+ отзывов",
+        chips: ["Sultanahmet", "4.6+", "норм чек", "без брони"],
+        note: "Кебаб, пиде и лахмаджун в центре: формат простой, порции нормальные, подходит без предварительной брони.",
+        map: "https://www.google.com/maps/search/?api=1&query=Ortaklar%20Kebap%20Restaurant%20Istanbul",
+        image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Balkan Lokantasi Sirkeci",
+        area: "Sirkeci",
+        rating: "норм чек",
+        reviews: "без брони",
+        chips: ["Sirkeci", "столовая", "норм чек", "без брони"],
+        note: "Домашняя турецкая еда и формат локанты: выбираете блюда на линии, быстро, недорого и без резерва.",
+        map: "https://www.google.com/maps/search/?api=1&query=Balkan%20Lokantasi%20Sirkeci%20Istanbul",
+        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80"
       }
     ];
 
@@ -1659,7 +1689,7 @@
 
         var meta = document.createElement("p");
         meta.className = "trip-food-card__meta";
-        [place.area, place.rating, place.reviews].forEach(function (value) {
+        (place.chips || [place.area, place.rating, place.reviews]).forEach(function (value) {
           var chip = document.createElement("span");
           chip.textContent = value;
           meta.appendChild(chip);
