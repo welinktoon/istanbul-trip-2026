@@ -1319,9 +1319,19 @@
         wide: true,
         cards: [
           {
+            title: "Адрес отеля",
+            text: "Alessia Old City: Telli Odaları Sokak No:10, Kumkapı/Beyazıt, Fatih, Istanbul.",
+            items: ["Ориентир: Grand Bazaar примерно 870 м пешком", "Beyazıt-Kapalıçarşı / T1 примерно 690 м пешком", "Для такси показывать адрес и название Alessia Old City"]
+          },
+          {
+            title: "Аэропорт прилета",
+            text: "Istanbul Airport (IST): Tayakadın Borough, Terminal Street No:1, 34283 Arnavutköy/Istanbul.",
+            items: ["Это новый главный аэропорт Стамбула, не SAW", "До отеля обычно закладывать 60-90 минут с учетом дороги", "После прилета 09:20 реалистичное прибытие в отель: 12:00-13:00"]
+          },
+          {
             title: "Из аэропорта IST",
-            text: "Самый простой вариант - Havaist до центральных районов; бюджетный - метро с пересадками.",
-            items: ["Havaist: проверить остановку заранее", "Метро: держать Istanbulkart с балансом", "Такси: только официальная стойка или приложение"]
+            text: "Для Alessia Old City удобнее всего такси/трансфер до отеля или Havaist в сторону Beyazıt/Aksaray с короткой пересадкой/такси.",
+            items: ["Havaist: проверить актуальную остановку Beyazıt/Aksaray в день поездки", "Метро M11 подходит, если хочется объехать пробки, но с чемоданом будет больше пересадок", "Такси: только официальная стойка или приложение"]
           },
           {
             title: "Istanbulkart",
@@ -1383,6 +1393,46 @@
     };
 
     var FOOD_RECOMMENDATIONS = [
+      {
+        name: "Pakistani Asia Restaurant",
+        area: "1 мин от отеля",
+        rating: "рядом",
+        reviews: "быстро",
+        chips: ["у отеля", "1 мин", "плотная еда", "после прилета"],
+        note: "Самый близкий вариант у Alessia Old City: удобно, если приехали раньше заселения и нужно быстро поесть без маршрута.",
+        map: "https://www.google.com/maps/search/?api=1&query=Pakistani%20Asia%20Restaurant%20Telli%20Odalar%C4%B1%20Sokak%20Istanbul",
+        image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Lahori Darbar Restaurant Istanbul",
+        area: "1 мин от отеля",
+        rating: "рядом",
+        reviews: "без дороги",
+        chips: ["у отеля", "1 мин", "просто поесть", "без такси"],
+        note: "Еще один ближайший вариант рядом с отелем. Держать как запасной на первый день или поздний ужин рядом.",
+        map: "https://www.google.com/maps/search/?api=1&query=Lahori%20Darbar%20Restaurant%20Istanbul%20Telli%20Odalar%C4%B1%20Sokak",
+        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Kumkapı fish restaurants",
+        area: "Kumkapı",
+        rating: "вечером",
+        reviews: "рыба/мейхане",
+        chips: ["рядом", "ужин", "рыба", "смотреть рейтинг"],
+        note: "Район рыбных ресторанов рядом с отелем. Не садиться в первое место с зазывалой: открыть карту и выбрать конкретный ресторан по свежим отзывам.",
+        map: "https://www.google.com/maps/search/?api=1&query=Kumkap%C4%B1%20fish%20restaurants%20Istanbul",
+        image: "https://images.unsplash.com/photo-1534766555764-ce878a5e3a2b?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        name: "Hafiz Mustafa 1864 Beyazıt",
+        area: "Beyazıt",
+        rating: "сладости",
+        reviews: "кофе/чай",
+        chips: ["Beyazıt", "десерт", "кофе", "пауза"],
+        note: "Сладости, чай и кофе рядом с Beyazıt/Grand Bazaar. Хорошо на паузу после базара или перед прогулкой в Султанахмет.",
+        map: "https://www.google.com/maps/search/?api=1&query=Hafiz%20Mustafa%201864%20Beyazit%20Istanbul",
+        image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80"
+      },
       {
         name: "Sehzade Cag Kebap",
         area: "Sirkeci",
@@ -1556,8 +1606,8 @@
       var initialValue = oldInput && oldInput.value ? oldInput.value : "1000";
       section.classList.add("trip-currency-converter");
       section.setAttribute("data-trip-currency-converter", "true");
-      section.setAttribute("data-trip-tab", "money");
-      section.setAttribute("data-tab-title", "Перевод лир");
+      section.setAttribute("data-trip-tab", "checklist");
+      section.setAttribute("data-tab-title", "Калькулятор валют");
       section.setAttribute("aria-label", "Калькулятор турецких лир");
       section.textContent = "";
 
@@ -1757,15 +1807,15 @@
       section.className = "trip-food-recommendations";
       section.setAttribute("data-trip-food-recommendations", "true");
       section.setAttribute("data-trip-tab", "food");
-      section.setAttribute("data-tab-title", "Топ мест в центре");
+      section.setAttribute("data-tab-title", "Еда с учетом отеля");
 
       var title = document.createElement("h2");
-      title.textContent = "Топ мест в центре";
+      title.textContent = "Еда с учетом отеля";
       section.appendChild(title);
 
       var note = document.createElement("p");
       note.className = "trip-food-recommendations__note";
-      note.textContent = "Оценки ориентировочные. Перед визитом проверьте карточку на карте.";
+      note.textContent = "Отель Alessia Old City стоит в зоне Kumkapı/Beyazıt: рядом есть быстрые места у отеля, рыбные рестораны Kumkapı, Grand Bazaar и Sultanahmet.";
       section.appendChild(note);
 
       var grid = document.createElement("div");
@@ -1875,6 +1925,50 @@
       REFERENCE_SECTIONS.forEach(function (config) {
         root.appendChild(buildReferenceSection(config));
       });
+    }
+
+    function appendHotelBasedRoute(root) {
+      if (!root || root.querySelector("[data-trip-hotel-route]")) return;
+      var section = buildReferenceSection({
+        tab: "route",
+        title: "Маршрут по дням от Alessia Old City",
+        note: "База поездки: Alessia Old City, Telli Odaları Sokak No:10, Kumkapı/Beyazıt. Ниже поправки к логике дней с учетом отеля.",
+        wide: true,
+        cards: [
+          {
+            title: "20 июля - прилет и мягкий старт",
+            text: "Рейс прилетает в IST в 09:20. Если без задержек, реалистично быть у отеля около 12:00-13:00.",
+            items: ["Оставить багаж, если номер еще не готов", "До 14:00 не ставить жесткие музеи/билеты", "После заселения: Grand Bazaar, Beyazıt, Kumkapı или легкий ужин рядом"]
+          },
+          {
+            title: "Султанахмет из отеля",
+            text: "Blue Mosque, Hagia Sophia, Basilica Cistern и Topkapi удобно делать одним днем от отеля.",
+            items: ["Пешком примерно 20-30 минут, либо трамвай T1 от Beyazıt-Kapalıçarşı", "Утром идти раньше жары и очередей", "На ужин можно вернуться через Sultanahmet/Beyazıt или уйти в Kumkapı"]
+          },
+          {
+            title: "Гранд-базар и Эминеню",
+            text: "Alessia удобно стоит для Grand Bazaar, Beyazıt и спуска к Eminönü/Spice Bazaar.",
+            items: ["Grand Bazaar рядом: можно ставить не отдельным большим переездом, а утром/вечером", "Eminönü и Spice Bazaar логично совмещать с Galata Bridge", "Обратно можно пешком через базарные улицы или на T1"]
+          },
+          {
+            title: "Галата, Каракёй и Босфор",
+            text: "От отеля логично ехать через Beyazıt/Eminönü: трамвай T1 или пеший спуск к мосту.",
+            items: ["Karaköy/Galata лучше делать после Eminönü", "Паромы удобнее планировать от Eminönü/Karaköy", "Вечером возвращаться по T1 или такси, если устали"]
+          },
+          {
+            title: "Кадыкёй / азиатская сторона",
+            text: "Лучший старт от отеля - дойти/доехать до Eminönü или Karaköy и сесть на паром.",
+            items: ["Не ехать туда на такси через мост без необходимости", "Планировать как отдельный полудень или вечер", "Последний паром проверить заранее"]
+          },
+          {
+            title: "День вылета",
+            text: "Если вылет позже, оставить багаж в отеле и гулять рядом: Beyazıt, Grand Bazaar, Kumkapı, Sultanahmet.",
+            items: ["На IST закладывать 60-90 минут дороги плюс запас", "Если пробки - смотреть метро/Havaist", "Не уходить далеко от багажа в последний день"]
+          }
+        ]
+      });
+      section.setAttribute("data-trip-hotel-route", "true");
+      root.appendChild(section);
     }
 
     function checklistStorageKey(input) {
@@ -2331,6 +2425,7 @@
       upgradeCurrencyConverter(root);
       suppressOriginalFoodBlocks(root);
       appendReferenceSections(root);
+      appendHotelBasedRoute(root);
       appendFoodRecommendations(root);
       appendTravelDocsChecklist(root);
       rewriteTripCopy(root);
