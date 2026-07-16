@@ -750,6 +750,13 @@
     border-radius: 0 var(--trip-radius) var(--trip-radius) 0;
     background: #f3f8f7;
   }
+  .trip-reference-mode .places {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .trip-reference-mode .place-card {
+    grid-template-columns: minmax(260px, 34%) minmax(0, 1fr);
+  }
   .trip-guide-story h4 {
     margin: 0;
     color: #0a5360;
@@ -759,7 +766,7 @@
   .trip-guide-story p {
     margin: 0;
     color: var(--trip-ink);
-    font: 720 14px/1.55 Inter, "Segoe UI", Arial, sans-serif;
+    font: 520 14px/1.55 Inter, "Segoe UI", Arial, sans-serif;
   }
   .trip-guide-story__notice {
     padding-top: 9px;
@@ -1088,6 +1095,12 @@
     .trip-route-day-card__map {
       min-height: 220px;
       aspect-ratio: 1 / 1;
+    }
+    .trip-reference-mode .place-card {
+      grid-template-columns: 1fr;
+    }
+    .trip-reference-mode .place-media {
+      min-height: 220px;
     }
     .trip-currency-converter__head,
     .trip-currency-converter__body {
