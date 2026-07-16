@@ -1687,10 +1687,10 @@
     ];
 
     var CURRENCY_RATES = {
-      updatedLabel: "15 июля 2026",
-      rub: 1.70,
-      usd: 0.022,
-      eur: 0.019
+      updatedLabel: "16 июля 2026",
+      rub: 1.66,
+      usd: 0.0212505,
+      eur: 0.0185791
     };
 
     var CURRENCY_OPTIONS = [
@@ -2034,6 +2034,7 @@
     }
 
     function liraUnit(value) {
+      if (Math.abs(value - Math.round(value)) > 0.000001) return "лиры";
       var rounded = Math.abs(Math.round(value));
       var lastTwo = rounded % 100;
       var last = rounded % 10;
@@ -2043,17 +2044,19 @@
       return "лир";
     }
 
+    function formatCurrencyNumber(value) {
+      return new Intl.NumberFormat("ru-RU", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value);
+    }
+
     function formatMoneyValue(value, currency) {
-      if (currency === "try") return formatRuNumber(Math.round(value)) + " " + liraUnit(value);
-      if (currency === "rub") return formatRuNumber(Math.round(value)) + " ₽";
-      if (currency === "usd") return "$" + new Intl.NumberFormat("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(value);
-      return "€" + new Intl.NumberFormat("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(value);
+      var formatted = formatCurrencyNumber(value);
+      if (currency === "try") return formatted + " " + liraUnit(value);
+      if (currency === "rub") return formatted + " ₽";
+      if (currency === "usd") return "$" + formatted;
+      return "€" + formatted;
     }
 
     function parseCurrencyAmount(value) {
@@ -2126,7 +2129,7 @@
       titleWrap.appendChild(makeCurrencyElement("p", "trip-currency-converter__eyebrow", "Любая пара"));
       titleWrap.appendChild(makeCurrencyElement("h2", "", "Калькулятор валют"));
       head.appendChild(titleWrap);
-      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "Доллары / евро / рубли / лиры"));
+      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "XE • 16.07.2026"));
 
       var body = makeCurrencyElement("div", "trip-currency-converter__body");
       var label = makeCurrencyElement("label", "", "Сумма");
@@ -2135,7 +2138,7 @@
       input.id = "tryAmount";
       input.type = "number";
       input.min = "0";
-      input.step = "1";
+      input.step = "0.01";
       input.inputMode = "decimal";
       input.value = initialValue;
       input.setAttribute("aria-describedby", "rateNote");
@@ -2181,7 +2184,7 @@
       var note = makeCurrencyElement(
         "p",
         "converter-note trip-currency-note",
-        "Ориентир на " + CURRENCY_RATES.updatedLabel + ", округлен вверх с небольшим запасом: 1 лира ≈ 1.70 ₽, $0.022, €0.019. Для обменника сверять курс на месте."
+        "Курс XE на " + CURRENCY_RATES.updatedLabel + ": 1 лира = 1,66 ₽; 1 доллар = 47,06 лир; 1 евро = 53,82 лиры. Курс ориентировочный: обменник или банк добавит свою комиссию."
       );
       note.id = "rateNote";
 
