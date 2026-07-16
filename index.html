@@ -478,7 +478,7 @@
   }
   .trip-currency-converter__body {
     display: grid;
-    grid-template-columns: minmax(190px, 280px) minmax(160px, 220px) minmax(0, 1fr);
+    grid-template-columns: minmax(180px, 240px) minmax(160px, 1fr) auto minmax(160px, 1fr);
     gap: 12px;
     align-items: end;
   }
@@ -506,10 +506,28 @@
     appearance: auto;
     font-size: 15px;
   }
+  .trip-currency-converter__swap {
+    width: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(15, 106, 120, .22);
+    border-radius: var(--trip-radius);
+    background: var(--trip-accent-soft);
+    color: #0a5360;
+    font: 950 18px/1 Inter, "Segoe UI", Arial, sans-serif;
+    cursor: pointer;
+  }
   .trip-currency-converter input:focus,
-  .trip-currency-converter select:focus {
+  .trip-currency-converter select:focus,
+  .trip-currency-converter__swap:focus-visible {
     border-color: rgba(15, 106, 120, .7);
     outline: 3px solid rgba(15, 106, 120, .14);
+  }
+  .trip-currency-converter__swap:hover {
+    border-color: rgba(15, 106, 120, .45);
+    background: #fff;
   }
   .trip-currency-converter__quick {
     display: flex;
@@ -567,6 +585,25 @@
     margin-top: 5px;
     color: var(--trip-muted);
     font: 800 12px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-currency-result {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid rgba(15, 106, 120, .22);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-currency-result span,
+  .trip-currency-result small {
+    color: var(--trip-muted);
+    font: 850 12px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-currency-result b {
+    color: var(--trip-ink);
+    font: 950 28px/1.1 Inter, "Segoe UI", Arial, sans-serif;
+    overflow-wrap: anywhere;
   }
   .trip-currency-note {
     margin: 0;
@@ -814,6 +851,9 @@
     .trip-currency-converter__rate-chip {
       justify-self: start;
       white-space: normal;
+    }
+    .trip-currency-converter__swap {
+      width: 100%;
     }
     .trip-currency-rates {
       grid-template-columns: 1fr;
@@ -1392,6 +1432,13 @@
       eur: 0.019
     };
 
+    var CURRENCY_OPTIONS = [
+      { value: "usd", label: "Доллары (USD)" },
+      { value: "eur", label: "Евро (EUR)" },
+      { value: "rub", label: "Рубли (RUB)" },
+      { value: "try", label: "Лиры (TRY)" }
+    ];
+
     var FOOD_RECOMMENDATIONS = [
       {
         name: "Pakistani Asia Restaurant",
@@ -1564,17 +1611,27 @@
     }
 
     function amountToLira(amount, currency) {
-      if (currency === "rub") return amount / CURRENCY_RATES.rub;
-      if (currency === "usd") return amount / CURRENCY_RATES.usd;
-      if (currency === "eur") return amount / CURRENCY_RATES.eur;
-      return amount;
+      var rate = currency === "try" ? 1 : CURRENCY_RATES[currency];
+      return rate ? amount / rate : amount;
     }
 
     function liraToCurrency(amount, currency) {
-      if (currency === "rub") return amount * CURRENCY_RATES.rub;
-      if (currency === "usd") return amount * CURRENCY_RATES.usd;
-      if (currency === "eur") return amount * CURRENCY_RATES.eur;
-      return amount;
+      var rate = currency === "try" ? 1 : CURRENCY_RATES[currency];
+      return amount * (rate || 1);
+    }
+
+    function convertCurrency(amount, sourceCurrency, targetCurrency) {
+      return liraToCurrency(amountToLira(amount, sourceCurrency), targetCurrency);
+    }
+
+    function populateCurrencySelect(select, selectedValue) {
+      CURRENCY_OPTIONS.forEach(function (item) {
+        var option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        if (item.value === selectedValue) option.selected = true;
+        select.appendChild(option);
+      });
     }
 
     function quickAmountsFor(currency) {
@@ -1608,15 +1665,15 @@
       section.setAttribute("data-trip-currency-converter", "true");
       section.setAttribute("data-trip-tab", "checklist");
       section.setAttribute("data-tab-title", "Калькулятор валют");
-      section.setAttribute("aria-label", "Калькулятор турецких лир");
+      section.setAttribute("aria-label", "Калькулятор валют");
       section.textContent = "";
 
       var head = makeCurrencyElement("div", "trip-currency-converter__head");
       var titleWrap = document.createElement("div");
-      titleWrap.appendChild(makeCurrencyElement("p", "trip-currency-converter__eyebrow", "Перевод лир"));
+      titleWrap.appendChild(makeCurrencyElement("p", "trip-currency-converter__eyebrow", "Любая пара"));
       titleWrap.appendChild(makeCurrencyElement("h2", "", "Калькулятор валют"));
       head.appendChild(titleWrap);
-      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "1 лира = 1,70 ₽"));
+      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "USD / EUR / RUB / TRY"));
 
       var body = makeCurrencyElement("div", "trip-currency-converter__body");
       var label = makeCurrencyElement("label", "", "Сумма");
@@ -1631,61 +1688,58 @@
       input.setAttribute("aria-describedby", "rateNote");
       label.appendChild(input);
 
-      var currencyLabel = makeCurrencyElement("label", "", "Считаем из");
-      currencyLabel.setAttribute("for", "currencySource");
-      var currencySelect = document.createElement("select");
-      currencySelect.id = "currencySource";
-      [
-        { value: "try", label: "лир" },
-        { value: "rub", label: "рублей" },
-        { value: "usd", label: "долларов" },
-        { value: "eur", label: "евро" }
-      ].forEach(function (item) {
-        var option = document.createElement("option");
-        option.value = item.value;
-        option.textContent = item.label;
-        currencySelect.appendChild(option);
-      });
-      currencyLabel.appendChild(currencySelect);
+      var sourceLabel = makeCurrencyElement("label", "", "Из валюты");
+      sourceLabel.setAttribute("for", "currencySource");
+      var sourceSelect = document.createElement("select");
+      sourceSelect.id = "currencySource";
+      populateCurrencySelect(sourceSelect, "try");
+      sourceLabel.appendChild(sourceSelect);
+
+      var swapButton = makeCurrencyElement("button", "trip-currency-converter__swap", "⇄");
+      swapButton.type = "button";
+      swapButton.setAttribute("aria-label", "Поменять валюты местами");
+      swapButton.title = "Поменять валюты местами";
+
+      var targetLabel = makeCurrencyElement("label", "", "В валюту");
+      targetLabel.setAttribute("for", "currencyTarget");
+      var targetSelect = document.createElement("select");
+      targetSelect.id = "currencyTarget";
+      populateCurrencySelect(targetSelect, "rub");
+      targetLabel.appendChild(targetSelect);
 
       var quick = makeCurrencyElement("div", "trip-currency-converter__quick");
       quick.setAttribute("aria-label", "Быстрые суммы");
       quick.appendChild(makeCurrencyElement("span", "", "Быстро:"));
       body.appendChild(label);
-      body.appendChild(currencyLabel);
-      body.appendChild(quick);
+      body.appendChild(sourceLabel);
+      body.appendChild(swapButton);
+      body.appendChild(targetLabel);
 
-      var rates = makeCurrencyElement("div", "rates trip-currency-rates");
-      rates.setAttribute("aria-live", "polite");
-      [
-        { id: "tryRate", label: "в лирах", code: "try" },
-        { id: "rubRate", label: "в рублях", code: "rub" },
-        { id: "usdRate", label: "в долларах", code: "usd" },
-        { id: "eurRate", label: "в евро", code: "eur" }
-      ].forEach(function (item) {
-        var card = makeCurrencyElement("div", "rate trip-currency-rate");
-        var value = makeCurrencyElement("b", "", "");
-        value.id = item.id;
-        value.setAttribute("data-currency-code", item.code);
-        card.appendChild(value);
-        card.appendChild(makeCurrencyElement("span", "", item.label));
-        rates.appendChild(card);
-      });
+      var result = makeCurrencyElement("div", "trip-currency-result");
+      result.setAttribute("aria-live", "polite");
+      result.appendChild(makeCurrencyElement("span", "", "Получится"));
+      var resultValue = makeCurrencyElement("b", "", "");
+      resultValue.id = "currencyResult";
+      result.appendChild(resultValue);
+      var resultEquation = makeCurrencyElement("small", "", "");
+      resultEquation.id = "currencyEquation";
+      result.appendChild(resultEquation);
 
       var note = makeCurrencyElement(
         "p",
         "converter-note trip-currency-note",
-        "Ориентир на " + CURRENCY_RATES.updatedLabel + ", округлен вверх с небольшим запасом: 1 лира ≈ 1.70 ₽, $0.022, €0.019."
+        "Ориентир на " + CURRENCY_RATES.updatedLabel + ", округлен вверх с небольшим запасом: 1 лира ≈ 1.70 ₽, $0.022, €0.019. Для обменника сверять курс на месте."
       );
       note.id = "rateNote";
 
       section.appendChild(head);
       section.appendChild(body);
-      section.appendChild(rates);
+      section.appendChild(quick);
+      section.appendChild(result);
       section.appendChild(note);
 
       function renderQuickAmounts() {
-        var currency = currencySelect.value;
+        var currency = sourceSelect.value;
         quick.querySelectorAll("button[data-quick-amount]").forEach(function (button) { button.remove(); });
         quickAmountsFor(currency).forEach(function (amount) {
           var button = makeCurrencyElement("button", "", quickLabelFor(amount, currency));
@@ -1695,31 +1749,38 @@
         });
       }
 
-      function updateRates() {
+      function updateConversion() {
         var amount = parseCurrencyAmount(input.value);
-        var sourceCurrency = currencySelect.value;
-        var amountInLira = amountToLira(amount, sourceCurrency);
-        section.querySelector("#tryRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "try"), "try");
-        section.querySelector("#rubRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "rub"), "rub");
-        section.querySelector("#usdRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "usd"), "usd");
-        section.querySelector("#eurRate").textContent = formatMoneyValue(liraToCurrency(amountInLira, "eur"), "eur");
+        var sourceCurrency = sourceSelect.value;
+        var targetCurrency = targetSelect.value;
+        var convertedAmount = convertCurrency(amount, sourceCurrency, targetCurrency);
+        resultValue.textContent = formatMoneyValue(convertedAmount, targetCurrency);
+        resultEquation.textContent = formatMoneyValue(amount, sourceCurrency) + " = " + formatMoneyValue(convertedAmount, targetCurrency);
       }
 
-      input.addEventListener("input", updateRates);
-      currencySelect.addEventListener("change", function () {
+      input.addEventListener("input", updateConversion);
+      sourceSelect.addEventListener("change", function () {
         renderQuickAmounts();
-        updateRates();
+        updateConversion();
+      });
+      targetSelect.addEventListener("change", updateConversion);
+      swapButton.addEventListener("click", function () {
+        var previousSource = sourceSelect.value;
+        sourceSelect.value = targetSelect.value;
+        targetSelect.value = previousSource;
+        renderQuickAmounts();
+        updateConversion();
       });
       quick.addEventListener("click", function (event) {
         var target = event.target;
         var button = target && target.closest ? target.closest("button[data-quick-amount]") : null;
         if (!button) return;
         input.value = button.getAttribute("data-quick-amount") || "0";
-        updateRates();
+        updateConversion();
         input.focus();
       });
       renderQuickAmounts();
-      updateRates();
+      updateConversion();
     }
 
     function containsRemovedText(value) {
