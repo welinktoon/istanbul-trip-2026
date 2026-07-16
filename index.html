@@ -744,6 +744,100 @@
     text-decoration: underline;
     outline: none;
   }
+  .trip-yandex-map {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px;
+    border: 1px solid rgba(15, 106, 120, .22);
+    border-radius: var(--trip-radius);
+    background: #fbfdfd;
+  }
+  .trip-yandex-map__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .trip-yandex-map h3 {
+    margin: 0 0 5px;
+    color: var(--trip-ink);
+    font: 950 18px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-yandex-map p {
+    margin: 0;
+    color: var(--trip-muted);
+    font: 750 13px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-yandex-map__open {
+    flex: 0 0 auto;
+    padding: 9px 11px;
+    border: 1px solid rgba(15, 106, 120, .22);
+    border-radius: var(--trip-radius);
+    background: var(--trip-accent-soft);
+    color: #0a5360;
+    font: 900 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .trip-yandex-map__open:hover,
+  .trip-yandex-map__open:focus-visible {
+    background: #fff;
+    text-decoration: none;
+    outline: 3px solid rgba(15, 106, 120, .14);
+  }
+  .trip-yandex-map__image-link {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
+    background: #d9e2e8;
+  }
+  .trip-yandex-map__image {
+    display: block;
+    width: 100%;
+    min-height: 260px;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+  }
+  .trip-yandex-map__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-yandex-map__legend a {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 8px;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+    color: var(--trip-ink);
+    font: 850 12px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-decoration: none;
+  }
+  .trip-yandex-map__legend a:hover,
+  .trip-yandex-map__legend a:focus-visible {
+    border-color: rgba(15, 106, 120, .45);
+    color: #0a5360;
+    outline: none;
+  }
+  .trip-yandex-map__pin {
+    display: inline-grid;
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    place-items: center;
+    border-radius: 999px;
+    background: #d7352a;
+    color: #fff;
+    font: 950 11px/1 Inter, "Segoe UI", Arial, sans-serif;
+  }
   .trip-empty-search {
     padding: 18px;
     border: 1px dashed var(--trip-line);
@@ -840,6 +934,17 @@
     .trip-food-grid {
       grid-template-columns: 1fr;
       gap: 10px;
+    }
+    .trip-yandex-map__head {
+      display: grid;
+    }
+    .trip-yandex-map__open {
+      justify-self: start;
+      white-space: normal;
+    }
+    .trip-yandex-map__image {
+      min-height: 220px;
+      aspect-ratio: 1 / 1;
     }
     .trip-currency-converter__head,
     .trip-currency-converter__body {
@@ -1355,13 +1460,13 @@
       {
         tab: "transport",
         title: "Транспорт",
-        note: "Подробный транспортный справочник: аэропорт, Istanbulkart, трамвай, метро, паромы и такси.",
+        note: "Подробный транспортный справочник: аэропорт, такси/трансфер и запасные варианты без покупки Istanbulkart.",
         wide: true,
         cards: [
           {
             title: "Адрес отеля",
             text: "Alessia Old City: Telli Odaları Sokak No:10, Kumkapı/Beyazıt, Fatih, Istanbul.",
-            items: ["Ориентир: Grand Bazaar примерно 870 м пешком", "Beyazıt-Kapalıçarşı / T1 примерно 690 м пешком", "Для такси показывать адрес и название Alessia Old City"]
+            items: ["Ориентир: Grand Bazaar примерно 870 м пешком", "Для такси показывать адрес и название Alessia Old City", "Рядом держать Kumkapı/Beyazıt как точку возврата"]
           },
           {
             title: "Аэропорт прилета",
@@ -1370,18 +1475,18 @@
           },
           {
             title: "Из аэропорта IST",
-            text: "Для Alessia Old City удобнее всего такси/трансфер до отеля или Havaist в сторону Beyazıt/Aksaray с короткой пересадкой/такси.",
-            items: ["Havaist: проверить актуальную остановку Beyazıt/Aksaray в день поездки", "Метро M11 подходит, если хочется объехать пробки, но с чемоданом будет больше пересадок", "Такси: только официальная стойка или приложение"]
+            text: "Для Alessia Old City основной вариант - такси или заранее заказанный трансфер прямо до отеля.",
+            items: ["Такси: только официальная стойка или приложение", "Сразу проверить маршрут и примерную цену", "Havaist/метро держать только как запасной вариант, если с такси проблема"]
           },
           {
-            title: "Istanbulkart",
-            text: "Одна карта закрывает метро, трамвай, автобус, Marmaray и многие паромы.",
-            items: ["Купить и пополнить в автомате", "Держать мелкие лиры на пополнение", "Проверять остаток перед длинным днем"]
+            title: "Такси вместо Istanbulkart",
+            text: "Istanbulkart не покупаем: по городу планируем ездить на такси, а пешие куски оставляем только там, где реально рядом.",
+            items: ["Заранее поставить BiTaksi/Uber или местное приложение", "Перед посадкой сверять адрес и точку на карте", "Держать наличные лиры на случай проблем с оплатой"]
           },
           {
-            title: "Трамвай T1",
-            text: "Главная линия для Султанахмета, Эминеню, Каракея, Галаты и Гранд-базара.",
-            items: ["В час пик тесно", "На коротких переездах быстрее такси", "Смотреть направление перед входом"]
+            title: "Трамвай/метро как запас",
+            text: "Общественный транспорт оставляем только как аварийный план, если пробки или такси неадекватно дорого.",
+            items: ["Для коротких переездов сначала смотреть такси", "Без Istanbulkart не строить план вокруг трамвая", "Если нужен транспорт - проверять разовый билет/оплату на месте"]
           },
           {
             title: "Метро и Marmaray",
@@ -1396,7 +1501,7 @@
           {
             title: "Такси",
             text: "Лучше заранее привязать карту в приложении и проверить оплату до поездки.",
-            items: ["Смотреть маршрут и цену", "Проверить карту в приложении", "Избегать неофициальных водителей"]
+            items: ["Смотреть маршрут и цену до посадки", "Проверить карту в приложении", "Избегать неофициальных водителей и торга с улицы"]
           }
         ]
       },
@@ -1448,6 +1553,8 @@
         chips: ["у отеля", "1 мин", "плотная еда", "после прилета"],
         note: "Самый близкий вариант у Alessia Old City: удобно, если приехали раньше заселения и нужно быстро поесть без маршрута.",
         map: "https://www.google.com/maps/search/?api=1&query=Pakistani%20Asia%20Restaurant%20Telli%20Odalar%C4%B1%20Sokak%20Istanbul",
+        coords: [28.96275, 41.00570],
+        yandexQuery: "Pakistani Asia Restaurant Telli Odaları Sokak Istanbul",
         image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1458,6 +1565,8 @@
         chips: ["у отеля", "1 мин", "просто поесть", "без такси"],
         note: "Еще один ближайший вариант рядом с отелем. Держать как запасной на первый день или поздний ужин рядом.",
         map: "https://www.google.com/maps/search/?api=1&query=Lahori%20Darbar%20Restaurant%20Istanbul%20Telli%20Odalar%C4%B1%20Sokak",
+        coords: [28.96255, 41.00545],
+        yandexQuery: "Lahori Darbar Restaurant Telli Odaları Sokak Istanbul",
         image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1468,6 +1577,8 @@
         chips: ["рядом", "ужин", "рыба", "смотреть рейтинг"],
         note: "Район рыбных ресторанов рядом с отелем. Не садиться в первое место с зазывалой: открыть карту и выбрать конкретный ресторан по свежим отзывам.",
         map: "https://www.google.com/maps/search/?api=1&query=Kumkap%C4%B1%20fish%20restaurants%20Istanbul",
+        coords: [28.9629002, 41.0033651],
+        yandexQuery: "Kumkapı fish restaurants Istanbul",
         image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1478,6 +1589,8 @@
         chips: ["Beyazıt", "десерт", "кофе", "пауза"],
         note: "Сладости, чай и кофе рядом с Beyazıt/Grand Bazaar. Хорошо на паузу после базара или перед прогулкой в Султанахмет.",
         map: "https://www.google.com/maps/search/?api=1&query=Hafiz%20Mustafa%201864%20Beyazit%20Istanbul",
+        coords: [28.9642308, 41.0102262],
+        yandexQuery: "Hafiz Mustafa 1864 Beyazıt Istanbul",
         image: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1487,6 +1600,8 @@
         reviews: "много отзывов",
         note: "Кебаб рядом с Сиркеджи; хороший вариант на быстрый плотный обед без сильного ухода с маршрута.",
         map: "https://www.google.com/maps/search/?api=1&query=Sehzade%20Cag%20Kebap%20Istanbul",
+        coords: [28.9752694, 41.0140192],
+        yandexQuery: "Sehzade Cag Kebap Istanbul",
         image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1496,6 +1611,8 @@
         reviews: "много отзывов",
         note: "Турецкая кухня, мясо, мезе и супы; удобно держать как нормальный ужин в центре.",
         map: "https://www.google.com/maps/search/?api=1&query=Bitlisli%20Istanbul",
+        coords: [28.9755764, 41.0137105],
+        yandexQuery: "Bitlisli Istanbul",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1505,6 +1622,8 @@
         reviews: "много отзывов",
         note: "Видовое место для вечера: мезе, рыба, закат и вид на город. Лучше бронировать.",
         map: "https://www.google.com/maps/search/?api=1&query=Roof%20Mezze%20360%20Restaurant%20Istanbul",
+        coords: [28.9769612, 41.0138017],
+        yandexQuery: "Roof Mezze 360 Restaurant Istanbul",
         image: "https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1514,6 +1633,8 @@
         reviews: "тысячи отзывов",
         note: "Пахлава и сладости в Каракее; удобно совместить с Галатой, паромом или прогулкой у воды.",
         map: "https://www.google.com/maps/search/?api=1&query=Karakoy%20Gulluoglu%20Istanbul",
+        coords: [28.9809581, 41.0248853],
+        yandexQuery: "Karakoy Gulluoglu Istanbul",
         image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1523,6 +1644,8 @@
         reviews: "много отзывов",
         note: "Центральный вариант у Султанахмета: удобно, если хочется без долгой дороги после музеев.",
         map: "https://www.google.com/maps/search/?api=1&query=Old%20Ottoman%20Cafe%20Restaurant%20Istanbul",
+        coords: [28.9754109, 41.0107281],
+        yandexQuery: "Old Ottoman Cafe Restaurant Istanbul",
         image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1532,6 +1655,8 @@
         reviews: "тысячи отзывов",
         note: "Сладости, чай и кофе; удобно на паузу рядом с туристическим центром.",
         map: "https://www.google.com/maps/search/?api=1&query=Hafiz%20Mustafa%201864%20Sirkeci",
+        coords: [28.9733605, 41.0160106],
+        yandexQuery: "Hafiz Mustafa 1864 Sirkeci Istanbul",
         image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1542,6 +1667,8 @@
         chips: ["Sirkeci", "4.5+", "норм чек", "без брони"],
         note: "Пиде рядом с Сиркеджи: быстрый обед или ужин, понятный чек, обычно можно просто зайти по пути.",
         map: "https://www.google.com/maps/search/?api=1&query=Hocapasa%20Pidecisi%20Istanbul",
+        coords: [28.9756056, 41.0139756],
+        yandexQuery: "Hocapasa Pidecisi Istanbul",
         image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1552,6 +1679,8 @@
         chips: ["Sultanahmet", "4.6+", "норм чек", "без брони"],
         note: "Кебаб, пиде и лахмаджун в центре: формат простой, порции нормальные, подходит без предварительной брони.",
         map: "https://www.google.com/maps/search/?api=1&query=Ortaklar%20Kebap%20Restaurant%20Istanbul",
+        coords: [28.9722043, 41.0072732],
+        yandexQuery: "Ortaklar Kebap Restaurant Istanbul",
         image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=900&q=80"
       },
       {
@@ -1562,6 +1691,8 @@
         chips: ["Sirkeci", "столовая", "норм чек", "без брони"],
         note: "Домашняя турецкая еда и формат локанты: выбираете блюда на линии, быстро, недорого и без резерва.",
         map: "https://www.google.com/maps/search/?api=1&query=Balkan%20Lokantasi%20Sirkeci%20Istanbul",
+        coords: [28.9747790, 41.0136320],
+        yandexQuery: "Balkan Lokantasi Sirkeci Istanbul",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80"
       }
     ];
@@ -1842,6 +1973,15 @@
         );
         value = value.replace(/Карточки\\s+Мест/g, "Карточки мест");
         value = value.replace(/Маршрут\\s+По\\s+Дням/g, "Маршрут по дням");
+        value = value.replace(
+          /14:00:\\s*заселиться,\\s*оставить вещи,\\s*купить Istanbulkart\\./gi,
+          "14:00: заселиться, оставить вещи, такси только при необходимости."
+        );
+        value = value.replace(
+          /Вечер:\\s*Карак[её]й,\\s*Галатский мост,\\s*набережная Эмин[её]ню\\./gi,
+          "Вечер: Beyazıt, Kumkapı или ужин рядом с отелем."
+        );
+        value = value.replace(/купить Istanbulkart/gi, "не покупать Istanbulkart");
         value = value.replace(/1\\s*TRY\\b/g, "1 лира");
         value = value.replace(/(\\d[\\d\\s.,]*)\\s*TRY\\b/g, "$1 лир");
         value = value.replace(/\\bTRY\\b/g, "лиры");
@@ -1859,6 +1999,87 @@
           block.setAttribute("data-trip-hidden-food-source", "true");
         }
       });
+    }
+
+    function yandexPointFor(place, index) {
+      return place.coords[0] + "," + place.coords[1] + ",pm2rdm" + (index + 1);
+    }
+
+    function yandexSearchUrl(place) {
+      return "https://yandex.ru/maps/?text=" + encodeURIComponent(place.yandexQuery || (place.name + " Istanbul"));
+    }
+
+    function yandexFoodMapPoints() {
+      return FOOD_RECOMMENDATIONS
+        .filter(function (place) { return place.coords && place.coords.length === 2; })
+        .map(yandexPointFor)
+        .join("~");
+    }
+
+    function yandexFoodStaticMapUrl() {
+      return "https://static-maps.yandex.ru/1.x/?ll=28.9720,41.0127&z=13&l=map&size=650,360&pt=" + yandexFoodMapPoints();
+    }
+
+    function yandexFoodOpenMapUrl() {
+      return "https://yandex.ru/maps/?ll=28.9720%2C41.0127&z=13&pt=" + encodeURIComponent(yandexFoodMapPoints());
+    }
+
+    function buildYandexFoodMap() {
+      var map = document.createElement("section");
+      map.className = "trip-yandex-map";
+      map.setAttribute("aria-label", "Яндекс Карты с местами еды");
+
+      var head = document.createElement("div");
+      head.className = "trip-yandex-map__head";
+      var text = document.createElement("div");
+      var heading = document.createElement("h3");
+      heading.textContent = "Яндекс Карты: все места еды";
+      text.appendChild(heading);
+      var note = document.createElement("p");
+      note.textContent = "Номера на карте совпадают со списком ниже. Для двух ближайших мест у отеля метка стоит по району Telli Odaları/Kumkapı, ссылку лучше открыть и сверить свежую карточку.";
+      text.appendChild(note);
+      head.appendChild(text);
+
+      var open = document.createElement("a");
+      open.className = "trip-yandex-map__open";
+      open.href = yandexFoodOpenMapUrl();
+      open.target = "_blank";
+      open.rel = "noopener noreferrer";
+      open.textContent = "Открыть Яндекс Карты";
+      head.appendChild(open);
+      map.appendChild(head);
+
+      var mapLink = document.createElement("a");
+      mapLink.className = "trip-yandex-map__image-link";
+      mapLink.href = yandexFoodOpenMapUrl();
+      mapLink.target = "_blank";
+      mapLink.rel = "noopener noreferrer";
+      var image = document.createElement("img");
+      image.className = "trip-yandex-map__image";
+      image.src = yandexFoodStaticMapUrl();
+      image.alt = "Яндекс Карты с метками мест еды рядом с Alessia Old City";
+      image.loading = "lazy";
+      mapLink.appendChild(image);
+      map.appendChild(mapLink);
+
+      var legend = document.createElement("ol");
+      legend.className = "trip-yandex-map__legend";
+      FOOD_RECOMMENDATIONS.forEach(function (place, index) {
+        var item = document.createElement("li");
+        var link = document.createElement("a");
+        link.href = yandexSearchUrl(place);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        var pin = document.createElement("span");
+        pin.className = "trip-yandex-map__pin";
+        pin.textContent = String(index + 1);
+        link.appendChild(pin);
+        link.appendChild(document.createTextNode(place.name));
+        item.appendChild(link);
+        legend.appendChild(item);
+      });
+      map.appendChild(legend);
+      return map;
     }
 
     function appendFoodRecommendations(root) {
@@ -1928,6 +2149,7 @@
       });
 
       section.appendChild(grid);
+      section.appendChild(buildYandexFoodMap());
       root.appendChild(section);
     }
 
@@ -1999,32 +2221,32 @@
           {
             title: "20 июля - прилет и мягкий старт",
             text: "Рейс прилетает в IST в 09:20. Если без задержек, реалистично быть у отеля около 12:00-13:00.",
-            items: ["Оставить багаж, если номер еще не готов", "До 14:00 не ставить жесткие музеи/билеты", "После заселения: Grand Bazaar, Beyazıt, Kumkapı или легкий ужин рядом"]
+            items: ["Оставить багаж, если номер еще не готов", "До 14:00 не ставить жесткие музеи/билеты", "После заселения: только Beyazıt, Grand Bazaar, Kumkapı или ужин рядом с отелем"]
           },
           {
             title: "Султанахмет из отеля",
             text: "Blue Mosque, Hagia Sophia, Basilica Cistern и Topkapi удобно делать одним днем от отеля.",
-            items: ["Пешком примерно 20-30 минут, либо трамвай T1 от Beyazıt-Kapalıçarşı", "Утром идти раньше жары и очередей", "На ужин можно вернуться через Sultanahmet/Beyazıt или уйти в Kumkapı"]
+            items: ["Пешком примерно 20-30 минут, либо короткое такси, если жарко/устали", "Утром идти раньше жары и очередей", "На ужин можно вернуться через Sultanahmet/Beyazıt или уйти в Kumkapı"]
           },
           {
-            title: "Гранд-базар и Эминеню",
-            text: "Alessia удобно стоит для Grand Bazaar, Beyazıt и спуска к Eminönü/Spice Bazaar.",
-            items: ["Grand Bazaar рядом: можно ставить не отдельным большим переездом, а утром/вечером", "Eminönü и Spice Bazaar логично совмещать с Galata Bridge", "Обратно можно пешком через базарные улицы или на T1"]
+            title: "Гранд-базар, Beyazıt и Kumkapı",
+            text: "Alessia удобно стоит для Grand Bazaar, Beyazıt и ужинов в Kumkapı, поэтому это можно ставить легкими кусками без дальних переездов.",
+            items: ["Grand Bazaar рядом: можно ставить утром/вечером", "Kumkapı логичен на ужин рядом с отелем", "Eminönü и Galata Bridge не ставить в первый день после перелета"]
           },
           {
             title: "Галата, Каракёй и Босфор",
-            text: "От отеля логично ехать через Beyazıt/Eminönü: трамвай T1 или пеший спуск к мосту.",
-            items: ["Karaköy/Galata лучше делать после Eminönü", "Паромы удобнее планировать от Eminönü/Karaköy", "Вечером возвращаться по T1 или такси, если устали"]
+            text: "Это не первый вечер после перелета. Делать отдельным днем или полуднем, когда есть силы.",
+            items: ["До Karaköy/Galata ехать на такси", "Galata Bridge можно добавить только если день уже посвящен Eminönü/Karaköy", "Вечером возвращаться на такси"]
           },
           {
             title: "Кадыкёй / азиатская сторона",
-            text: "Лучший старт от отеля - дойти/доехать до Eminönü или Karaköy и сесть на паром.",
-            items: ["Не ехать туда на такси через мост без необходимости", "Планировать как отдельный полудень или вечер", "Последний паром проверить заранее"]
+            text: "Планировать только как отдельный полудень или вечер, не в день прилета.",
+            items: ["Если хочется паром - такси до причала и дальше по ситуации", "Если ехать только на такси, проверять пробки и цену заранее", "Не ставить рядом с тяжелыми музеями"]
           },
           {
             title: "День вылета",
             text: "Если вылет позже, оставить багаж в отеле и гулять рядом: Beyazıt, Grand Bazaar, Kumkapı, Sultanahmet.",
-            items: ["На IST закладывать 60-90 минут дороги плюс запас", "Если пробки - смотреть метро/Havaist", "Не уходить далеко от багажа в последний день"]
+            items: ["На IST закладывать 60-90 минут дороги плюс запас", "Такси/трансфер заказать заранее", "Не уходить далеко от багажа в последний день"]
           }
         ]
       });
