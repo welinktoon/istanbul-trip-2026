@@ -638,6 +638,109 @@
     color: var(--trip-ink);
     font: 800 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
   }
+  .trip-route-day-maps {
+    display: grid;
+    gap: 14px;
+  }
+  .trip-route-day-maps h2 {
+    margin: 0;
+    color: var(--trip-ink);
+    font: 950 24px/1.12 Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .trip-route-day-maps__note {
+    margin: -4px 0 2px;
+    color: var(--trip-muted);
+    font: 750 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-day-card {
+    display: grid;
+    grid-template-columns: minmax(230px, 320px) minmax(0, 1fr);
+    gap: 14px;
+    overflow: hidden;
+    border: 1px solid var(--trip-soft-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-route-day-card__body {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-width: 0;
+    padding: 16px;
+  }
+  .trip-route-day-card__eyebrow {
+    color: var(--trip-accent);
+    font: 950 12px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .trip-route-day-card h3 {
+    margin: 0;
+    color: var(--trip-ink);
+    font: 950 19px/1.18 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-day-card p {
+    margin: 0;
+    color: var(--trip-muted);
+    font: 750 13px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-day-card__points {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-route-day-card__points li {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    color: var(--trip-ink);
+    font: 800 13px/1.3 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-day-card__pin {
+    display: inline-grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 999px;
+    background: #d7352a;
+    color: #fff;
+    font: 950 11px/1 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-day-card__open {
+    justify-self: start;
+    padding: 9px 11px;
+    border: 1px solid rgba(15, 106, 120, .22);
+    border-radius: var(--trip-radius);
+    background: var(--trip-accent-soft);
+    color: #0a5360;
+    font: 900 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-decoration: none;
+  }
+  .trip-route-day-card__open:hover,
+  .trip-route-day-card__open:focus-visible {
+    background: #fff;
+    text-decoration: none;
+    outline: 3px solid rgba(15, 106, 120, .14);
+  }
+  .trip-route-day-card__map-link {
+    display: block;
+    min-width: 0;
+    min-height: 100%;
+    overflow: hidden;
+    border-left: 1px solid var(--trip-soft-line);
+    background: #d9e2e8;
+  }
+  .trip-route-day-card__map {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    object-fit: cover;
+  }
   .trip-docs-checklist__group {
     min-width: 0;
   }
@@ -943,6 +1046,18 @@
       white-space: normal;
     }
     .trip-yandex-map__image {
+      min-height: 220px;
+      aspect-ratio: 1 / 1;
+    }
+    .trip-route-day-card {
+      grid-template-columns: 1fr;
+    }
+    .trip-route-day-card__map-link {
+      min-height: 220px;
+      border-left: 0;
+      border-top: 1px solid var(--trip-soft-line);
+    }
+    .trip-route-day-card__map {
       min-height: 220px;
       aspect-ratio: 1 / 1;
     }
@@ -1542,6 +1657,105 @@
       { value: "eur", label: "Евро" },
       { value: "rub", label: "Рубли" },
       { value: "try", label: "Лиры" }
+    ];
+
+    var ROUTE_DAY_MAPS = [
+      {
+        day: "День 1",
+        title: "20 июля - прилет и район отеля",
+        description: "Без дальних переездов после дороги: отель, Beyazıt, Grand Bazaar и Kumkapı на ужин.",
+        center: [28.9650, 41.0070],
+        zoom: 15,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Beyazıt", coords: [28.9642308, 41.0102262] },
+          { name: "Grand Bazaar", coords: [28.968066, 41.010684] },
+          { name: "Kumkapı", coords: [28.9629002, 41.0033651] }
+        ]
+      },
+      {
+        day: "День 2",
+        title: "21 июля - Султанахмет",
+        description: "Главная историческая часть: Айя-София, Голубая мечеть, Цистерна и парк Гюльхане.",
+        center: [28.9758, 41.0084],
+        zoom: 15,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Голубая мечеть / Ипподром", coords: [28.976813, 41.005409] },
+          { name: "Айя-София", coords: [28.980175, 41.008584] },
+          { name: "Цистерна Базилика", coords: [28.97784, 41.00839] },
+          { name: "Парк Гюльхане", coords: [28.98150, 41.01300] }
+        ]
+      },
+      {
+        day: "День 3",
+        title: "22 июля - Топкапы, базары, Сулеймание",
+        description: "Дворец и музеи утром, потом Grand Bazaar и вид от Сулеймание.",
+        center: [28.9735, 41.0132],
+        zoom: 14,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Дворец Топкапы", coords: [28.98400, 41.01152] },
+          { name: "Археологический музей", coords: [28.98130, 41.01170] },
+          { name: "Grand Bazaar", coords: [28.968066, 41.010684] },
+          { name: "Сулеймание", coords: [28.96370, 41.01620] }
+        ]
+      },
+      {
+        day: "День 4",
+        title: "23 июля - Долмабахче, Бешикташ, Ортакёй",
+        description: "День вдоль Босфора: дворец, район Бешикташ, Ортакёй и вечер у воды.",
+        center: [29.0000, 41.0350],
+        zoom: 12,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Долмабахче", coords: [28.99570, 41.03920] },
+          { name: "Бешикташ", coords: [29.00750, 41.04200] },
+          { name: "Ортакёй", coords: [29.02670, 41.04720] },
+          { name: "Причал Eminönü", coords: [28.97690, 41.01780] }
+        ]
+      },
+      {
+        day: "День 5",
+        title: "24 июля - Балат, Фенер, Галата",
+        description: "Цветные районы и кофейни днем, потом Галата/Каракёй отдельным куском, не в день прилета.",
+        center: [28.9650, 41.0280],
+        zoom: 13,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Балат", coords: [28.94820, 41.03020] },
+          { name: "Фенер", coords: [28.95130, 41.02900] },
+          { name: "Галатская башня", coords: [28.97420, 41.02560] },
+          { name: "Чукурджума", coords: [28.98240, 41.03140] }
+        ]
+      },
+      {
+        day: "День 6",
+        title: "25 июля - Кадыкёй и Мода",
+        description: "Азиатская сторона как отдельный день: Кадыкёй, рынок, Мода и берег.",
+        center: [29.0000, 41.0000],
+        zoom: 12,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Причал Eminönü", coords: [28.97690, 41.01780] },
+          { name: "Кадыкёй", coords: [29.02580, 40.99030] },
+          { name: "Мода", coords: [29.02450, 40.98400] }
+        ]
+      },
+      {
+        day: "День 7",
+        title: "26 июля - рядом с отелем и вылет",
+        description: "Последний день без риска: район отеля, легкая прогулка рядом и такси/трансфер в IST.",
+        center: [28.8600, 41.1350],
+        zoom: 10,
+        points: [
+          { name: "Alessia Old City", coords: [28.96265, 41.00560] },
+          { name: "Beyazıt", coords: [28.9642308, 41.0102262] },
+          { name: "Grand Bazaar", coords: [28.968066, 41.010684] },
+          { name: "Kumkapı", coords: [28.9629002, 41.0033651] },
+          { name: "Istanbul Airport IST", coords: [28.75200, 41.27530] }
+        ]
+      }
     ];
 
     var FOOD_RECOMMENDATIONS = [
@@ -2207,6 +2421,120 @@
       return section;
     }
 
+    function yandexRoutePointFor(point, index) {
+      return point.coords[0] + "," + point.coords[1] + ",pm2rdm" + (index + 1);
+    }
+
+    function yandexRouteLineFor(points) {
+      return "c:0A6C7D,w:5," + points.map(function (point) {
+        return point.coords[0] + "," + point.coords[1];
+      }).join(",");
+    }
+
+    function yandexRouteStaticMapUrl(route) {
+      return "https://static-maps.yandex.ru/1.x/?ll=" + route.center[0] + "," + route.center[1]
+        + "&z=" + route.zoom
+        + "&l=map&size=650,330"
+        + "&pt=" + route.points.map(yandexRoutePointFor).join("~")
+        + "&pl=" + encodeURIComponent(yandexRouteLineFor(route.points));
+    }
+
+    function yandexRouteOpenUrl(route) {
+      return "https://yandex.ru/maps/?rtext=" + route.points.map(function (point) {
+        return point.coords[1] + "%2C" + point.coords[0];
+      }).join("~") + "&rtt=auto";
+    }
+
+    function buildRouteDayCard(route) {
+      var card = document.createElement("article");
+      card.className = "trip-route-day-card";
+
+      var body = document.createElement("div");
+      body.className = "trip-route-day-card__body";
+      var eyebrow = document.createElement("div");
+      eyebrow.className = "trip-route-day-card__eyebrow";
+      eyebrow.textContent = route.day;
+      body.appendChild(eyebrow);
+
+      var heading = document.createElement("h3");
+      heading.textContent = route.title;
+      body.appendChild(heading);
+
+      var description = document.createElement("p");
+      description.textContent = route.description;
+      body.appendChild(description);
+
+      var list = document.createElement("ol");
+      list.className = "trip-route-day-card__points";
+      route.points.forEach(function (point, index) {
+        var item = document.createElement("li");
+        var pin = document.createElement("span");
+        pin.className = "trip-route-day-card__pin";
+        pin.textContent = String(index + 1);
+        item.appendChild(pin);
+        item.appendChild(document.createTextNode(point.name));
+        list.appendChild(item);
+      });
+      body.appendChild(list);
+
+      var open = document.createElement("a");
+      open.className = "trip-route-day-card__open";
+      open.href = yandexRouteOpenUrl(route);
+      open.target = "_blank";
+      open.rel = "noopener noreferrer";
+      open.textContent = "Открыть маршрут в Яндексе";
+      body.appendChild(open);
+      card.appendChild(body);
+
+      var mapLink = document.createElement("a");
+      mapLink.className = "trip-route-day-card__map-link";
+      mapLink.href = yandexRouteOpenUrl(route);
+      mapLink.target = "_blank";
+      mapLink.rel = "noopener noreferrer";
+      var image = document.createElement("img");
+      image.className = "trip-route-day-card__map";
+      image.src = yandexRouteStaticMapUrl(route);
+      image.alt = "Карта маршрута: " + route.title;
+      image.loading = "lazy";
+      mapLink.appendChild(image);
+      card.appendChild(mapLink);
+      return card;
+    }
+
+    function appendRouteDayMaps(root) {
+      if (!root || root.querySelector("[data-trip-route-day-maps]")) return;
+
+      var section = document.createElement("section");
+      section.className = "trip-route-day-maps";
+      section.setAttribute("data-trip-route-day-maps", "true");
+      section.setAttribute("data-trip-tab", "route");
+      section.setAttribute("data-tab-title", "Карта маршрута по дням");
+
+      var title = document.createElement("h2");
+      title.textContent = "Карта маршрута по дням";
+      section.appendChild(title);
+
+      var note = document.createElement("p");
+      note.className = "trip-route-day-maps__note";
+      note.textContent = "Каждый день отдельно: сначала описание, потом карта с точками маршрута. Линия показывает примерный порядок, а не точный трек такси.";
+      section.appendChild(note);
+
+      ROUTE_DAY_MAPS.forEach(function (route) {
+        section.appendChild(buildRouteDayCard(route));
+      });
+
+      root.appendChild(section);
+    }
+
+    function removeOriginalRouteMapBlocks(root) {
+      root = root || document;
+      Array.prototype.slice.call(root.querySelectorAll("h2, h3, h4")).forEach(function (heading) {
+        if (!heading.isConnected || heading.closest("[data-trip-route-day-maps]")) return;
+        var key = textKey(heading.textContent);
+        if (/^карта маршрут/.test(key) || /^route map/.test(key)) removeRunFromHeading(heading);
+      });
+    }
+
     function appendReferenceSections(root) {
       if (!root || root.querySelector("[data-trip-reference-section]")) return;
       REFERENCE_SECTIONS.forEach(function (config) {
@@ -2711,8 +3039,10 @@
       normalizeTripHeadings(root);
       upgradeCurrencyConverter(root);
       suppressOriginalFoodBlocks(root);
+      removeOriginalRouteMapBlocks(root);
       appendReferenceSections(root);
       appendHotelBasedRoute(root);
+      appendRouteDayMaps(root);
       appendFoodRecommendations(root);
       appendTravelDocsChecklist(root);
       rewriteTripCopy(root);
