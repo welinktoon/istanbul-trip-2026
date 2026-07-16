@@ -1433,10 +1433,10 @@
     };
 
     var CURRENCY_OPTIONS = [
-      { value: "usd", label: "Доллары (USD)" },
-      { value: "eur", label: "Евро (EUR)" },
-      { value: "rub", label: "Рубли (RUB)" },
-      { value: "try", label: "Лиры (TRY)" }
+      { value: "usd", label: "Доллары" },
+      { value: "eur", label: "Евро" },
+      { value: "rub", label: "Рубли" },
+      { value: "try", label: "Лиры" }
     ];
 
     var FOOD_RECOMMENDATIONS = [
@@ -1673,7 +1673,7 @@
       titleWrap.appendChild(makeCurrencyElement("p", "trip-currency-converter__eyebrow", "Любая пара"));
       titleWrap.appendChild(makeCurrencyElement("h2", "", "Калькулятор валют"));
       head.appendChild(titleWrap);
-      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "USD / EUR / RUB / TRY"));
+      head.appendChild(makeCurrencyElement("span", "trip-currency-converter__rate-chip", "Доллары / евро / рубли / лиры"));
 
       var body = makeCurrencyElement("div", "trip-currency-converter__body");
       var label = makeCurrencyElement("label", "", "Сумма");
