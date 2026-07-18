@@ -777,6 +777,34 @@
     color: var(--trip-muted);
     font: 650 15px/1.55 Inter, "Segoe UI", Arial, sans-serif;
   }
+  .trip-route-hotel-address {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px 14px;
+    align-items: center;
+    padding: 14px 16px;
+    border: 1px solid rgba(8, 116, 129, .28);
+    border-radius: var(--trip-radius);
+    background: var(--trip-accent-soft);
+  }
+  .trip-route-hotel-address__label {
+    color: #075b65;
+    font: 950 12px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .trip-route-hotel-address strong {
+    color: var(--trip-ink);
+    font: 850 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-list {
+    display: grid;
+    gap: 18px;
+  }
+  .trip-route-list .trip-route-explorer {
+    min-height: 440px;
+    scroll-margin-top: 18px;
+  }
   .trip-route-days {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -858,7 +886,7 @@
     display: grid;
     grid-template-columns: 26px minmax(0, 1fr);
     gap: 9px;
-    align-items: center;
+    align-items: start;
     color: var(--trip-ink);
     font: 800 14px/1.35 Inter, "Segoe UI", Arial, sans-serif;
   }
@@ -899,6 +927,26 @@
     align-items: center;
     min-width: 0;
   }
+  .trip-route-explorer__point-copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+    padding-top: 2px;
+  }
+  .trip-route-explorer__point-detail {
+    color: var(--trip-muted);
+    font: 650 12px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__point-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: #fff1db;
+    color: #8b4b08;
+    font: 900 10px/1.1 Inter, "Segoe UI", Arial, sans-serif;
+    text-transform: uppercase;
+  }
   .trip-route-explorer__hotel-tag,
   .trip-map-popup__hotel-tag {
     display: inline-flex;
@@ -928,6 +976,29 @@
   .trip-route-explorer__open:focus-visible {
     background: #fff;
     outline: 3px solid rgba(8, 116, 129, .12);
+  }
+  .trip-route-explorer__notes {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 10px 12px 10px 28px;
+    border-left: 3px solid var(--trip-clay);
+    background: #fff;
+    color: var(--trip-muted);
+    font: 700 12px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .trip-route-explorer__actions .trip-route-explorer__open {
+    margin-top: 0;
+  }
+  .trip-route-explorer__open--secondary {
+    border-color: var(--trip-line);
+    background: #fff;
+    color: var(--trip-ink);
   }
   .trip-map-frame {
     position: relative;
@@ -1364,6 +1435,13 @@
     .trip-interactive-map-section__head {
       display: grid;
     }
+    .trip-route-hotel-address {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+    .trip-route-list {
+      gap: 14px;
+    }
     .trip-route-days {
       display: flex;
       overflow-x: auto;
@@ -1381,6 +1459,9 @@
     .trip-route-explorer,
     .trip-food-map-layout {
       grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .trip-route-list .trip-route-explorer {
       min-height: 0;
     }
     .trip-route-explorer__details {
@@ -2007,31 +2088,42 @@
     var ROUTE_DAY_MAPS = [
       {
         day: "День 1",
-        title: "20 июля - прилет и район отеля",
-        description: "Без дальних переездов после дороги: отель, Beyazıt, Grand Bazaar и Kumkapı на ужин.",
+        title: "20 июля - прилет, обменник и район отеля",
+        description: "После заселения: обменять деньги на Yeniçeriler Caddesi, зайти в McDonald's и пройти спокойный круг по ближайшему старому городу.",
         routingMode: "pd",
         routingLabel: "пешком",
-        center: [28.9650, 41.0070],
+        center: [28.9666, 41.0080],
         zoom: 15,
         points: [
-          { name: "Alessia Old City", coords: [28.963913, 41.004277], uri: "ymapsbm1://org?oid=230369368703" },
-          { name: "Площадь Беязыт", coords: [28.964267, 41.010448], uri: "ymapsbm1://org?oid=1023820238" },
-          { name: "Гранд-базар", coords: [28.968070, 41.010611], uri: "ymapsbm1://org?oid=1016388421" },
-          { name: "Кумкапы", coords: [28.964676, 41.004318], uri: "ymapsbm1://geo?data=Cgo0MTA2NDQyMjgyEipUw7xya2l5ZSwgxLBzdGFuYnVsLCBGYXRpaCwgS3Vta2FwxLEgU2VtdGkiCg2mt-dBFWwEJEI," }
+          { name: "Alessia Old City", detail: "Telli Odaları Sokak No:10, Kumkapı/Beyazıt, Fatih, İstanbul", coords: [28.963913, 41.004277], uri: "ymapsbm1://org?oid=230369368703" },
+          { name: "Artvin Döviz", detail: "Yeniçeriler Cad. 57 — основной обменник", badge: "основной", coords: [28.966221, 41.008939], uri: "ymapsbm1://org?oid=1189521028" },
+          { name: "McDonald's", detail: "Yeniçeriler Cad. No:35", coords: [28.968530, 41.008605], uri: "ymapsbm1://org?oid=1288340686" },
+          { name: "Ağaoğlu Döviz", detail: "Yeniçeriler Cad. No:25/B — запасной вариант", badge: "запасной", coords: [28.969118, 41.008598], uri: "ymapsbm1://org?oid=1180051965" },
+          { name: "Колонна Константина", detail: "короткая остановка по пути", coords: [28.971070, 41.008620] },
+          { name: "Гранд-базар", detail: "посмотреть район без обязательного шопинга", coords: [28.968070, 41.010611], uri: "ymapsbm1://org?oid=1016388421" },
+          { name: "Площадь Беязыт", detail: "вид на ворота университета и возвращение к отелю", coords: [28.964267, 41.010448], uri: "ymapsbm1://org?oid=1023820238" }
+        ],
+        notes: [
+          "Сначала сравните курс покупки/продажи на табло; если в Artvin не понравится курс, Ağaoğlu находится примерно в 250 м дальше по той же улице.",
+          "После обмена пересчитайте лиры у кассы и сохраните чек. График работы лучше перепроверить в день визита."
+        ],
+        links: [
+          { label: "Artvin Döviz", href: "https://yandex.com.tr/maps/org/artvin_doviz/1189521028/" },
+          { label: "Ağaoğlu Döviz", href: "https://www.agaogludoviz.com.tr/iletisim" }
         ]
       },
       {
         day: "День 2",
-        title: "21 июля - Султанахмет",
-        description: "Главная историческая часть: Айя-София, Голубая мечеть, Цистерна и парк Гюльхане.",
+        title: "21 июля - Султанахмет: основные виды",
+        description: "Собрать главные виды исторического центра одним пешим днем: площадь, мечети, Айя-София, Цистерна и Гюльхане.",
         routingMode: "pd",
         routingLabel: "пешком",
         center: [28.9758, 41.0084],
         zoom: 15,
         points: [
           { name: "Alessia Old City", coords: [28.963913, 41.004277], uri: "ymapsbm1://org?oid=230369368703" },
-          { name: "Голубая мечеть", coords: [28.977023, 41.005251], uri: "ymapsbm1://org?oid=92889334517" },
           { name: "Ипподром", coords: [28.974856, 41.005412], uri: "ymapsbm1://org?oid=172442592464" },
+          { name: "Голубая мечеть", coords: [28.977023, 41.005251], uri: "ymapsbm1://org?oid=92889334517" },
           { name: "Айя-София", coords: [28.979964, 41.008567], uri: "ymapsbm1://org?oid=1033757231" },
           { name: "Цистерна Базилика", coords: [28.978384, 41.008705], uri: "ymapsbm1://org?oid=1093580699" },
           { name: "Парк Гюльхане", coords: [28.981501, 41.013430], uri: "ymapsbm1://org?oid=131722635986" }
@@ -2055,41 +2147,61 @@
       },
       {
         day: "День 4",
-        title: "23 июля - Долмабахче, Бешикташ, Ортакёй",
-        description: "День вдоль Босфора: дворец, район Бешикташ, Ортакёй и вечер у воды.",
-        routingMode: "auto",
-        routingLabel: "на машине",
-        yandexPointIndexes: [0, 1, 2, 3],
-        center: [29.0000, 41.0350],
-        zoom: 12,
+        title: "23 июля - Бейоглу, Galataport и Каракёй",
+        description: "Сначала нужная точка на Meclis-i Mebusan 10B, этаж 1. Затем все близко пешком: набережная Galataport, Istanbul Modern, Топхане и Каракёй.",
+        routingMode: "mt",
+        routingLabel: "транспорт + пешком",
+        center: [28.9815, 41.0270],
+        zoom: 15,
         points: [
           { name: "Alessia Old City", coords: [28.963913, 41.004277], uri: "ymapsbm1://org?oid=230369368703" },
-          { name: "Дворец Долмабахче", coords: [29.000526, 41.039240], uri: "ymapsbm1://org?oid=1200535628" },
-          { name: "Площадь Бешикташ", coords: [29.007055, 41.042330], uri: "ymapsbm1://org?oid=49885390888" },
-          { name: "Мечеть Ортакёй", coords: [29.026891, 41.047257], uri: "ymapsbm1://org?oid=1005596328" },
-          { name: "Причал Эминёню", coords: [28.974042, 41.017908], uri: "ymapsbm1://transit/stop?id=2196214831" }
+          { name: "Нужная точка", detail: "Meclis-i Mebusan Cad. No:10B, Beyoğlu — этаж 1", badge: "сначала сюда", coords: [28.985292, 41.028084] },
+          { name: "Набережная Galataport", detail: "виды на Босфор и прогулочная зона", coords: [28.985000, 41.027050] },
+          { name: "Istanbul Modern", detail: "современная архитектура и музей у воды", coords: [28.983540, 41.026840] },
+          { name: "Мечеть Кылыч Али-паши", detail: "комплекс Мимара Синана в Топхане", coords: [28.979690, 41.025730] },
+          { name: "Набережная Каракёй", detail: "кофейни, порт и уличная прогулка", coords: [28.977900, 41.022750] },
+          { name: "Галатский мост", detail: "закончить день видом на старый город", coords: [28.974090, 41.020450] }
+        ],
+        notes: [
+          "От отеля удобнее доехать до Tophane / Galataport, а после адреса весь маршрут пройти пешком вниз к Каракёю.",
+          "На самой точке проверьте вывеску и этаж: в картах подтвержден адрес здания, но название нужного места пользователь не указал."
+        ],
+        links: [
+          { label: "Адрес 10B в Яндексе", href: "https://yandex.com.tr/maps/11508/istanbul/house/meclis_i_mebusan_cad_no_10b/ZkEYfw9lS0wFQFprfXxzeXxrYA%3D%3D/" }
         ]
       },
       {
         day: "День 5",
-        title: "24 июля - Балат, Фенер, Галата",
-        description: "Цветные районы и кофейни днем, потом Галата/Каракёй отдельным куском, не в день прилета.",
-        routingMode: "auto",
-        routingLabel: "на машине",
-        center: [28.9650, 41.0280],
-        zoom: 13,
+        title: "24 июля - прогулка по Босфору",
+        description: "Официальный короткий тур Şehir Hatları: отправление из Эминёню, виды на обе стороны Босфора и возвращение без отдельной сложной логистики.",
+        routingMode: "mt",
+        routingLabel: "до причала",
+        openLabel: "Маршрут до причала в Яндексе",
+        yandexPointIndexes: [0, 1],
+        center: [29.0000, 41.0310],
+        zoom: 12,
         points: [
           { name: "Alessia Old City", coords: [28.963913, 41.004277], uri: "ymapsbm1://org?oid=230369368703" },
-          { name: "Балат", coords: [28.950043, 41.030989], uri: "ymapsbm1://geo?data=CgoyMjE1OTEyMDIyEiZUw7xya2l5ZSwgxLBzdGFuYnVsLCBGYXRpaCwgQmFsYXQgTWFoLiIKDbCZ50EVux8kQg,," },
-          { name: "Фенерский патриархат", coords: [28.951899, 41.029142], uri: "ymapsbm1://org?oid=22034829499" },
-          { name: "Галатская башня", coords: [28.974194, 41.025625], uri: "ymapsbm1://org?oid=1087398212" },
-          { name: "Чукурджума", coords: [28.981409, 41.033385], uri: "ymapsbm1://org?oid=1095414139" }
+          { name: "Касса Şehir Hatları / Eminönü Boğaz İskelesi", detail: "покупка билета на месте перед посадкой", badge: "билеты здесь", coords: [28.974450, 41.017720] },
+          { name: "Причал Üsküdar", detail: "вид на Девичью башню и азиатский берег", coords: [29.015300, 41.027650] },
+          { name: "Причал Ortaköy", detail: "вид на мечеть и Босфорский мост с воды", coords: [29.026650, 41.047500] },
+          { name: "Возвращение в Эминёню", coords: [28.974450, 41.017720] }
+        ],
+        notes: [
+          "По расписанию, проверенному 19 июля 2026: короткий тур отправляется ежедневно из Эминёню в 14:40. Лучше быть у официальной кассы за 30-45 минут.",
+          "На официальном сайте нет онлайн-покупки для этого рейса: билет берется в кассе Şehir Hatları у причала. Текущая цена для иностранного пассажира — 340 ₺; перед поездкой снова проверьте расписание и тариф.",
+          "Если захочется целый день на воде: длинный тур отправляется из Эминёню в 10:35, делает паузу в Anadolu Kavağı и возвращается к 16:40."
+        ],
+        links: [
+          { label: "Официальное расписание", href: "https://sehirhatlari.istanbul/en/timetables/bosphorus-tours/short-bosphorus-tour-181" },
+          { label: "Официальные цены", href: "https://sehirhatlari.istanbul/en/price-list/bosphorus-tours-78" },
+          { label: "Длинный тур", href: "https://sehirhatlari.istanbul/en/timetables/bosphorus-tours/long-bosphorus-tour-91" }
         ]
       },
       {
         day: "День 6",
-        title: "25 июля - Кадыкёй и Мода",
-        description: "Азиатская сторона как отдельный день: Кадыкёй, рынок, Мода и берег.",
+        title: "25 июля - свободный день: Кадыкёй и Мода",
+        description: "Необязательный запасной план: паром на азиатскую сторону, рынок Кадыкёя, улицы с кафе и спокойная прогулка по берегу Моды.",
         routingMode: "mt",
         routingLabel: "транспорт и паром",
         center: [29.0000, 41.0000],
@@ -2098,7 +2210,11 @@
           { name: "Alessia Old City", coords: [28.963913, 41.004277], uri: "ymapsbm1://org?oid=230369368703" },
           { name: "Причал Эминёню", coords: [28.974042, 41.017908], uri: "ymapsbm1://transit/stop?id=2196214831" },
           { name: "Паромный терминал Кадыкёй", coords: [29.023812, 40.991876], uri: "ymapsbm1://org?oid=176526005238" },
+          { name: "Рынок Кадыкёя", coords: [29.025270, 40.990240] },
           { name: "Парк Мода", coords: [29.021192, 40.980941], uri: "ymapsbm1://org?oid=11925079130" }
+        ],
+        notes: [
+          "Если после пяти дней захочется отдыха, этот день можно без потерь заменить поздним завтраком, хаммамом или повтором любимого района."
         ]
       },
       {
@@ -3099,76 +3215,49 @@
       head.className = "trip-interactive-map-section__head";
       var headText = document.createElement("div");
       var title = document.createElement("h2");
-      title.textContent = "Интерактивная карта";
+      title.textContent = "Маршрут и интерактивные карты";
       headText.appendChild(title);
 
       var note = document.createElement("p");
-      note.textContent = "Выберите день, двигайте карту и нажимайте метки. В Яндексе уже выбран подходящий режим: пешком, на машине или на транспорте с паромом.";
+      note.textContent = "Все дни идут подряд без переключателей. Двигайте любую карту, нажимайте метки или открывайте готовый маршрут в Яндексе.";
       headText.appendChild(note);
       head.appendChild(headText);
       section.appendChild(head);
 
-      var dayNav = document.createElement("div");
-      dayNav.className = "trip-route-days";
-      dayNav.setAttribute("aria-label", "Выбрать день маршрута");
-      var dayButtons = [];
-      ROUTE_DAY_MAPS.forEach(function (route, index) {
-        var button = document.createElement("button");
-        button.type = "button";
-        button.textContent = route.title.split(" - ")[0];
-        button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
-        button.setAttribute("aria-label", "Показать маршрут: " + route.title);
-        dayNav.appendChild(button);
-        dayButtons.push(button);
-      });
-      section.appendChild(dayNav);
+      var hotelAddress = document.createElement("div");
+      hotelAddress.className = "trip-route-hotel-address";
+      var hotelAddressLabel = document.createElement("span");
+      hotelAddressLabel.className = "trip-route-hotel-address__label";
+      hotelAddressLabel.textContent = "Адрес отеля";
+      var hotelAddressText = document.createElement("strong");
+      hotelAddressText.textContent = "Alessia Old City — Telli Odaları Sokak No:10, Kumkapı/Beyazıt, Fatih, İstanbul";
+      hotelAddress.appendChild(hotelAddressLabel);
+      hotelAddress.appendChild(hotelAddressText);
+      section.appendChild(hotelAddress);
 
-      var explorer = document.createElement("div");
-      explorer.className = "trip-route-explorer";
-      var details = document.createElement("div");
-      details.className = "trip-route-explorer__details";
-      var eyebrow = document.createElement("p");
-      eyebrow.className = "trip-route-explorer__eyebrow";
-      var heading = document.createElement("h3");
-      var description = document.createElement("p");
-      description.className = "trip-route-explorer__description";
-      var pointList = document.createElement("ol");
-      pointList.className = "trip-route-explorer__points";
-      var open = document.createElement("a");
-      open.className = "trip-route-explorer__open";
-      open.target = "_blank";
-      open.rel = "noopener noreferrer";
-      open.textContent = "Открыть в Яндексе";
-      details.appendChild(eyebrow);
-      details.appendChild(heading);
-      details.appendChild(description);
-      details.appendChild(pointList);
-      details.appendChild(open);
-      explorer.appendChild(details);
+      var routeList = document.createElement("div");
+      routeList.className = "trip-route-list";
+      var mapEntries = [];
 
-      var frame = document.createElement("div");
-      frame.className = "trip-map-frame";
-      var status = document.createElement("div");
-      status.className = "trip-map-status";
-      status.textContent = "Загружаем интерактивную карту...";
-      frame.appendChild(status);
-      var canvas = document.createElement("div");
-      canvas.className = "trip-leaflet-map";
-      canvas.setAttribute("aria-label", "Интерактивная карта маршрута по Стамбулу");
-      frame.appendChild(canvas);
-      explorer.appendChild(frame);
-      section.appendChild(explorer);
+      ROUTE_DAY_MAPS.forEach(function (route, routeIndex) {
+        var explorer = document.createElement("article");
+        explorer.className = "trip-route-explorer";
+        explorer.id = "trip-route-day-" + String(routeIndex + 1);
+        explorer.setAttribute("data-trip-route-day", String(routeIndex + 1));
 
-      var leafletMap = null;
-      var routeLayer = null;
-      function renderRoute(index) {
-        var route = ROUTE_DAY_MAPS[index];
+        var details = document.createElement("div");
+        details.className = "trip-route-explorer__details";
+        var eyebrow = document.createElement("p");
+        eyebrow.className = "trip-route-explorer__eyebrow";
         eyebrow.textContent = route.day;
+        var heading = document.createElement("h3");
         heading.textContent = route.title;
+        var description = document.createElement("p");
+        description.className = "trip-route-explorer__description";
         description.textContent = route.description;
-        open.href = yandexRouteOpenUrl(route);
-        open.textContent = "Открыть в Яндексе · " + route.routingLabel;
-        pointList.textContent = "";
+        var pointList = document.createElement("ol");
+        pointList.className = "trip-route-explorer__points";
+
         route.points.forEach(function (point, pointIndex) {
           var item = document.createElement("li");
           var pin = document.createElement("span");
@@ -3177,6 +3266,9 @@
           if (hotel) pin.innerHTML = TRIP_HOME_ICON;
           else pin.textContent = String(pointIndex + 1);
           item.appendChild(pin);
+
+          var pointCopy = document.createElement("span");
+          pointCopy.className = "trip-route-explorer__point-copy";
           var pointName = document.createElement("span");
           pointName.className = "trip-route-explorer__point-name";
           pointName.appendChild(document.createTextNode(point.name));
@@ -3186,29 +3278,88 @@
             hotelTag.textContent = "Наш отель";
             pointName.appendChild(hotelTag);
           }
-          item.appendChild(pointName);
+          if (point.badge) {
+            var pointBadge = document.createElement("span");
+            pointBadge.className = "trip-route-explorer__point-badge";
+            pointBadge.textContent = point.badge;
+            pointName.appendChild(pointBadge);
+          }
+          pointCopy.appendChild(pointName);
+          if (point.detail) {
+            var pointDetail = document.createElement("small");
+            pointDetail.className = "trip-route-explorer__point-detail";
+            pointDetail.textContent = point.detail;
+            pointCopy.appendChild(pointDetail);
+          }
+          item.appendChild(pointCopy);
           pointList.appendChild(item);
         });
-        dayButtons.forEach(function (button, buttonIndex) {
-          button.setAttribute("aria-pressed", buttonIndex === index ? "true" : "false");
-        });
-        if (leafletMap && routeLayer) {
-          renderTripPoints(leafletMap, routeLayer, route.points, { line: true });
-        }
-      }
 
-      dayButtons.forEach(function (button, index) {
-        button.addEventListener("click", function () { renderRoute(index); });
+        details.appendChild(eyebrow);
+        details.appendChild(heading);
+        details.appendChild(description);
+        details.appendChild(pointList);
+
+        if (route.notes && route.notes.length) {
+          var notes = document.createElement("ul");
+          notes.className = "trip-route-explorer__notes";
+          route.notes.forEach(function (value) {
+            var noteItem = document.createElement("li");
+            noteItem.textContent = value;
+            notes.appendChild(noteItem);
+          });
+          details.appendChild(notes);
+        }
+
+        var actions = document.createElement("div");
+        actions.className = "trip-route-explorer__actions";
+        var open = document.createElement("a");
+        open.className = "trip-route-explorer__open";
+        open.target = "_blank";
+        open.rel = "noopener noreferrer";
+        open.href = yandexRouteOpenUrl(route);
+        open.textContent = route.openLabel || ("Открыть в Яндексе · " + route.routingLabel);
+        actions.appendChild(open);
+
+        (route.links || []).forEach(function (link) {
+          var action = document.createElement("a");
+          action.className = "trip-route-explorer__open trip-route-explorer__open--secondary";
+          action.target = "_blank";
+          action.rel = "noopener noreferrer";
+          action.href = link.href;
+          action.textContent = link.label;
+          actions.appendChild(action);
+        });
+        details.appendChild(actions);
+        explorer.appendChild(details);
+
+        var frame = document.createElement("div");
+        frame.className = "trip-map-frame";
+        var status = document.createElement("div");
+        status.className = "trip-map-status";
+        status.textContent = "Загружаем интерактивную карту...";
+        frame.appendChild(status);
+        var canvas = document.createElement("div");
+        canvas.className = "trip-leaflet-map";
+        canvas.setAttribute("aria-label", "Интерактивная карта: " + route.title);
+        frame.appendChild(canvas);
+        explorer.appendChild(frame);
+        routeList.appendChild(explorer);
+        mapEntries.push({ route: route, canvas: canvas, status: status });
       });
-      renderRoute(0);
+      section.appendChild(routeList);
 
       loadTripLeaflet().then(function () {
-        status.textContent = "";
-        leafletMap = createTripLeafletMap(canvas);
-        routeLayer = window.L.layerGroup().addTo(leafletMap);
-        renderRoute(0);
+        mapEntries.forEach(function (entry) {
+          entry.status.textContent = "";
+          var leafletMap = createTripLeafletMap(entry.canvas);
+          var routeLayer = window.L.layerGroup().addTo(leafletMap);
+          renderTripPoints(leafletMap, routeLayer, entry.route.points, { line: true });
+        });
       }).catch(function () {
-        status.textContent = "Карта сейчас не загрузилась. Откройте маршрут в Яндекс Картах кнопкой слева.";
+        mapEntries.forEach(function (entry) {
+          entry.status.textContent = "Карта сейчас не загрузилась. Откройте маршрут в Яндекс Картах кнопкой слева.";
+        });
       });
 
       root.appendChild(section);
