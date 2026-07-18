@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Istanbul 2026</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2317212b'/%3E%3Cpath d='M18 39c8-11 20-11 28 0' fill='none' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='27' r='9' fill='%23c47b16'/%3E%3Cpath d='M42 16l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -3226,11 +3226,22 @@
   })();
 <\/script>`;
 
+    const faviconLink = '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
+
+    function addTripFavicon(html) {
+      const iconPattern = /<link\b[^>]*rel=["'][^"']*\bicon\b[^>]*>/i;
+      if (iconPattern.test(html)) return html.replace(iconPattern, faviconLink);
+      return /<\/head>/i.test(html)
+        ? html.replace(/<\/head>/i, `  ${faviconLink}\n</head>`)
+        : `${faviconLink}\n${html}`;
+    }
+
     function addTripTabs(html) {
-      if (html.includes("istanbul-trip-tabs-script")) return html;
-      const withStyle = /<\/head>/i.test(html)
-        ? html.replace(/<\/head>/i, `${tripTabsStyle}\n</head>`)
-        : `${tripTabsStyle}\n${html}`;
+      const withFavicon = addTripFavicon(html);
+      if (withFavicon.includes("istanbul-trip-tabs-script")) return withFavicon;
+      const withStyle = /<\/head>/i.test(withFavicon)
+        ? withFavicon.replace(/<\/head>/i, `${tripTabsStyle}\n</head>`)
+        : `${tripTabsStyle}\n${withFavicon}`;
       return /<\/body>/i.test(withStyle)
         ? withStyle.replace(/<\/body>/i, `${tripTabsScript}\n</body>`)
         : `${withStyle}\n${tripTabsScript}`;
