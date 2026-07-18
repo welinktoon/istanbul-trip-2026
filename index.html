@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <!-- published refresh: 2026-07-18T11:23Z -->
+  <!-- published refresh: 2026-07-18T11:30Z -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Istanbul 2026</title>
@@ -132,10 +132,10 @@
     box-sizing: border-box;
   }
   .trip-tab-shell {
-    width: min(1440px, 100vw);
+    width: var(--trip-page-width, 100vw);
     min-width: 0;
-    max-width: 100vw;
-    margin-left: calc(50% - min(720px, 50vw));
+    max-width: var(--trip-page-width, 100vw);
+    margin-left: calc((100% - var(--trip-page-width, 100vw)) / 2);
     grid-column: 1 / -1;
     background: var(--trip-bg);
     color: var(--trip-ink);
@@ -3654,6 +3654,17 @@
     }
 
     function initTripTabs() {
+      var syncTripPageWidth = function () {
+        document.documentElement.style.setProperty(
+          "--trip-page-width",
+          Math.min(1440, document.documentElement.clientWidth) + "px"
+        );
+      };
+      syncTripPageWidth();
+      if (!window.__istanbulTripPageWidthBound) {
+        window.__istanbulTripPageWidthBound = true;
+        window.addEventListener("resize", syncTripPageWidth);
+      }
       document.documentElement.classList.add("trip-reference-mode");
       removeHotelTopAreas();
       hideLargeHero();
