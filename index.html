@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <!-- published refresh: 2026-07-18T11:03Z -->
+  <!-- published refresh: 2026-07-18T11:23Z -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Istanbul 2026</title>
@@ -90,17 +90,18 @@
     }
 
     const tripTabsStyle = `
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <style id="istanbul-trip-tabs-style">
   :root {
-    --trip-ink: #2f3a46;
-    --trip-muted: #657181;
-    --trip-line: #d9e2e8;
-    --trip-soft-line: rgba(23, 33, 43, .10);
-    --trip-bg: #f6f8fa;
+    --trip-ink: #17222d;
+    --trip-muted: #4f5e6d;
+    --trip-line: #cfd9df;
+    --trip-soft-line: rgba(23, 34, 45, .13);
+    --trip-bg: #eef3f5;
     --trip-surface: #ffffff;
-    --trip-accent: #0f6a78;
-    --trip-accent-soft: #e8f4f6;
-    --trip-clay: #c65f28;
+    --trip-accent: #087481;
+    --trip-accent-soft: #e1f3f4;
+    --trip-clay: #d35d2d;
     --trip-danger: #b9473f;
     --trip-radius: 8px;
     --trip-shadow: none;
@@ -117,6 +118,8 @@
     margin: 0 !important;
     padding: 0 !important;
     overflow-x: hidden;
+    font-size: 16px;
+    line-height: 1.55;
   }
   .trip-reference-header,
   .trip-reference-header *,
@@ -352,7 +355,7 @@
     max-width: 100%;
     min-width: 0;
     margin: 0;
-    padding: 18px;
+    padding: 22px;
     border: 1px solid var(--trip-line);
     border-radius: var(--trip-radius);
     background: var(--trip-surface);
@@ -373,14 +376,30 @@
   .trip-docs-checklist__group h3 {
     margin: 0 0 6px;
     color: var(--trip-ink);
-    font: 900 15px/1.25 Inter, "Segoe UI", Arial, sans-serif;
+    font: 900 16px/1.3 Inter, "Segoe UI", Arial, sans-serif;
     letter-spacing: 0;
+  }
+  .trip-tab-panel > section p,
+  .trip-tab-panel > article p,
+  .trip-tab-panel > section li,
+  .trip-tab-panel > article li {
+    color: #33414e;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .trip-tab-panel a {
+    color: #075f69;
+    text-underline-offset: 3px;
+  }
+  .trip-tab-panel a:hover,
+  .trip-tab-panel a:focus-visible {
+    color: #a53f1c;
   }
   .trip-reference-section__note,
   .trip-docs-checklist__note {
     margin: 0 0 16px;
     color: var(--trip-muted);
-    font: 700 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+    font: 700 15px/1.55 Inter, "Segoe UI", Arial, sans-serif;
   }
   .trip-reference-grid,
   .trip-docs-checklist__grid {
@@ -401,7 +420,7 @@
   .trip-reference-card p {
     margin: 0;
     color: var(--trip-muted);
-    font: 700 13px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+    font: 650 14px/1.55 Inter, "Segoe UI", Arial, sans-serif;
   }
   .trip-reference-card ul {
     display: grid;
@@ -414,7 +433,7 @@
     position: relative;
     padding-left: 14px;
     color: #2f3d4a;
-    font: 750 13px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+    font: 750 14px/1.45 Inter, "Segoe UI", Arial, sans-serif;
   }
   .trip-reference-card li::before {
     content: "";
@@ -740,6 +759,211 @@
     height: 100%;
     min-height: 280px;
     object-fit: cover;
+  }
+  .trip-interactive-map-section {
+    display: grid;
+    gap: 16px;
+    overflow: hidden;
+  }
+  .trip-interactive-map-section__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .trip-interactive-map-section__head p {
+    max-width: 760px;
+    margin: 6px 0 0;
+    color: var(--trip-muted);
+    font: 650 15px/1.55 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 7px;
+    padding: 7px;
+    border: 1px solid var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: #f5f8f9;
+  }
+  .trip-route-days button,
+  .trip-map-legend button {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--trip-ink);
+    font: 850 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    cursor: pointer;
+  }
+  .trip-route-days button:hover,
+  .trip-route-days button:focus-visible,
+  .trip-map-legend button:hover,
+  .trip-map-legend button:focus-visible {
+    border-color: rgba(8, 116, 129, .35);
+    background: #fff;
+    outline: 3px solid rgba(8, 116, 129, .12);
+  }
+  .trip-route-days button[aria-pressed="true"] {
+    border-color: var(--trip-accent);
+    background: var(--trip-accent);
+    color: #fff;
+  }
+  .trip-route-explorer {
+    display: grid;
+    grid-template-columns: minmax(250px, 330px) minmax(0, 1fr);
+    min-height: 520px;
+    overflow: hidden;
+    border: 1px solid var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-route-explorer__details {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    min-width: 0;
+    padding: 20px;
+    border-right: 1px solid var(--trip-line);
+    background: #f8fafb;
+  }
+  .trip-route-explorer__eyebrow {
+    margin: 0;
+    color: var(--trip-clay);
+    font: 950 12px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-transform: uppercase;
+  }
+  .trip-route-explorer__details h3 {
+    margin: 0;
+    color: var(--trip-ink);
+    font: 950 21px/1.22 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__description {
+    margin: 0;
+    color: var(--trip-muted);
+    font: 650 14px/1.55 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__points {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-route-explorer__points li {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 9px;
+    align-items: center;
+    color: var(--trip-ink);
+    font: 800 14px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__pin,
+  .trip-map-marker {
+    display: inline-grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: var(--trip-clay);
+    color: #fff;
+    font: 950 12px/1 Inter, "Segoe UI", Arial, sans-serif;
+    box-shadow: 0 2px 7px rgba(23, 34, 45, .32);
+  }
+  .trip-route-explorer__open {
+    justify-self: start;
+    margin-top: 2px;
+    padding: 10px 12px;
+    border: 1px solid rgba(8, 116, 129, .34);
+    border-radius: 6px;
+    background: var(--trip-accent-soft);
+    color: #075b65;
+    font: 900 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-decoration: none;
+  }
+  .trip-route-explorer__open:hover,
+  .trip-route-explorer__open:focus-visible {
+    background: #fff;
+    outline: 3px solid rgba(8, 116, 129, .12);
+  }
+  .trip-map-frame {
+    position: relative;
+    min-width: 0;
+    min-height: 420px;
+    background: #dbe5e8;
+  }
+  .trip-leaflet-map {
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    z-index: 1;
+  }
+  .trip-map-status {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    color: var(--trip-muted);
+    font: 800 14px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+    text-align: center;
+  }
+  .trip-map-marker-shell {
+    border: 0;
+    background: transparent;
+  }
+  .trip-leaflet-map .leaflet-control-zoom a {
+    color: var(--trip-ink);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-leaflet-map .leaflet-popup-content {
+    margin: 12px 14px;
+    color: var(--trip-ink);
+    font: 800 13px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-food-map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
+    min-height: 460px;
+    overflow: hidden;
+    border: 1px solid var(--trip-line);
+    border-radius: var(--trip-radius);
+    background: #fff;
+  }
+  .trip-food-map-layout .trip-map-frame,
+  .trip-food-map-layout .trip-leaflet-map {
+    min-height: 460px;
+  }
+  .trip-map-legend {
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    max-height: 460px;
+    margin: 0;
+    padding: 10px;
+    overflow: auto;
+    border-left: 1px solid var(--trip-line);
+    background: #f8fafb;
+    list-style: none;
+  }
+  .trip-map-legend button {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px;
+    text-align: left;
+  }
+  .trip-map-legend .trip-route-explorer__pin {
+    width: 26px;
+    height: 26px;
   }
   .trip-guide-story {
     display: grid;
@@ -1095,6 +1319,48 @@
     .trip-route-day-card__map {
       min-height: 220px;
       aspect-ratio: 1 / 1;
+    }
+    .trip-interactive-map-section {
+      gap: 12px;
+    }
+    .trip-interactive-map-section__head {
+      display: grid;
+    }
+    .trip-route-days {
+      display: flex;
+      overflow-x: auto;
+      padding: 6px;
+      scrollbar-width: none;
+    }
+    .trip-route-days::-webkit-scrollbar {
+      display: none;
+    }
+    .trip-route-days button {
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 88px;
+    }
+    .trip-route-explorer,
+    .trip-food-map-layout {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .trip-route-explorer__details {
+      padding: 16px;
+      border-right: 0;
+      border-bottom: 1px solid var(--trip-line);
+    }
+    .trip-map-frame,
+    .trip-leaflet-map,
+    .trip-food-map-layout .trip-map-frame,
+    .trip-food-map-layout .trip-leaflet-map {
+      min-height: 360px;
+    }
+    .trip-map-legend {
+      grid-template-columns: 1fr;
+      max-height: 300px;
+      border-top: 1px solid var(--trip-line);
+      border-left: 0;
     }
     .trip-reference-mode .place-card {
       grid-template-columns: 1fr;
@@ -2373,6 +2639,119 @@
       });
     }
 
+    var tripLeafletPromise = null;
+
+    function loadTripLeaflet() {
+      if (window.L) return Promise.resolve(window.L);
+      if (tripLeafletPromise) return tripLeafletPromise;
+
+      tripLeafletPromise = new Promise(function (resolve, reject) {
+        var existing = document.querySelector("script[data-trip-leaflet]");
+        var finish = function () {
+          if (window.L) resolve(window.L);
+          else reject(new Error("Leaflet did not initialize"));
+        };
+
+        if (existing) {
+          existing.addEventListener("load", finish, { once: true });
+          existing.addEventListener("error", function () { reject(new Error("Leaflet failed to load")); }, { once: true });
+          return;
+        }
+
+        var script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.crossOrigin = "";
+        script.setAttribute("data-trip-leaflet", "true");
+        script.addEventListener("load", finish, { once: true });
+        script.addEventListener("error", function () { reject(new Error("Leaflet failed to load")); }, { once: true });
+        document.head.appendChild(script);
+      });
+
+      return tripLeafletPromise;
+    }
+
+    function tripLatLng(point) {
+      return [point.coords[1], point.coords[0]];
+    }
+
+    function tripMarkerIcon(index) {
+      return window.L.divIcon({
+        className: "trip-map-marker-shell",
+        html: '<span class="trip-map-marker">' + String(index + 1) + "</span>",
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -14]
+      });
+    }
+
+    function tripPopupContent(point, href) {
+      var content = document.createElement("div");
+      var title = document.createElement("strong");
+      title.textContent = point.name;
+      content.appendChild(title);
+      if (href) {
+        var link = document.createElement("a");
+        link.href = href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Открыть в Яндекс Картах";
+        link.style.display = "block";
+        link.style.marginTop = "6px";
+        content.appendChild(link);
+      }
+      return content;
+    }
+
+    function createTripLeafletMap(host) {
+      var map = window.L.map(host, { scrollWheelZoom: false, zoomControl: true });
+      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+
+      var resizeTimer = 0;
+      var invalidate = function () {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(function () { map.invalidateSize(false); }, 60);
+      };
+      if (window.ResizeObserver) {
+        var observer = new ResizeObserver(invalidate);
+        observer.observe(host);
+      }
+      window.addEventListener("resize", invalidate);
+      invalidate();
+      return map;
+    }
+
+    function renderTripPoints(map, layer, points, options) {
+      layer.clearLayers();
+      var bounds = [];
+      var markers = [];
+      points.forEach(function (point, index) {
+        var latLng = tripLatLng(point);
+        var href = options && options.linkFor ? options.linkFor(point, index) : "";
+        var marker = window.L.marker(latLng, { icon: tripMarkerIcon(index), keyboard: true })
+          .bindPopup(tripPopupContent(point, href));
+        marker.addTo(layer);
+        bounds.push(latLng);
+        markers.push(marker);
+      });
+
+      if (options && options.line && bounds.length > 1) {
+        window.L.polyline(bounds, {
+          color: "#087481",
+          weight: 5,
+          opacity: .86,
+          lineJoin: "round"
+        }).addTo(layer);
+      }
+
+      if (bounds.length) {
+        map.fitBounds(bounds, { padding: [38, 38], maxZoom: 15, animate: false });
+      }
+      return markers;
+    }
+
     function yandexPointFor(place, index) {
       return place.coords[0] + "," + place.coords[1] + ",pm2rdm" + (index + 1);
     }
@@ -2398,17 +2777,17 @@
 
     function buildYandexFoodMap() {
       var map = document.createElement("section");
-      map.className = "trip-yandex-map";
-      map.setAttribute("aria-label", "Яндекс Карты с местами еды");
+      map.className = "trip-yandex-map trip-interactive-map-section";
+      map.setAttribute("aria-label", "Интерактивная карта мест еды");
 
       var head = document.createElement("div");
-      head.className = "trip-yandex-map__head";
+      head.className = "trip-yandex-map__head trip-interactive-map-section__head";
       var text = document.createElement("div");
       var heading = document.createElement("h3");
-      heading.textContent = "Яндекс Карты: все места еды";
+      heading.textContent = "Интерактивная карта еды";
       text.appendChild(heading);
       var note = document.createElement("p");
-      note.textContent = "Номера на карте совпадают со списком ниже. Для двух ближайших мест у отеля метка стоит по району Telli Odaları/Kumkapı, ссылку лучше открыть и сверить свежую карточку.";
+      note.textContent = "Двигайте и масштабируйте карту. Нажмите место в списке, чтобы быстро найти его на карте.";
       text.appendChild(note);
       head.appendChild(text);
 
@@ -2421,36 +2800,56 @@
       head.appendChild(open);
       map.appendChild(head);
 
-      var mapLink = document.createElement("a");
-      mapLink.className = "trip-yandex-map__image-link";
-      mapLink.href = yandexFoodOpenMapUrl();
-      mapLink.target = "_blank";
-      mapLink.rel = "noopener noreferrer";
-      var image = document.createElement("img");
-      image.className = "trip-yandex-map__image";
-      image.src = yandexFoodStaticMapUrl();
-      image.alt = "Яндекс Карты с метками мест еды рядом с Alessia Old City";
-      image.loading = "lazy";
-      mapLink.appendChild(image);
-      map.appendChild(mapLink);
-
+      var layout = document.createElement("div");
+      layout.className = "trip-food-map-layout";
+      var frame = document.createElement("div");
+      frame.className = "trip-map-frame";
+      var status = document.createElement("div");
+      status.className = "trip-map-status";
+      status.textContent = "Загружаем интерактивную карту...";
+      frame.appendChild(status);
+      var canvas = document.createElement("div");
+      canvas.className = "trip-leaflet-map";
+      canvas.setAttribute("aria-label", "Карта ресторанов и кафе Стамбула");
+      frame.appendChild(canvas);
+      layout.appendChild(frame);
       var legend = document.createElement("ol");
-      legend.className = "trip-yandex-map__legend";
+      legend.className = "trip-map-legend";
+      var legendButtons = [];
       FOOD_RECOMMENDATIONS.forEach(function (place, index) {
         var item = document.createElement("li");
-        var link = document.createElement("a");
-        link.href = yandexSearchUrl(place);
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
+        var button = document.createElement("button");
+        button.type = "button";
+        button.setAttribute("aria-label", "Показать на карте: " + place.name);
         var pin = document.createElement("span");
-        pin.className = "trip-yandex-map__pin";
+        pin.className = "trip-route-explorer__pin";
         pin.textContent = String(index + 1);
-        link.appendChild(pin);
-        link.appendChild(document.createTextNode(place.name));
-        item.appendChild(link);
+        button.appendChild(pin);
+        button.appendChild(document.createTextNode(place.name));
+        item.appendChild(button);
         legend.appendChild(item);
+        legendButtons.push(button);
       });
-      map.appendChild(legend);
+      layout.appendChild(legend);
+      map.appendChild(layout);
+
+      loadTripLeaflet().then(function () {
+        status.textContent = "";
+        var leafletMap = createTripLeafletMap(canvas);
+        var layer = window.L.layerGroup().addTo(leafletMap);
+        var markers = renderTripPoints(leafletMap, layer, FOOD_RECOMMENDATIONS, {
+          linkFor: function (place) { return yandexSearchUrl(place); }
+        });
+        legendButtons.forEach(function (button, index) {
+          button.addEventListener("click", function () {
+            var point = FOOD_RECOMMENDATIONS[index];
+            leafletMap.setView(tripLatLng(point), 16, { animate: true });
+            markers[index].openPopup();
+          });
+        });
+      }).catch(function () {
+        status.textContent = "Карта сейчас не загрузилась. Откройте список точек в Яндекс Картах кнопкой выше.";
+      });
       return map;
     }
 
@@ -2599,82 +2998,117 @@
       }).join("~") + "&rtt=auto";
     }
 
-    function buildRouteDayCard(route) {
-      var card = document.createElement("article");
-      card.className = "trip-route-day-card";
-
-      var body = document.createElement("div");
-      body.className = "trip-route-day-card__body";
-      var eyebrow = document.createElement("div");
-      eyebrow.className = "trip-route-day-card__eyebrow";
-      eyebrow.textContent = route.day;
-      body.appendChild(eyebrow);
-
-      var heading = document.createElement("h3");
-      heading.textContent = route.title;
-      body.appendChild(heading);
-
-      var description = document.createElement("p");
-      description.textContent = route.description;
-      body.appendChild(description);
-
-      var list = document.createElement("ol");
-      list.className = "trip-route-day-card__points";
-      route.points.forEach(function (point, index) {
-        var item = document.createElement("li");
-        var pin = document.createElement("span");
-        pin.className = "trip-route-day-card__pin";
-        pin.textContent = String(index + 1);
-        item.appendChild(pin);
-        item.appendChild(document.createTextNode(point.name));
-        list.appendChild(item);
-      });
-      body.appendChild(list);
-
-      var open = document.createElement("a");
-      open.className = "trip-route-day-card__open";
-      open.href = yandexRouteOpenUrl(route);
-      open.target = "_blank";
-      open.rel = "noopener noreferrer";
-      open.textContent = "Открыть маршрут в Яндексе";
-      body.appendChild(open);
-      card.appendChild(body);
-
-      var mapLink = document.createElement("a");
-      mapLink.className = "trip-route-day-card__map-link";
-      mapLink.href = yandexRouteOpenUrl(route);
-      mapLink.target = "_blank";
-      mapLink.rel = "noopener noreferrer";
-      var image = document.createElement("img");
-      image.className = "trip-route-day-card__map";
-      image.src = yandexRouteStaticMapUrl(route);
-      image.alt = "Карта маршрута: " + route.title;
-      image.loading = "lazy";
-      mapLink.appendChild(image);
-      card.appendChild(mapLink);
-      return card;
-    }
-
     function appendRouteDayMaps(root) {
       if (!root || root.querySelector("[data-trip-route-day-maps]")) return;
 
       var section = document.createElement("section");
-      section.className = "trip-route-day-maps";
+      section.className = "trip-route-day-maps trip-interactive-map-section";
       section.setAttribute("data-trip-route-day-maps", "true");
       section.setAttribute("data-trip-tab", "route");
-      section.setAttribute("data-tab-title", "Карта маршрута по дням");
+      section.setAttribute("data-tab-title", "Интерактивная карта");
 
+      var head = document.createElement("div");
+      head.className = "trip-interactive-map-section__head";
+      var headText = document.createElement("div");
       var title = document.createElement("h2");
-      title.textContent = "Карта маршрута по дням";
-      section.appendChild(title);
+      title.textContent = "Интерактивная карта";
+      headText.appendChild(title);
 
       var note = document.createElement("p");
-      note.className = "trip-route-day-maps__note";
-      note.textContent = "Каждый день отдельно: сначала описание, потом карта с точками маршрута. Линия показывает примерный порядок, а не точный трек такси.";
-      section.appendChild(note);
+      note.textContent = "Выберите день, двигайте карту и нажимайте метки. Линия показывает порядок точек, а не точный путь такси.";
+      headText.appendChild(note);
+      head.appendChild(headText);
+      section.appendChild(head);
 
-      ROUTE_DAY_MAPS.forEach(function (route) {
-        section.appendChild(buildRouteDayCard(route));
+      var dayNav = document.createElement("div");
+      dayNav.className = "trip-route-days";
+      dayNav.setAttribute("aria-label", "Выбрать день маршрута");
+      var dayButtons = [];
+      ROUTE_DAY_MAPS.forEach(function (route, index) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.textContent = route.title.split(" - ")[0];
+        button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+        button.setAttribute("aria-label", "Показать маршрут: " + route.title);
+        dayNav.appendChild(button);
+        dayButtons.push(button);
+      });
+      section.appendChild(dayNav);
+
+      var explorer = document.createElement("div");
+      explorer.className = "trip-route-explorer";
+      var details = document.createElement("div");
+      details.className = "trip-route-explorer__details";
+      var eyebrow = document.createElement("p");
+      eyebrow.className = "trip-route-explorer__eyebrow";
+      var heading = document.createElement("h3");
+      var description = document.createElement("p");
+      description.className = "trip-route-explorer__description";
+      var pointList = document.createElement("ol");
+      pointList.className = "trip-route-explorer__points";
+      var open = document.createElement("a");
+      open.className = "trip-route-explorer__open";
+      open.target = "_blank";
+      open.rel = "noopener noreferrer";
+      open.textContent = "Открыть маршрут в Яндексе";
+      details.appendChild(eyebrow);
+      details.appendChild(heading);
+      details.appendChild(description);
+      details.appendChild(pointList);
+      details.appendChild(open);
+      explorer.appendChild(details);
+
+      var frame = document.createElement("div");
+      frame.className = "trip-map-frame";
+      var status = document.createElement("div");
+      status.className = "trip-map-status";
+      status.textContent = "Загружаем интерактивную карту...";
+      frame.appendChild(status);
+      var canvas = document.createElement("div");
+      canvas.className = "trip-leaflet-map";
+      canvas.setAttribute("aria-label", "Интерактивная карта маршрута по Стамбулу");
+      frame.appendChild(canvas);
+      explorer.appendChild(frame);
+      section.appendChild(explorer);
+
+      var leafletMap = null;
+      var routeLayer = null;
+      function renderRoute(index) {
+        var route = ROUTE_DAY_MAPS[index];
+        eyebrow.textContent = route.day;
+        heading.textContent = route.title;
+        description.textContent = route.description;
+        open.href = yandexRouteOpenUrl(route);
+        pointList.textContent = "";
+        route.points.forEach(function (point, pointIndex) {
+          var item = document.createElement("li");
+          var pin = document.createElement("span");
+          pin.className = "trip-route-explorer__pin";
+          pin.textContent = String(pointIndex + 1);
+          item.appendChild(pin);
+          item.appendChild(document.createTextNode(point.name));
+          pointList.appendChild(item);
+        });
+        dayButtons.forEach(function (button, buttonIndex) {
+          button.setAttribute("aria-pressed", buttonIndex === index ? "true" : "false");
+        });
+        if (leafletMap && routeLayer) {
+          renderTripPoints(leafletMap, routeLayer, route.points, { line: true });
+        }
+      }
+
+      dayButtons.forEach(function (button, index) {
+        button.addEventListener("click", function () { renderRoute(index); });
+      });
+      renderRoute(0);
+
+      loadTripLeaflet().then(function () {
+        status.textContent = "";
+        leafletMap = createTripLeafletMap(canvas);
+        routeLayer = window.L.layerGroup().addTo(leafletMap);
+        renderRoute(0);
+      }).catch(function () {
+        status.textContent = "Карта сейчас не загрузилась. Откройте маршрут в Яндекс Картах кнопкой слева.";
       });
 
       root.appendChild(section);
@@ -2687,6 +3121,43 @@
         var key = textKey(heading.textContent);
         if (/^карта маршрут/.test(key) || /^route map/.test(key)) removeRunFromHeading(heading);
       });
+    }
+
+    function contentBlockForHeading(heading, root) {
+      var block = heading.closest("section, article, [data-tab-title], .section, .card");
+      return block && block !== root ? block : heading.parentElement;
+    }
+
+    function removeRequestedOverviewBlocks(root) {
+      root = root || document;
+      Array.prototype.slice.call(root.querySelectorAll(".quick-grid")).forEach(function (block) {
+        var key = textKey(block.textContent);
+        if (key.indexOf("даты") >= 0 && key.indexOf("темп") >= 0 && key.indexOf("транспорт") >= 0) {
+          block.remove();
+        }
+      });
+
+      Array.prototype.slice.call(root.querySelectorAll("h2, h3, h4")).forEach(function (heading) {
+        if (!heading.isConnected || heading.closest("[data-trip-route-day-maps]")) return;
+        var key = textKey(heading.textContent);
+        if (key === "маршрут по дням" || key.indexOf("маршрут по дням от alessia") === 0) {
+          var block = contentBlockForHeading(heading, root);
+          if (block) block.remove();
+        }
+      });
+    }
+
+    function moveUsefulAppsToBottom(root) {
+      root = root || document;
+      var heading = Array.prototype.slice.call(root.querySelectorAll("h2, h3, h4")).find(function (item) {
+        return textKey(item.textContent) === "полезные приложения и сайты";
+      });
+      if (!heading) return;
+      var block = contentBlockForHeading(heading, root);
+      if (!block || block === root) return;
+      block.setAttribute("data-trip-tab", "route");
+      block.setAttribute("data-tab-title", "Полезные приложения и сайты");
+      root.appendChild(block);
     }
 
     function appendReferenceSections(root) {
@@ -3189,6 +3660,7 @@
       hideIntroTitleBlocks();
       var root = findRoot();
       removeUnwantedTripText(root);
+      removeRequestedOverviewBlocks(root);
       rewriteTripCopy(root);
       normalizeTripHeadings(root);
       upgradeCurrencyConverter(root);
@@ -3196,10 +3668,10 @@
       removeOriginalRouteMapBlocks(root);
       appendPlaceGuideStories(root);
       appendReferenceSections(root);
-      appendHotelBasedRoute(root);
       appendRouteDayMaps(root);
       appendFoodRecommendations(root);
       appendTravelDocsChecklist(root);
+      moveUsefulAppsToBottom(root);
       rewriteTripCopy(root);
       normalizeTripHeadings(root);
       var blocks = candidateBlocks(root);
