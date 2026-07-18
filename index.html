@@ -2322,6 +2322,97 @@
       }
     ];
 
+    var PLACE_VISIT_DETAILS = [
+      {
+        title: "Айя-София",
+        price: "Площадь и внешний осмотр — бесплатно. Туристическая верхняя галерея — около 25 €.",
+        purchase: "Билет в галерею покупайте в официальной кассе у туристического входа; проверенного официального онлайн-продавца нет.",
+        hours: "Доступ туристов ограничивают на время молитв — лучше приходить утром и сверять режим на месте.",
+        route: "День 2 · 21 июля — общий вид и прогулка по Султанахмету; вход внутрь по желанию.",
+        mapQuery: "Айя-София Стамбул",
+        infoUrl: "https://whc.unesco.org/document/220840",
+        infoLabel: "Условия посещения"
+      },
+      {
+        title: "Цистерна Базилика",
+        price: "1 950 ₺ с 09:00 до 18:30; 3 000 ₺ с 19:30 до 22:00.",
+        purchase: "Онлайн — только через Passo; также можно купить в официальной кассе. Оплата картой или İstanbulkart.",
+        hours: "Ежедневно 09:00–22:00.",
+        route: "День 2 · 21 июля.",
+        mapQuery: "Цистерна Базилика Стамбул",
+        buyUrl: "https://passo.com.tr/ibbkulturas/",
+        buyLabel: "Купить билет",
+        infoUrl: "https://yerebatan.com/en/basilica-cistern/visit-info/",
+        infoLabel: "Официальные цены"
+      },
+      {
+        title: "Дворец Топкапы",
+        price: "2 750 ₺ — комбинированный билет для иностранцев: дворец + гарем + Айя-Ирина.",
+        purchase: "Покупайте в официальной кассе дворца. Отдельного Topkapı e-ticket в официальной форме сейчас нет.",
+        hours: "Кассы 09:00–17:00; по вторникам закрыто.",
+        route: "День 3 · 22 июля — лучше прийти к открытию.",
+        mapQuery: "Дворец Топкапы Стамбул",
+        infoUrl: "https://www.millisaraylar.gov.tr/Lokasyon/2/topkapi-sarayi",
+        infoLabel: "Официальные цены"
+      },
+      {
+        title: "Дворец Долмабахче",
+        price: "2 000 ₺ в официальном прайсе на месте; официальный e-ticket сейчас показывает 2 750 ₺.",
+        purchase: "В кассе дешевле; онлайн — только на сайте Национальных дворцов. E-ticket действует 90 дней и не возвращается.",
+        hours: "Кассы 09:00–17:00; по понедельникам закрыто.",
+        route: "Не входит в основной маршрут; можно поставить вместо части Дня 4.",
+        mapQuery: "Дворец Долмабахче Стамбул",
+        buyUrl: "https://www.millisaraylar.gov.tr/Bilet/BiletAl?culture=en",
+        buyLabel: "Купить e-ticket",
+        infoUrl: "https://www.millisaraylar.gov.tr/Lokasyon/3/dolmabahce-sarayi",
+        infoLabel: "Прайс на месте"
+      },
+      {
+        title: "Галатская башня",
+        price: "30 € для иностранного посетителя.",
+        purchase: "Официальный e-ticket — на сайте музеев Турции; билет также продаётся в кассе башни.",
+        hours: "Днём 08:30–18:30; ночной режим 18:30–23:00, касса до 22:00. Открыто ежедневно.",
+        route: "День 4 · 23 июля — после Галатапорта и Каракёя.",
+        mapQuery: "Галатская башня Стамбул",
+        buyUrl: "https://muze.gov.tr/urun-detay?CatalogNo=WEB-GLT03-87-009",
+        buyLabel: "Купить билет",
+        infoUrl: "https://muze.gov.tr/muze-detay?distId=MRK&sectionId=GLT04",
+        infoLabel: "Официальные часы"
+      },
+      {
+        title: "Босфорский паром",
+        price: "340 ₺ — короткий тур Şehir Hatları для иностранного пассажира.",
+        purchase: "Билет берите в официальной кассе Şehir Hatları на причале Эминёню перед отправлением.",
+        hours: "Короткий тур отправляется из Эминёню ежедневно в 14:40; приходите за 30–40 минут.",
+        route: "День 5 · 24 июля.",
+        mapQuery: "Şehir Hatları Eminönü İstanbul",
+        infoUrl: "https://sehirhatlari.istanbul/en/timetables/bosphorus-tours/short-bosphorus-tour-181",
+        infoLabel: "Расписание",
+        extraUrl: "https://sehirhatlari.istanbul/en/price-list/bosphorus-tours-78",
+        extraLabel: "Официальный тариф"
+      },
+      {
+        title: "Балат и Фенер",
+        price: "0 ₺ — прогулка по улицам бесплатная.",
+        purchase: "Билет не нужен; бюджет понадобится только на транспорт, еду и кофе.",
+        hours: "Улицы доступны весь день; для спокойной прогулки лучше светлое время.",
+        route: "Запасной вариант, в основной маршрут сейчас не включён.",
+        mapQuery: "Балат и Фенер Стамбул"
+      },
+      {
+        title: "Кадыкёй и Мода",
+        price: "Район — бесплатно; паром Эминёню–Кадыкёй — 59,28 ₺ по полному тарифу İstanbulkart.",
+        purchase: "Проезд оплачивается на турникете причала; отдельный входной билет в район не нужен.",
+        hours: "Паромы ходят часто; точное время на 25 июля смотрите в официальном расписании.",
+        route: "День 6 · 25 июля.",
+        mapQuery: "Kadıköy Çarşı İstanbul",
+        infoUrl: "https://sehirhatlari.istanbul/en/timetables/domestic-trips/istanbul-ici-hatlar/kadikoy-karakoy-eminonu-163",
+        infoLabel: "Расписание парома",
+        extraUrl: "https://sehirhatlari.istanbul/en/price-list",
+        extraLabel: "Тариф парома"
+      }
+    ];
+
     var FOOD_RECOMMENDATIONS = [
       {
         name: "Pakistani Asia Restaurant",
@@ -2775,6 +2866,60 @@
 
         var facts = body.querySelector(".facts");
         body.insertBefore(block, facts || null);
+      });
+    }
+
+    function applyPlaceVisitDetails(root) {
+      if (!root) return;
+
+      var detailsByTitle = PLACE_VISIT_DETAILS.reduce(function (result, details) {
+        result[textKey(details.title)] = details;
+        return result;
+      }, {});
+
+      function addFact(container, label, value) {
+        var row = document.createElement("div");
+        var title = document.createElement("b");
+        title.textContent = label + ": ";
+        row.appendChild(title);
+        row.appendChild(document.createTextNode(value));
+        container.appendChild(row);
+      }
+
+      function addAction(container, href, label, primary) {
+        if (!href) return;
+        var link = document.createElement("a");
+        link.className = "button" + (primary ? " primary" : "");
+        link.href = href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = label;
+        container.appendChild(link);
+      }
+
+      Array.prototype.slice.call(root.querySelectorAll(".place-card")).forEach(function (card) {
+        var heading = card.querySelector(".place-body h3, h3");
+        var details = heading && detailsByTitle[textKey(heading.textContent)];
+        if (!details) return;
+
+        var facts = card.querySelector(".facts");
+        if (facts) {
+          facts.innerHTML = "";
+          addFact(facts, "Цена", details.price);
+          addFact(facts, "Где купить", details.purchase);
+          addFact(facts, "Часы", details.hours);
+          addFact(facts, "В маршруте", details.route);
+          addFact(facts, "Проверено", "19 июля 2026 по официальным источникам; цена может измениться без предупреждения.");
+        }
+
+        var actions = card.querySelector(".actions");
+        if (actions) {
+          actions.innerHTML = "";
+          addAction(actions, "https://yandex.ru/maps/?text=" + encodeURIComponent(details.mapQuery), "Яндекс Карты", true);
+          addAction(actions, details.buyUrl, details.buyLabel || "Купить билет", false);
+          addAction(actions, details.infoUrl, details.infoLabel || "Официальный сайт", false);
+          addAction(actions, details.extraUrl, details.extraLabel || "Подробнее", false);
+        }
       });
     }
 
@@ -3948,6 +4093,7 @@
       suppressOriginalFoodBlocks(root);
       removeOriginalRouteMapBlocks(root);
       appendPlaceGuideStories(root);
+      applyPlaceVisitDetails(root);
       appendReferenceSections(root);
       appendRouteDayMaps(root);
       appendFoodRecommendations(root);
