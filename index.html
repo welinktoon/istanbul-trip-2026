@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <!-- published refresh: 2026-07-18T11:55Z -->
+  <!-- published refresh: 2026-07-18T12:05Z -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Istanbul 2026</title>
@@ -874,6 +874,44 @@
     color: #fff;
     font: 950 12px/1 Inter, "Segoe UI", Arial, sans-serif;
     box-shadow: 0 2px 7px rgba(23, 34, 45, .32);
+  }
+  .trip-route-explorer__pin--hotel,
+  .trip-map-marker--hotel {
+    border-radius: 7px;
+    background: #075b65;
+  }
+  .trip-map-marker--hotel {
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 3px 10px rgba(23, 34, 45, .42);
+  }
+  .trip-route-explorer__pin svg,
+  .trip-map-marker svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2.4;
+  }
+  .trip-route-explorer__point-name {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    min-width: 0;
+  }
+  .trip-route-explorer__hotel-tag,
+  .trip-map-popup__hotel-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: #dceff0;
+    color: #075b65;
+    font: 900 10px/1.1 Inter, "Segoe UI", Arial, sans-serif;
+    text-transform: uppercase;
+  }
+  .trip-map-popup__hotel-tag {
+    margin: 0 0 5px;
   }
   .trip-route-explorer__open {
     justify-self: start;
@@ -2691,18 +2729,34 @@
       return [point.coords[1], point.coords[0]];
     }
 
-    function tripMarkerIcon(index) {
+    var TRIP_HOME_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>';
+
+    function isTripHotel(point) {
+      return point && point.name === "Alessia Old City";
+    }
+
+    function tripMarkerIcon(point, index) {
+      var hotel = isTripHotel(point);
       return window.L.divIcon({
         className: "trip-map-marker-shell",
-        html: '<span class="trip-map-marker">' + String(index + 1) + "</span>",
-        iconSize: [30, 30],
-        iconAnchor: [15, 15],
-        popupAnchor: [0, -14]
+        html: hotel
+          ? '<span class="trip-map-marker trip-map-marker--hotel">' + TRIP_HOME_ICON + "</span>"
+          : '<span class="trip-map-marker">' + String(index + 1) + "</span>",
+        iconSize: hotel ? [36, 36] : [30, 30],
+        iconAnchor: hotel ? [18, 18] : [15, 15],
+        popupAnchor: hotel ? [0, -17] : [0, -14]
       });
     }
 
     function tripPopupContent(point, href) {
       var content = document.createElement("div");
+      if (isTripHotel(point)) {
+        var hotelTag = document.createElement("span");
+        hotelTag.className = "trip-map-popup__hotel-tag";
+        hotelTag.textContent = "Наш отель";
+        content.appendChild(hotelTag);
+        content.appendChild(document.createElement("br"));
+      }
       var title = document.createElement("strong");
       title.textContent = point.name;
       content.appendChild(title);
@@ -2747,7 +2801,14 @@
       points.forEach(function (point, index) {
         var latLng = tripLatLng(point);
         var href = options && options.linkFor ? options.linkFor(point, index) : "";
-        var marker = window.L.marker(latLng, { icon: tripMarkerIcon(index), keyboard: true })
+        var hotel = isTripHotel(point);
+        var marker = window.L.marker(latLng, {
+          icon: tripMarkerIcon(point, index),
+          keyboard: true,
+          title: hotel ? "Наш отель: " + point.name : point.name,
+          alt: hotel ? "Наш отель: " + point.name : point.name,
+          zIndexOffset: hotel ? 1000 : 0
+        })
           .bindPopup(tripPopupContent(point, href));
         marker.addTo(layer);
         bounds.push(latLng);
@@ -3111,10 +3172,21 @@
         route.points.forEach(function (point, pointIndex) {
           var item = document.createElement("li");
           var pin = document.createElement("span");
-          pin.className = "trip-route-explorer__pin";
-          pin.textContent = String(pointIndex + 1);
+          var hotel = isTripHotel(point);
+          pin.className = "trip-route-explorer__pin" + (hotel ? " trip-route-explorer__pin--hotel" : "");
+          if (hotel) pin.innerHTML = TRIP_HOME_ICON;
+          else pin.textContent = String(pointIndex + 1);
           item.appendChild(pin);
-          item.appendChild(document.createTextNode(point.name));
+          var pointName = document.createElement("span");
+          pointName.className = "trip-route-explorer__point-name";
+          pointName.appendChild(document.createTextNode(point.name));
+          if (hotel) {
+            var hotelTag = document.createElement("span");
+            hotelTag.className = "trip-route-explorer__hotel-tag";
+            hotelTag.textContent = "Наш отель";
+            pointName.appendChild(hotelTag);
+          }
+          item.appendChild(pointName);
           pointList.appendChild(item);
         });
         dayButtons.forEach(function (button, buttonIndex) {
