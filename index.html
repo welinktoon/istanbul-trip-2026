@@ -350,7 +350,8 @@
   .trip-tab-panel > article,
   .trip-generated-block,
   .trip-reference-section,
-  .trip-docs-checklist {
+  .trip-docs-checklist,
+  .trip-phrases {
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -364,7 +365,8 @@
   .trip-tab-panel > section h2,
   .trip-tab-panel > article h2,
   .trip-reference-section h2,
-  .trip-docs-checklist h2 {
+  .trip-docs-checklist h2,
+  .trip-phrases h2 {
     margin: 0 0 8px;
     color: var(--trip-ink);
     font: 950 24px/1.12 Inter, "Segoe UI", Arial, sans-serif;
@@ -1140,6 +1142,61 @@
     min-width: 0;
     overflow-wrap: anywhere;
   }
+  .trip-phrases__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .trip-phrases__group {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--trip-line);
+    border-radius: 12px;
+    background: #fff;
+  }
+  .trip-phrases__group--wide {
+    grid-column: 1 / -1;
+  }
+  .trip-phrases__group h3 {
+    margin: 0 0 8px;
+    color: var(--trip-ink);
+    font: 900 17px/1.3 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-phrases__list {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trip-phrases__group--wide .trip-phrases__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  .trip-phrases__item {
+    min-width: 0;
+    padding: 10px 0;
+    border-top: 1px solid var(--trip-line);
+  }
+  .trip-phrases__item:first-child {
+    border-top: 0;
+    padding-top: 2px;
+  }
+  .trip-phrases__english,
+  .trip-phrases__translation {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .trip-phrases__english {
+    color: var(--trip-ink);
+    font: 850 14px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-phrases__translation {
+    margin-top: 2px;
+    color: var(--trip-muted);
+    font: 650 13px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
   .trip-food-recommendations h2 {
     margin: 0 0 8px;
     color: var(--trip-ink);
@@ -1390,21 +1447,28 @@
     .trip-tab-panel > article,
     .trip-generated-block,
     .trip-reference-section,
-    .trip-docs-checklist {
+    .trip-docs-checklist,
+    .trip-phrases {
       padding: 14px;
     }
     .trip-tab-panel > section h2,
     .trip-tab-panel > article h2,
     .trip-reference-section h2,
-    .trip-docs-checklist h2 {
+    .trip-docs-checklist h2,
+    .trip-phrases h2 {
       font-size: 21px;
     }
     .trip-reference-grid,
     .trip-reference-grid--wide,
     .trip-docs-checklist__grid,
-    .trip-food-grid {
+    .trip-food-grid,
+    .trip-phrases__grid,
+    .trip-phrases__group--wide .trip-phrases__list {
       grid-template-columns: 1fr;
       gap: 10px;
+    }
+    .trip-phrases__group--wide {
+      grid-column: auto;
     }
     .trip-yandex-map__head {
       display: grid;
@@ -1533,6 +1597,11 @@
         id: "transport",
         label: "Транспорт",
         keywords: ["транспорт", "метро", "трамвай", "паром", "такси", "аэропорт", "airport", "ist", "saw", "havaist", "marmaray", "istanbulkart", "ferry", "metro", "tram", "bus", "otobus"]
+      },
+      {
+        id: "phrases",
+        label: "Фразы",
+        keywords: ["фразы", "английский", "english", "passport", "reservation", "exchange rate", "receipt", "luggage", "menu", "bill"]
       },
       {
         id: "money",
@@ -2319,6 +2388,79 @@
           "В османское время Кадыкёй развивался как рынок и транспортный узел, а в XIX веке Мода стала спокойным приморским пригородом с виллами, садами и смешанным греческим, армянским, левантийским и турецким населением. Сегодня рынки, бары и кофейни продолжают эту менее официальную традицию. После дворцов и мечетей старого города здесь хорошо видно, как живет современный Стамбул."
         ],
         notice: "Начните с рынка Кадыкёя, затем идите в сторону Моды и берега. Сравните ритм улиц с Султанахметом: здесь меньше памятников-символов, зато больше обычной городской жизни."
+      }
+    ];
+
+    var TRAVEL_PHRASES = [
+      {
+        title: "Аэропорт",
+        items: [
+          ["Here is my passport.", "Вот мой паспорт."],
+          ["I’m here on vacation.", "Я приехал(а) в отпуск."],
+          ["I’m staying for six days.", "Я остаюсь на шесть дней."],
+          ["I’m staying at this hotel.", "Я остановлюсь в этом отеле."],
+          ["Here is my booking confirmation.", "Вот подтверждение бронирования."],
+          ["Where is passport control?", "Где паспортный контроль?"],
+          ["Where can I collect my luggage?", "Где я могу забрать багаж?"],
+          ["Where is gate number five?", "Где выход номер пять?"],
+          ["Is the flight delayed?", "Рейс задерживается?"],
+          ["My luggage is missing.", "Мой багаж пропал."]
+        ]
+      },
+      {
+        title: "Такси",
+        items: [
+          ["I’d like to go to this address, please.", "Я хочу поехать по этому адресу."],
+          ["Here is my hotel’s address.", "Вот адрес моего отеля."],
+          ["Can you help me with my bag?", "Вы можете помочь мне с сумкой?"],
+          ["How much will it cost?", "Сколько это будет стоить?"],
+          ["How long will it take?", "Сколько времени займёт поездка?"],
+          ["Can I pay by card?", "Можно оплатить картой?"],
+          ["Please stop here.", "Остановитесь здесь, пожалуйста."],
+          ["Could you give me a receipt, please?", "Дайте мне чек, пожалуйста."],
+          ["No receipt, thank you.", "Чек не нужен, спасибо."]
+        ]
+      },
+      {
+        title: "Отель",
+        items: [
+          ["I have a reservation.", "У меня есть бронь."],
+          ["The reservation is under Diana’s name.", "Бронь оформлена на имя Дианы."],
+          ["Here is my booking confirmation.", "Вот подтверждение бронирования."],
+          ["I’d like two key cards, please.", "Мне нужны две ключ-карты."],
+          ["What time is breakfast?", "Во сколько завтрак?"],
+          ["What time is check-out?", "Во сколько нужно освободить номер?"],
+          ["What is the Wi-Fi password?", "Какой пароль от Wi-Fi?"],
+          ["Could you help me with my luggage?", "Помогите мне с багажом, пожалуйста."],
+          ["There is a problem with my room.", "В моём номере проблема."],
+          ["The air conditioner isn’t working.", "Кондиционер не работает."],
+          ["Could I have a clean towel, please?", "Можно мне чистое полотенце?"]
+        ]
+      },
+      {
+        title: "Обмен валют",
+        items: [
+          ["I’d like to exchange some money.", "Я хочу обменять деньги."],
+          ["I’d like to exchange dollars for euros.", "Я хочу обменять доллары на евро."],
+          ["What is the exchange rate?", "Какой курс обмена?"],
+          ["Is there a commission?", "Есть ли комиссия?"],
+          ["I’d like to exchange all of it.", "Я хочу обменять всё."],
+          ["Small notes, please.", "Мелкими купюрами, пожалуйста."]
+        ]
+      },
+      {
+        title: "Кафе и ресторан",
+        items: [
+          ["A table for two, please.", "Столик на двоих, пожалуйста."],
+          ["Could I see the menu, please?", "Можно посмотреть меню?"],
+          ["I’m ready to order.", "Я готов(а) сделать заказ."],
+          ["I’d like pasta with cheese, please.", "Я хочу пасту с сыром."],
+          ["I’d like a cup of coffee, please.", "Я хочу чашку кофе."],
+          ["No milk or sugar, thank you.", "Без молока и сахара, спасибо."],
+          ["No, that’s all, thank you.", "Нет, это всё, спасибо."],
+          ["Could I have the bill, please?", "Можно счёт, пожалуйста?"],
+          ["Can I pay by card?", "Можно оплатить картой?"]
+        ]
       }
     ];
 
@@ -3710,6 +3852,58 @@
       bindStoredChecklistState();
     }
 
+    function appendTravelPhrases(root) {
+      if (!root || root.querySelector("[data-trip-phrases]")) return;
+
+      var section = document.createElement("section");
+      section.className = "trip-phrases";
+      section.setAttribute("data-trip-phrases", "true");
+      section.setAttribute("data-trip-tab", "phrases");
+      section.setAttribute("data-tab-title", "Полезные фразы");
+
+      var title = document.createElement("h2");
+      title.textContent = "Вот 45 полезных фраз для поездки.";
+      section.appendChild(title);
+
+      var grid = document.createElement("div");
+      grid.className = "trip-phrases__grid";
+
+      TRAVEL_PHRASES.forEach(function (group, groupIndex) {
+        var groupBlock = document.createElement("section");
+        groupBlock.className = "trip-phrases__group" + (groupIndex === TRAVEL_PHRASES.length - 1 ? " trip-phrases__group--wide" : "");
+
+        var heading = document.createElement("h3");
+        heading.textContent = group.title;
+        groupBlock.appendChild(heading);
+
+        var list = document.createElement("ul");
+        list.className = "trip-phrases__list";
+
+        group.items.forEach(function (phrase) {
+          var item = document.createElement("li");
+          item.className = "trip-phrases__item";
+
+          var english = document.createElement("strong");
+          english.className = "trip-phrases__english";
+          english.textContent = phrase[0];
+
+          var translation = document.createElement("span");
+          translation.className = "trip-phrases__translation";
+          translation.textContent = phrase[1];
+
+          item.appendChild(english);
+          item.appendChild(translation);
+          list.appendChild(item);
+        });
+
+        groupBlock.appendChild(list);
+        grid.appendChild(groupBlock);
+      });
+
+      section.appendChild(grid);
+      root.appendChild(section);
+    }
+
     function textKey(value) {
       return normalizeText(value).toLowerCase()
         .replace(/[ё]/g, "е")
@@ -4098,6 +4292,7 @@
       appendRouteDayMaps(root);
       appendFoodRecommendations(root);
       appendTravelDocsChecklist(root);
+      appendTravelPhrases(root);
       moveUsefulAppsToBottom(root);
       rewriteTripCopy(root);
       normalizeTripHeadings(root);
