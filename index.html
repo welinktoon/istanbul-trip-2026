@@ -823,8 +823,10 @@
     text-transform: uppercase;
     letter-spacing: .04em;
   }
-  .trip-route-days button,
+  .trip-route-days a,
   .trip-map-legend button {
+    display: grid;
+    place-items: center;
     width: 100%;
     min-width: 0;
     min-height: 42px;
@@ -837,15 +839,15 @@
     font: 850 13px/1.2 Inter, "Segoe UI", Arial, sans-serif;
     cursor: pointer;
   }
-  .trip-route-days button:hover,
-  .trip-route-days button:focus-visible,
+  .trip-route-days a:hover,
+  .trip-route-days a:focus-visible,
   .trip-map-legend button:hover,
   .trip-map-legend button:focus-visible {
     border-color: rgba(8, 116, 129, .35);
     background: #fff;
     outline: 3px solid rgba(8, 116, 129, .12);
   }
-  .trip-route-days button[aria-pressed="true"] {
+  .trip-route-days a[aria-pressed="true"] {
     border-color: var(--trip-accent);
     background: var(--trip-accent);
     color: #fff;
@@ -896,6 +898,7 @@
   }
   .trip-route-explorer__decision strong {
     color: var(--trip-ink);
+    text-decoration: none;
     font-weight: 950;
   }
   .trip-route-explorer__timeline {
@@ -1585,7 +1588,7 @@
     .trip-route-days::-webkit-scrollbar {
       display: none;
     }
-    .trip-route-days button {
+    .trip-route-days a {
       flex: 0 0 auto;
       width: auto;
       min-width: 70px;
@@ -3630,17 +3633,12 @@
       dayNav.appendChild(dayNavLabel);
       var dayNavButtons = [];
       ROUTE_DAY_MAPS.forEach(function (route, routeIndex) {
-        var dayButton = document.createElement("button");
-        dayButton.type = "button";
+        var dayButton = document.createElement("a");
+        dayButton.href = "#trip-route-day-" + String(routeIndex + 1);
         dayButton.textContent = "День " + String(routeIndex + 1);
         dayButton.setAttribute("aria-label", "Перейти: " + route.title);
         dayButton.setAttribute("aria-pressed", routeIndex === 0 ? "true" : "false");
         dayButton.addEventListener("click", function () {
-          var target = document.getElementById("trip-route-day-" + String(routeIndex + 1));
-          if (target) target.scrollIntoView({
-            block: "start",
-            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
-          });
           dayNavButtons.forEach(function (button, index) {
             button.setAttribute("aria-pressed", String(index === routeIndex));
           });
