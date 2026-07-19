@@ -90,7 +90,6 @@
     }
 
     const tripTabsStyle = `
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <style id="istanbul-trip-tabs-style">
   :root {
     --trip-ink: #17222d;
@@ -892,8 +891,7 @@
     color: var(--trip-ink);
     font: 800 14px/1.35 Inter, "Segoe UI", Arial, sans-serif;
   }
-  .trip-route-explorer__pin,
-  .trip-map-marker {
+  .trip-route-explorer__pin {
     display: inline-grid;
     width: 26px;
     height: 26px;
@@ -905,18 +903,11 @@
     font: 950 12px/1 Inter, "Segoe UI", Arial, sans-serif;
     box-shadow: 0 2px 7px rgba(23, 34, 45, .32);
   }
-  .trip-route-explorer__pin--hotel,
-  .trip-map-marker--hotel {
+  .trip-route-explorer__pin--hotel {
     border-radius: 7px;
     background: #075b65;
   }
-  .trip-map-marker--hotel {
-    width: 32px;
-    height: 32px;
-    box-shadow: 0 3px 10px rgba(23, 34, 45, .42);
-  }
-  .trip-route-explorer__pin svg,
-  .trip-map-marker svg {
+  .trip-route-explorer__pin svg {
     width: 16px;
     height: 16px;
     stroke: currentColor;
@@ -949,8 +940,7 @@
     font: 900 10px/1.1 Inter, "Segoe UI", Arial, sans-serif;
     text-transform: uppercase;
   }
-  .trip-route-explorer__hotel-tag,
-  .trip-map-popup__hotel-tag {
+  .trip-route-explorer__hotel-tag {
     display: inline-flex;
     align-items: center;
     padding: 3px 6px;
@@ -959,9 +949,6 @@
     color: #075b65;
     font: 900 10px/1.1 Inter, "Segoe UI", Arial, sans-serif;
     text-transform: uppercase;
-  }
-  .trip-map-popup__hotel-tag {
-    margin: 0 0 5px;
   }
   .trip-route-explorer__open {
     justify-self: start;
@@ -1008,10 +995,13 @@
     min-height: 420px;
     background: #dbe5e8;
   }
-  .trip-leaflet-map {
+  .trip-yandex-widget {
+    position: relative;
+    display: block;
     width: 100%;
     height: 100%;
     min-height: 420px;
+    border: 0;
     z-index: 1;
   }
   .trip-map-status {
@@ -1025,19 +1015,6 @@
     font: 800 14px/1.4 Inter, "Segoe UI", Arial, sans-serif;
     text-align: center;
   }
-  .trip-map-marker-shell {
-    border: 0;
-    background: transparent;
-  }
-  .trip-leaflet-map .leaflet-control-zoom a {
-    color: var(--trip-ink);
-    font-family: Inter, "Segoe UI", Arial, sans-serif;
-  }
-  .trip-leaflet-map .leaflet-popup-content {
-    margin: 12px 14px;
-    color: var(--trip-ink);
-    font: 800 13px/1.4 Inter, "Segoe UI", Arial, sans-serif;
-  }
   .trip-food-map-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
@@ -1048,7 +1025,7 @@
     background: #fff;
   }
   .trip-food-map-layout .trip-map-frame,
-  .trip-food-map-layout .trip-leaflet-map {
+  .trip-food-map-layout .trip-yandex-widget {
     min-height: 460px;
   }
   .trip-map-legend {
@@ -1071,6 +1048,11 @@
     min-height: 40px;
     padding: 6px;
     text-align: left;
+  }
+  .trip-map-legend button[aria-pressed="true"] {
+    border-color: rgba(8, 116, 129, .42);
+    background: var(--trip-accent-soft);
+    color: #075b65;
   }
   .trip-map-legend .trip-route-explorer__pin {
     width: 26px;
@@ -1534,9 +1516,9 @@
       border-bottom: 1px solid var(--trip-line);
     }
     .trip-map-frame,
-    .trip-leaflet-map,
+    .trip-yandex-widget,
     .trip-food-map-layout .trip-map-frame,
-    .trip-food-map-layout .trip-leaflet-map {
+    .trip-food-map-layout .trip-yandex-widget {
       min-height: 360px;
     }
     .trip-map-legend {
@@ -3116,140 +3098,21 @@
       });
     }
 
-    var tripLeafletPromise = null;
-
-    function loadTripLeaflet() {
-      if (window.L) return Promise.resolve(window.L);
-      if (tripLeafletPromise) return tripLeafletPromise;
-
-      tripLeafletPromise = new Promise(function (resolve, reject) {
-        var existing = document.querySelector("script[data-trip-leaflet]");
-        var finish = function () {
-          if (window.L) resolve(window.L);
-          else reject(new Error("Leaflet did not initialize"));
-        };
-
-        if (existing) {
-          existing.addEventListener("load", finish, { once: true });
-          existing.addEventListener("error", function () { reject(new Error("Leaflet failed to load")); }, { once: true });
-          return;
-        }
-
-        var script = document.createElement("script");
-        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-        script.crossOrigin = "";
-        script.setAttribute("data-trip-leaflet", "true");
-        script.addEventListener("load", finish, { once: true });
-        script.addEventListener("error", function () { reject(new Error("Leaflet failed to load")); }, { once: true });
-        document.head.appendChild(script);
-      });
-
-      return tripLeafletPromise;
-    }
-
-    function tripLatLng(point) {
-      return [point.coords[1], point.coords[0]];
-    }
-
     var TRIP_HOME_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>';
 
     function isTripHotel(point) {
       return point && point.name === "Alessia Old City";
     }
 
-    function tripMarkerIcon(point, index) {
-      var hotel = isTripHotel(point);
-      return window.L.divIcon({
-        className: "trip-map-marker-shell",
-        html: hotel
-          ? '<span class="trip-map-marker trip-map-marker--hotel">' + TRIP_HOME_ICON + "</span>"
-          : '<span class="trip-map-marker">' + String(index + 1) + "</span>",
-        iconSize: hotel ? [36, 36] : [30, 30],
-        iconAnchor: hotel ? [18, 18] : [15, 15],
-        popupAnchor: hotel ? [0, -17] : [0, -14]
-      });
-    }
-
-    function tripPopupContent(point, href) {
-      var content = document.createElement("div");
-      if (isTripHotel(point)) {
-        var hotelTag = document.createElement("span");
-        hotelTag.className = "trip-map-popup__hotel-tag";
-        hotelTag.textContent = "Наш отель";
-        content.appendChild(hotelTag);
-        content.appendChild(document.createElement("br"));
-      }
-      var title = document.createElement("strong");
-      title.textContent = point.name;
-      content.appendChild(title);
-      if (href) {
-        var link = document.createElement("a");
-        link.href = href;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = "Открыть в Яндекс Картах";
-        link.style.display = "block";
-        link.style.marginTop = "6px";
-        content.appendChild(link);
-      }
-      return content;
-    }
-
-    function createTripLeafletMap(host) {
-      var map = window.L.map(host, { scrollWheelZoom: false, zoomControl: true });
-      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
-
-      var resizeTimer = 0;
-      var invalidate = function () {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(function () { map.invalidateSize(false); }, 60);
-      };
-      if (window.ResizeObserver) {
-        var observer = new ResizeObserver(invalidate);
-        observer.observe(host);
-      }
-      window.addEventListener("resize", invalidate);
-      invalidate();
-      return map;
-    }
-
-    function renderTripPoints(map, layer, points, options) {
-      layer.clearLayers();
-      var bounds = [];
-      var markers = [];
-      points.forEach(function (point, index) {
-        var latLng = tripLatLng(point);
-        var href = options && options.linkFor ? options.linkFor(point, index) : "";
-        var hotel = isTripHotel(point);
-        var marker = window.L.marker(latLng, {
-          icon: tripMarkerIcon(point, index),
-          keyboard: true,
-          title: hotel ? "Наш отель: " + point.name : point.name,
-          alt: hotel ? "Наш отель: " + point.name : point.name,
-          zIndexOffset: hotel ? 1000 : 0
-        })
-          .bindPopup(tripPopupContent(point, href));
-        marker.addTo(layer);
-        bounds.push(latLng);
-        markers.push(marker);
-      });
-
-      if (options && options.line && bounds.length > 1) {
-        window.L.polyline(bounds, {
-          color: "#087481",
-          weight: 5,
-          opacity: .86,
-          lineJoin: "round"
-        }).addTo(layer);
-      }
-
-      if (bounds.length) {
-        map.fitBounds(bounds, { padding: [38, 38], maxZoom: 15, animate: false });
-      }
-      return markers;
+    function createYandexWidget(src, title) {
+      var iframe = document.createElement("iframe");
+      iframe.className = "trip-yandex-widget";
+      iframe.src = src;
+      iframe.title = title;
+      iframe.loading = "lazy";
+      iframe.referrerPolicy = "no-referrer-when-downgrade";
+      iframe.allowFullscreen = true;
+      return iframe;
     }
 
     function yandexPointFor(place, index) {
@@ -3275,6 +3138,23 @@
       return "https://yandex.ru/maps/?ll=28.9720%2C41.0127&z=13&pt=" + encodeURIComponent(yandexFoodMapPoints());
     }
 
+    function yandexFoodWidgetUrl() {
+      var params = new URLSearchParams();
+      params.set("ll", "28.9720,41.0127");
+      params.set("z", "13");
+      params.set("pt", yandexFoodMapPoints());
+      params.set("lang", "ru_RU");
+      return "https://yandex.ru/map-widget/v1/?" + params.toString();
+    }
+
+    function yandexPlaceWidgetUrl(place) {
+      var params = new URLSearchParams();
+      params.set("text", place.yandexQuery || (place.name + " Istanbul"));
+      params.set("z", "16");
+      params.set("lang", "ru_RU");
+      return "https://yandex.ru/map-widget/v1/?" + params.toString();
+    }
+
     function buildYandexFoodMap() {
       var map = document.createElement("section");
       map.className = "trip-yandex-map trip-interactive-map-section";
@@ -3287,7 +3167,7 @@
       heading.textContent = "Интерактивная карта еды";
       text.appendChild(heading);
       var note = document.createElement("p");
-      note.textContent = "Двигайте и масштабируйте карту. Нажмите место в списке, чтобы быстро найти его на карте.";
+      note.textContent = "Двигайте и масштабируйте карту. Нажмите место в списке, чтобы открыть его в виджете Яндекс Карт.";
       text.appendChild(note);
       head.appendChild(text);
 
@@ -3304,14 +3184,8 @@
       layout.className = "trip-food-map-layout";
       var frame = document.createElement("div");
       frame.className = "trip-map-frame";
-      var status = document.createElement("div");
-      status.className = "trip-map-status";
-      status.textContent = "Загружаем интерактивную карту...";
-      frame.appendChild(status);
-      var canvas = document.createElement("div");
-      canvas.className = "trip-leaflet-map";
-      canvas.setAttribute("aria-label", "Карта ресторанов и кафе Стамбула");
-      frame.appendChild(canvas);
+      var widget = createYandexWidget(yandexFoodWidgetUrl(), "Карта ресторанов и кафе Стамбула");
+      frame.appendChild(widget);
       layout.appendChild(frame);
       var legend = document.createElement("ol");
       legend.className = "trip-map-legend";
@@ -3321,6 +3195,7 @@
         var button = document.createElement("button");
         button.type = "button";
         button.setAttribute("aria-label", "Показать на карте: " + place.name);
+        button.setAttribute("aria-pressed", "false");
         var pin = document.createElement("span");
         pin.className = "trip-route-explorer__pin";
         pin.textContent = String(index + 1);
@@ -3333,22 +3208,12 @@
       layout.appendChild(legend);
       map.appendChild(layout);
 
-      loadTripLeaflet().then(function () {
-        status.textContent = "";
-        var leafletMap = createTripLeafletMap(canvas);
-        var layer = window.L.layerGroup().addTo(leafletMap);
-        var markers = renderTripPoints(leafletMap, layer, FOOD_RECOMMENDATIONS, {
-          linkFor: function (place) { return yandexSearchUrl(place); }
+      legendButtons.forEach(function (button, index) {
+        button.addEventListener("click", function () {
+          legendButtons.forEach(function (item) { item.setAttribute("aria-pressed", "false"); });
+          button.setAttribute("aria-pressed", "true");
+          widget.src = yandexPlaceWidgetUrl(FOOD_RECOMMENDATIONS[index]);
         });
-        legendButtons.forEach(function (button, index) {
-          button.addEventListener("click", function () {
-            var point = FOOD_RECOMMENDATIONS[index];
-            leafletMap.setView(tripLatLng(point), 16, { animate: true });
-            markers[index].openPopup();
-          });
-        });
-      }).catch(function () {
-        status.textContent = "Карта сейчас не загрузилась. Откройте список точек в Яндекс Картах кнопкой выше.";
       });
       return map;
     }
@@ -3508,6 +3373,12 @@
       return "https://yandex.ru/maps/?" + params.toString();
     }
 
+    function yandexRouteWidgetUrl(route) {
+      return yandexRouteOpenUrl(route)
+        .replace("https://yandex.ru/maps/?", "https://yandex.ru/map-widget/v1/?")
+        + "&lang=ru_RU";
+    }
+
     function appendRouteDayMaps(root) {
       if (!root || root.querySelector("[data-trip-route-day-maps]")) return;
 
@@ -3543,8 +3414,6 @@
 
       var routeList = document.createElement("div");
       routeList.className = "trip-route-list";
-      var mapEntries = [];
-
       ROUTE_DAY_MAPS.forEach(function (route, routeIndex) {
         var explorer = document.createElement("article");
         explorer.className = "trip-route-explorer";
@@ -3641,32 +3510,12 @@
 
         var frame = document.createElement("div");
         frame.className = "trip-map-frame";
-        var status = document.createElement("div");
-        status.className = "trip-map-status";
-        status.textContent = "Загружаем интерактивную карту...";
-        frame.appendChild(status);
-        var canvas = document.createElement("div");
-        canvas.className = "trip-leaflet-map";
-        canvas.setAttribute("aria-label", "Интерактивная карта: " + route.title);
-        frame.appendChild(canvas);
+        var widget = createYandexWidget(yandexRouteWidgetUrl(route), "Интерактивная карта: " + route.title);
+        frame.appendChild(widget);
         explorer.appendChild(frame);
         routeList.appendChild(explorer);
-        mapEntries.push({ route: route, canvas: canvas, status: status });
       });
       section.appendChild(routeList);
-
-      loadTripLeaflet().then(function () {
-        mapEntries.forEach(function (entry) {
-          entry.status.textContent = "";
-          var leafletMap = createTripLeafletMap(entry.canvas);
-          var routeLayer = window.L.layerGroup().addTo(leafletMap);
-          renderTripPoints(leafletMap, routeLayer, entry.route.points, { line: true });
-        });
-      }).catch(function () {
-        mapEntries.forEach(function (entry) {
-          entry.status.textContent = "Карта сейчас не загрузилась. Откройте маршрут в Яндекс Картах кнопкой слева.";
-        });
-      });
 
       root.appendChild(section);
     }
