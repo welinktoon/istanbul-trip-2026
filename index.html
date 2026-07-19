@@ -50,7 +50,11 @@
     .error { min-height: 20px; margin-top: 12px; color: #b6465f; font-size: 14px; }
     @media (max-width: 520px) {
       body { padding: 16px; }
-      .panel { padding: 20px; }
+      .panel {
+        width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px);
+        padding: 20px;
+      }
     }
   </style>
 </head>
