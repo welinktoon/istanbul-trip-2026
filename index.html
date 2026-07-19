@@ -3370,6 +3370,7 @@
       params.set("ruri", points.map(function (point) {
         return point.uri || "";
       }).join("~"));
+      params.set("pt", route.points.map(yandexRoutePointFor).join("~"));
       return "https://yandex.ru/maps/?" + params.toString();
     }
 
