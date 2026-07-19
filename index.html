@@ -815,6 +815,14 @@
     border-radius: var(--trip-radius);
     background: #f5f8f9;
   }
+  .trip-route-days__label {
+    grid-column: 1 / -1;
+    padding: 2px 4px 0;
+    color: var(--trip-muted);
+    font: 850 11px/1.2 Inter, "Segoe UI", Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
   .trip-route-days button,
   .trip-map-legend button {
     width: 100%;
@@ -846,7 +854,7 @@
     display: grid;
     grid-template-columns: minmax(250px, 330px) minmax(0, 1fr);
     min-height: 520px;
-    overflow: hidden;
+    overflow: clip;
     border: 1px solid var(--trip-line);
     border-radius: var(--trip-radius);
     background: #fff;
@@ -875,6 +883,69 @@
     margin: 0;
     color: var(--trip-muted);
     font: 650 14px/1.55 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__decision {
+    display: grid;
+    gap: 3px;
+    margin: 0;
+    padding: 10px 12px;
+    border-left: 3px solid var(--trip-accent);
+    background: var(--trip-accent-soft);
+    color: #075b65;
+    font: 850 12px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__decision strong {
+    color: var(--trip-ink);
+    font-weight: 950;
+  }
+  .trip-route-explorer__timeline {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--trip-line);
+    border-radius: 7px;
+    background: #fff;
+    list-style: none;
+  }
+  .trip-route-explorer__timeline li {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+    padding: 8px 10px;
+    border-top: 1px solid var(--trip-soft-line);
+  }
+  .trip-route-explorer__timeline li:first-child {
+    border-top: 0;
+  }
+  .trip-route-explorer__time {
+    color: var(--trip-clay);
+    font: 950 12px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__event {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    color: var(--trip-ink);
+    font: 850 12px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__event small {
+    color: var(--trip-muted);
+    font: 650 11px/1.4 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__stops {
+    min-width: 0;
+    border-top: 1px solid var(--trip-soft-line);
+    border-bottom: 1px solid var(--trip-soft-line);
+    padding: 8px 0;
+  }
+  .trip-route-explorer__stops summary {
+    cursor: pointer;
+    color: var(--trip-ink);
+    font: 900 13px/1.35 Inter, "Segoe UI", Arial, sans-serif;
+  }
+  .trip-route-explorer__stops[open] summary {
+    margin-bottom: 10px;
   }
   .trip-route-explorer__points {
     display: grid;
@@ -994,6 +1065,12 @@
     min-width: 0;
     min-height: 420px;
     background: #dbe5e8;
+  }
+  .trip-route-explorer > .trip-map-frame {
+    position: sticky;
+    top: 18px;
+    align-self: start;
+    height: min(70vh, 640px);
   }
   .trip-yandex-widget {
     position: relative;
@@ -1416,11 +1493,14 @@
       width: 100%;
       gap: 6px;
       padding: 7px;
+      scroll-snap-type: x proximity;
+      overscroll-behavior-x: contain;
     }
     .trip-tabs__button {
       min-height: 36px;
       padding: 7px 10px;
       font-size: 13px;
+      scroll-snap-align: start;
     }
     .trip-tab-panel {
       gap: 12px;
@@ -1489,9 +1569,17 @@
       gap: 14px;
     }
     .trip-route-days {
+      position: sticky;
+      top: 52px;
+      z-index: 8;
       display: flex;
+      align-items: center;
       overflow-x: auto;
       padding: 6px;
+      background: rgba(245, 248, 249, .97);
+      box-shadow: 0 1px 0 var(--trip-line);
+      scroll-snap-type: x proximity;
+      overscroll-behavior-x: contain;
       scrollbar-width: none;
     }
     .trip-route-days::-webkit-scrollbar {
@@ -1500,7 +1588,14 @@
     .trip-route-days button {
       flex: 0 0 auto;
       width: auto;
-      min-width: 88px;
+      min-width: 70px;
+      min-height: 38px;
+      scroll-snap-align: start;
+    }
+    .trip-route-days__label {
+      flex: 0 0 auto;
+      padding: 0 4px;
+      white-space: nowrap;
     }
     .trip-route-explorer,
     .trip-food-map-layout {
@@ -1509,11 +1604,30 @@
     }
     .trip-route-list .trip-route-explorer {
       min-height: 0;
+      scroll-margin-top: 108px;
     }
     .trip-route-explorer__details {
       padding: 16px;
       border-right: 0;
       border-bottom: 1px solid var(--trip-line);
+    }
+    .trip-route-explorer > .trip-map-frame {
+      position: relative;
+      top: auto;
+      height: 360px;
+    }
+    .trip-route-explorer__timeline li {
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 8px;
+      padding: 8px;
+    }
+    .trip-route-explorer__actions {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .trip-route-explorer__actions .trip-route-explorer__open {
+      width: 100%;
+      text-align: center;
     }
     .trip-map-frame,
     .trip-yandex-widget,
@@ -2052,7 +2166,7 @@
       {
         tab: "transport",
         title: "Транспорт",
-        note: "Подробный транспортный справочник: аэропорт, такси/трансфер и запасные варианты без покупки Istanbulkart.",
+        note: "Правило поездки: до 27 минут включительно идем пешком, от 28 минут едем на такси. Istanbulkart не покупаем.",
         wide: true,
         cards: [
           {
@@ -2072,23 +2186,23 @@
           },
           {
             title: "Такси вместо Istanbulkart",
-            text: "Istanbulkart не покупаем: по городу планируем ездить на такси, а пешие куски оставляем только там, где реально рядом.",
+            text: "Istanbulkart не покупаем: короткие переходы до 27 минут проходим пешком, для дальних районов и аэропорта используем такси.",
             items: ["Заранее поставить BiTaksi/Uber или местное приложение", "Перед посадкой сверять адрес и точку на карте", "Держать наличные лиры на случай проблем с оплатой"]
           },
           {
-            title: "Трамвай/метро как запас",
-            text: "Общественный транспорт оставляем только как аварийный план, если пробки или такси неадекватно дорого.",
-            items: ["Для коротких переездов сначала смотреть такси", "Без Istanbulkart не строить план вокруг трамвая", "Если нужен транспорт - проверять разовый билет/оплату на месте"]
+            title: "Пешком или такси",
+            text: "Перед каждым самостоятельным переездом смотрим пешее время в Яндексе и сравниваем с порогом 27 минут.",
+            items: ["27 минут и меньше — пешком", "28 минут и больше — такси", "Внутри одного района между соседними местами — пешком"]
           },
           {
-            title: "Метро и Marmaray",
-            text: "Удобно для длинных переездов, азиатской стороны и объезда пробок.",
-            items: ["Marmaray пересекает Босфор", "Метро стабильно по времени", "Сохранять маршрут офлайн"]
+            title: "Запас времени",
+            text: "Расчет карты — ориентир, поэтому к такси добавляем запас на подачу, пробки и поиск нужного входа.",
+            items: ["По городу добавлять 10–15 минут", "В аэропорт закладывать 75 минут дороги", "К билетам и посадке приходить заранее"]
           },
           {
-            title: "Паромы",
-            text: "Паромы удобны для Босфора, Кадыкея и видов на город.",
-            items: ["Проверять последний рейс", "Приходить к причалу заранее", "Брать ветровку вечером"]
+            title: "Морская прогулка",
+            text: "Для короткого тура по Босфору Istanbulkart не нужна: это отдельный билет Şehir Hatları в кассе причала.",
+            items: ["На такси доехать к кассе Эминёню", "Приехать за 50 минут", "Взять ветровку на воду"]
           },
           {
             title: "Такси",
@@ -2141,6 +2255,18 @@
         day: "День 1",
         title: "20 июля - прилет, обменник и район отеля",
         description: "После заселения: обменять деньги, зайти в McDonald's и пройти спокойный круг по старому городу — около 3 км и 45–60 минут чистой ходьбы.",
+        transferDecision: "Пешком до обменника: 10 минут. Это меньше порога 27 минут — такси после заселения не нужно.",
+        schedule: [
+          { time: "09:20", title: "Прилёт в IST", detail: "На паспортный контроль и багаж заложен запас до 10:40." },
+          { time: "10:40", title: "Такси из аэропорта", detail: "Текущий расчёт — 47 минут; с пробками закладываем 60–80 минут." },
+          { time: "12:00", title: "Ориентир прибытия в отель", detail: "Если номер не готов, оставить багаж на ресепшене и пообедать рядом." },
+          { time: "14:00", title: "Заселение и отдых", detail: "Душ, вода и пауза после дороги." },
+          { time: "15:30", title: "Выйти из отеля пешком", detail: "До Artvin Döviz — 10 минут." },
+          { time: "15:40", title: "Обмен валюты", detail: "Сравнить курс; запасной Ağaoğlu находится дальше по той же улице." },
+          { time: "16:00", title: "McDonald's и начало прогулки", detail: "После перекуса — Колонна Константина, Нуруосмание и Гранд-базар." },
+          { time: "18:00", title: "Площадь Беязыт", detail: "До отеля отсюда около 8–10 минут пешком." },
+          { time: "18:15", title: "Вернуться в отель", detail: "Свободный вечер без дальних поездок." }
+        ],
         routingMode: "pd",
         routingLabel: "пешком",
         center: [28.9666, 41.0080],
@@ -2169,6 +2295,21 @@
         day: "День 2",
         title: "21 июля - Султанахмет: основные виды",
         description: "Главные виды исторического центра плюс Араста, Сиркеджи и Египетский базар — около 5–6 км и 80–95 минут чистой ходьбы без учета осмотров.",
+        transferDecision: "Пешком до Ипподрома: 17 минут. Это меньше порога 27 минут; от Египетского базара обратно до отеля — 19 минут, тоже пешком.",
+        schedule: [
+          { time: "08:20", title: "Выйти из отеля пешком", detail: "До Ипподрома — 17 минут; пять минут оставлены на переходы." },
+          { time: "08:45", title: "Ипподром", detail: "Обелиски и общий вид площади до начала основной толпы." },
+          { time: "09:10", title: "Голубая мечеть", detail: "На осмотр — 35–40 минут; доступ могут ограничить перед молитвой." },
+          { time: "09:55", title: "Рынок Араста", detail: "Короткий проход за мечетью, около 20 минут." },
+          { time: "10:20", title: "Айя-София", detail: "Общий вид; галерея по желанию. На посещение заложен час." },
+          { time: "11:30", title: "Цистерна Базилика", detail: "Лучше иметь билет Passo; официальный режим — ежедневно с 09:00." },
+          { time: "12:35", title: "Обед", detail: "Около часа в Султанахмете или Сиркеджи." },
+          { time: "13:45", title: "Парк Гюльхане", detail: "Спокойная прогулка и отдых в тени." },
+          { time: "14:40", title: "Вокзал Сиркеджи", detail: "Фасад и короткая остановка на 20 минут." },
+          { time: "15:10", title: "Египетский базар", detail: "На рынок и район Эминёню — около часа." },
+          { time: "16:15", title: "Пойти обратно в отель", detail: "Пешком 19 минут — такси не нужно." },
+          { time: "16:40", title: "Отдых в отеле", detail: "Вечер остаётся свободным." }
+        ],
         routingMode: "pd",
         routingLabel: "пешком",
         center: [28.9758, 41.0084],
@@ -2189,9 +2330,24 @@
       {
         day: "День 3",
         title: "22 июля - Топкапы, базары, Сулеймание",
-        description: "Дворец и музеи утром, затем Египетский базар, Сулеймание и Гранд-базар — около 5–6 км и 80–95 минут чистой ходьбы.",
-        routingMode: "pd",
-        routingLabel: "пешком",
+        description: "Утром такси до Топкапы, затем дворец, музеи, Египетский базар, Сулеймание и Гранд-базар — около 4 км пешком внутри исторического центра.",
+        transferDecision: "Пешком до Топкапы: 36 минут — больше порога 27 минут. Поэтому выезжаем на такси; текущий расчёт поездки — около 14 минут.",
+        schedule: [
+          { time: "08:20", title: "Выйти из отеля и заказать такси", detail: "На дорогу и высадку закладываем 25 минут." },
+          { time: "08:45", title: "Очередь у Топкапы", detail: "Касса открывается в 09:00; 22 июля — среда, дворец открыт." },
+          { time: "09:00", title: "Дворец Топкапы", detail: "Дворец, гарем и Айя-Ирина — до 12:00 без спешки." },
+          { time: "12:05", title: "Археологический музей", detail: "На основные залы — около 70 минут." },
+          { time: "13:20", title: "Обед", detail: "45–50 минут возле Гюльхане или Сиркеджи." },
+          { time: "14:20", title: "Египетский базар", detail: "Пеший переход через Гюльхане и Сиркеджи." },
+          { time: "15:20", title: "Мечеть Сулеймание", detail: "Подъём пешком; на двор и виды — 40 минут." },
+          { time: "16:15", title: "Гранд-базар", detail: "На прогулку и покупки — около часа." },
+          { time: "17:20", title: "Пойти в отель", detail: "От Гранд-базара 9 минут пешком — такси не нужно." },
+          { time: "17:35", title: "Вернуться в отель", detail: "Запас оставлен на выход из базара и переходы." }
+        ],
+        routingMode: "auto",
+        routingLabel: "такси до Топкапы",
+        openLabel: "Такси до Топкапы в Яндексе",
+        yandexPointIndexes: [0, 1],
         center: [28.9735, 41.0132],
         zoom: 14,
         points: [
@@ -2208,6 +2364,20 @@
         day: "День 4",
         title: "23 июля - Бейоглу, Galataport и Каракёй",
         description: "На такси от отеля до Meclis-i Mebusan 10B, этаж 1. Затем пешая петля через Galataport, Каракёй, Галату и Джихангир — около 4 км и 60–75 минут чистой ходьбы.",
+        transferDecision: "Пешком до адреса 10B: 49 минут — больше порога 27 минут. Едем на такси около 19 минут; из Джихангира обратно пешком 46 минут, поэтому тоже такси.",
+        schedule: [
+          { time: "09:20", title: "Выйти из отеля и заказать такси", detail: "Цель — приехать к 09:50; десять минут остаются на поиск входа и этажа." },
+          { time: "09:50", title: "Meclis-i Mebusan 10B", detail: "Проверить вывеску, нужный вход и этаж 1." },
+          { time: "10:45", title: "Набережная Galataport", detail: "От адреса — короткий пеший переход." },
+          { time: "11:10", title: "Istanbul Modern", detail: "На музей по желанию заложено до 90 минут; внешний осмотр быстрее." },
+          { time: "12:45", title: "Обед в Каракёе", detail: "Около часа без ухода с маршрута." },
+          { time: "13:50", title: "Кылыч Али-паша и Каракёй", detail: "Прогулка по набережной и кварталу." },
+          { time: "15:00", title: "Галатский мост и лестница Камондо", detail: "Пеший подъём в сторону башни." },
+          { time: "15:50", title: "Галатская башня", detail: "Официально открыта; на очередь и подъём заложено 70 минут." },
+          { time: "17:10", title: "Парк Джихангир", detail: "Короткий отдых и вид на Босфор." },
+          { time: "17:45", title: "Заказать такси в отель", detail: "Текущий расчёт — 19 минут; с пробками закладываем до 30." },
+          { time: "18:15", title: "Вернуться в отель", detail: "Вечер свободный." }
+        ],
         routingMode: "auto",
         routingLabel: "такси до адреса 10B",
         openLabel: "Такси до адреса 10B в Яндексе",
@@ -2238,6 +2408,20 @@
         day: "День 5",
         title: "24 июля - прогулка по Босфору",
         description: "На такси до причала Эминёню, затем короткий тур Şehir Hatları. После возвращения — прогулка через Египетский базар, Сиркеджи и Гюльхане: еще около 3 км и 45–60 минут пешком.",
+        transferDecision: "Пешком до причала: 30 минут — на 3 минуты больше порога. Поэтому такси: текущий расчёт 15 минут. От Гюльхане до отеля 23 минуты — обратно идём пешком.",
+        schedule: [
+          { time: "11:30", title: "Спокойное утро", detail: "Завтрак, отдых и проверка погоды на Босфоре." },
+          { time: "12:30", title: "Обед рядом с отелем", detail: "Закончить до 13:15, чтобы не спешить к причалу." },
+          { time: "13:25", title: "Выйти из отеля и заказать такси", detail: "На поездку и высадку закладываем 25 минут." },
+          { time: "13:50", title: "Касса Şehir Hatları в Эминёню", detail: "До отправления остаётся 50 минут: купить билет и найти посадку." },
+          { time: "14:40", title: "Отправление короткого тура", detail: "Официальное расписание на 24 июля; точное время возвращения подтвердить в кассе." },
+          { time: "~16:40", title: "Ориентир возвращения", detail: "Фактическое время зависит от рейса и условий на воде." },
+          { time: "16:50", title: "Египетский базар", detail: "Короткая прогулка после круиза." },
+          { time: "17:35", title: "Вокзал Сиркеджи", detail: "Фасад и старые торговые улицы." },
+          { time: "18:05", title: "Парк Гюльхане", detail: "Отдых в тени перед дорогой в отель." },
+          { time: "18:45", title: "Пойти в отель пешком", detail: "23 минуты — меньше порога, такси не нужно." },
+          { time: "19:10", title: "Вернуться в отель", detail: "Запас две минуты добавлен к расчёту карты." }
+        ],
         routingMode: "auto",
         routingLabel: "такси до причала",
         openLabel: "Такси до причала в Яндексе",
@@ -2271,6 +2455,18 @@
         day: "День 6",
         title: "25 июля - свободный день: Кадыкёй и Мода",
         description: "На такси прямо из отеля в Кадыкёй, затем прогулка через рынок, Бахарие, парк Йогуртчу и берег Моды — около 4–4,5 км и 60–80 минут пешком. Обратно в отель — на такси.",
+        transferDecision: "Кадыкёй находится на другом берегу: текущий расчёт такси до рынка — 27 минут, обратно от Моды — 28 минут. Это не короткий пеший переход, поэтому в обе стороны такси.",
+        schedule: [
+          { time: "09:30", title: "Выйти из отеля и заказать такси", detail: "На дорогу через тоннель и возможные пробки закладываем 40 минут." },
+          { time: "10:10", title: "Рынок Кадыкёя", detail: "Завтрак или кофе и прогулка по рынку." },
+          { time: "11:30", title: "Улица Бахарие", detail: "Пешеходная улица и исторический трамвай снаружи." },
+          { time: "12:00", title: "Опера Сюрейя", detail: "Фасад и короткая остановка." },
+          { time: "12:30", title: "Обед", detail: "Около 75 минут в центре Кадыкёя." },
+          { time: "14:00", title: "Парк Йогуртчу", detail: "Пешая зелёная часть маршрута." },
+          { time: "15:00", title: "Парк и набережная Моды", detail: "Свободная прогулка, кофе и отдых у воды." },
+          { time: "17:30", title: "Заказать такси в отель", detail: "Текущий расчёт — 28 минут; закладываем 45 минут." },
+          { time: "18:15", title: "Вернуться в отель", detail: "Если пробки сильные, выехать из Моды раньше." }
+        ],
         routingMode: "auto",
         routingLabel: "такси до Кадыкёя",
         openLabel: "Такси до Кадыкёя в Яндексе",
@@ -2295,6 +2491,15 @@
         day: "День 7",
         title: "26 июля - рядом с отелем и вылет",
         description: "Последний день без риска: 30–45 минут рядом с отелем, затем такси или трансфер в IST с хорошим запасом времени.",
+        transferDecision: "До Беязыта и Гранд-базара 8–10 минут пешком. В IST — только такси/трансфер: текущий расчёт 44 минуты, но на дорогу закладываем 75 минут и приезжаем за 3 часа до рейса.",
+        schedule: [
+          { time: "09:00", title: "Завтрак и сбор вещей", detail: "Проверить документы, зарядки и онлайн-регистрацию." },
+          { time: "10:00", title: "Оставить багаж в отеле", detail: "Только если время вылета позволяет вернуться без спешки." },
+          { time: "10:15", title: "Короткая прогулка пешком", detail: "Беязыт, край Гранд-базара и Кумкапы — не уходить дальше района отеля." },
+          { time: "T−4:30", title: "Вернуться в отель", detail: "T — время вылета. Забрать багаж и проверить терминал IST." },
+          { time: "T−4:15", title: "Выехать из отеля", detail: "75 минут на дорогу плюс прибытие в аэропорт за 3 часа." },
+          { time: "T−3:00", title: "Быть в IST", detail: "Регистрация, багаж, паспортный контроль и путь до выхода." }
+        ],
         routingMode: "auto",
         routingLabel: "трансфер в аэропорт",
         yandexPointIndexes: [0, 4],
@@ -2306,6 +2511,9 @@
           { name: "Гранд-базар", coords: [28.968070, 41.010611], uri: "ymapsbm1://org?oid=1016388421" },
           { name: "Кумкапы", coords: [28.964676, 41.004318], uri: "ymapsbm1://geo?data=Cgo0MTA2NDQyMjgyEipUw7xya2l5ZSwgxLBzdGFuYnVsLCBGYXRpaCwgS3Vta2FwxLEgU2VtdGkiCg2mt-dBFWwEJEI," },
           { name: "Аэропорт Стамбул (IST)", coords: [28.742536, 41.260746], uri: "ymapsbm1://org?oid=85454152633" }
+        ],
+        notes: [
+          "Точное время обратного рейса в материалах поездки не указано, поэтому расписание записано через T — время вылета. Как только подставите время билета, получите точные часы возвращения и выезда."
         ]
       }
     ];
@@ -3397,7 +3605,7 @@
       headText.appendChild(title);
 
       var note = document.createElement("p");
-      note.textContent = "Все дни идут подряд без переключателей. Двигайте любую карту, нажимайте метки или открывайте готовый маршрут в Яндексе.";
+      note.textContent = "Все дни идут подряд. Правило переездов: до 27 минут включительно пешком, от 28 минут — такси. В каждом дне указаны время выхода, запас и готовая карта.";
       headText.appendChild(note);
       head.appendChild(headText);
       section.appendChild(head);
@@ -3412,6 +3620,35 @@
       hotelAddress.appendChild(hotelAddressLabel);
       hotelAddress.appendChild(hotelAddressText);
       section.appendChild(hotelAddress);
+
+      var dayNav = document.createElement("nav");
+      dayNav.className = "trip-route-days";
+      dayNav.setAttribute("aria-label", "Быстрый переход по дням маршрута");
+      var dayNavLabel = document.createElement("span");
+      dayNavLabel.className = "trip-route-days__label";
+      dayNavLabel.textContent = "Перейти к дню";
+      dayNav.appendChild(dayNavLabel);
+      var dayNavButtons = [];
+      ROUTE_DAY_MAPS.forEach(function (route, routeIndex) {
+        var dayButton = document.createElement("button");
+        dayButton.type = "button";
+        dayButton.textContent = "День " + String(routeIndex + 1);
+        dayButton.setAttribute("aria-label", "Перейти: " + route.title);
+        dayButton.setAttribute("aria-pressed", routeIndex === 0 ? "true" : "false");
+        dayButton.addEventListener("click", function () {
+          var target = document.getElementById("trip-route-day-" + String(routeIndex + 1));
+          if (target) target.scrollIntoView({
+            block: "start",
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+          });
+          dayNavButtons.forEach(function (button, index) {
+            button.setAttribute("aria-pressed", String(index === routeIndex));
+          });
+        });
+        dayNav.appendChild(dayButton);
+        dayNavButtons.push(dayButton);
+      });
+      section.appendChild(dayNav);
 
       var routeList = document.createElement("div");
       routeList.className = "trip-route-list";
@@ -3474,7 +3711,51 @@
         details.appendChild(eyebrow);
         details.appendChild(heading);
         details.appendChild(description);
-        details.appendChild(pointList);
+
+        if (route.transferDecision) {
+          var decision = document.createElement("p");
+          decision.className = "trip-route-explorer__decision";
+          var decisionTitle = document.createElement("strong");
+          decisionTitle.textContent = "Пешком или такси";
+          var decisionText = document.createElement("span");
+          decisionText.textContent = route.transferDecision;
+          decision.appendChild(decisionTitle);
+          decision.appendChild(decisionText);
+          details.appendChild(decision);
+        }
+
+        if (route.schedule && route.schedule.length) {
+          var timeline = document.createElement("ol");
+          timeline.className = "trip-route-explorer__timeline";
+          timeline.setAttribute("aria-label", "Расписание: " + route.title);
+          route.schedule.forEach(function (entry) {
+            var timelineItem = document.createElement("li");
+            var time = document.createElement("time");
+            time.className = "trip-route-explorer__time";
+            time.textContent = entry.time;
+            var event = document.createElement("span");
+            event.className = "trip-route-explorer__event";
+            event.appendChild(document.createTextNode(entry.title));
+            if (entry.detail) {
+              var eventDetail = document.createElement("small");
+              eventDetail.textContent = entry.detail;
+              event.appendChild(eventDetail);
+            }
+            timelineItem.appendChild(time);
+            timelineItem.appendChild(event);
+            timeline.appendChild(timelineItem);
+          });
+          details.appendChild(timeline);
+        }
+
+        var stopsDisclosure = document.createElement("details");
+        stopsDisclosure.className = "trip-route-explorer__stops";
+        stopsDisclosure.open = !window.matchMedia("(max-width: 680px)").matches;
+        var stopsSummary = document.createElement("summary");
+        stopsSummary.textContent = "Все точки маршрута (" + String(route.points.length) + ")";
+        stopsDisclosure.appendChild(stopsSummary);
+        stopsDisclosure.appendChild(pointList);
+        details.appendChild(stopsDisclosure);
 
         if (route.notes && route.notes.length) {
           var notes = document.createElement("ul");
@@ -3484,7 +3765,7 @@
             noteItem.textContent = value;
             notes.appendChild(noteItem);
           });
-          details.appendChild(notes);
+          stopsDisclosure.appendChild(notes);
         }
 
         var actions = document.createElement("div");
@@ -3517,6 +3798,19 @@
         routeList.appendChild(explorer);
       });
       section.appendChild(routeList);
+
+      if (window.IntersectionObserver) {
+        var dayObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var dayIndex = Number(entry.target.getAttribute("data-trip-route-day")) - 1;
+            dayNavButtons.forEach(function (button, index) {
+              button.setAttribute("aria-pressed", String(index === dayIndex));
+            });
+          });
+        }, { rootMargin: "-120px 0px -65% 0px", threshold: 0 });
+        Array.prototype.forEach.call(routeList.children, function (card) { dayObserver.observe(card); });
+      }
 
       root.appendChild(section);
     }
@@ -4014,6 +4308,7 @@
           buttons[tab.id].setAttribute("aria-selected", String(isActive));
           panels[tab.id].hidden = !isActive;
         });
+        if (buttons[tabId]) buttons[tabId].scrollIntoView({ block: "nearest", inline: "center" });
         if (!options.skipScroll) shell.scrollIntoView({ block: "start", behavior: "smooth" });
       }
 
